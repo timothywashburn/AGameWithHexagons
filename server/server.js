@@ -1,15 +1,24 @@
 const path = require('path');
 const express = require('express');
-const {response} = require("express");
 const app = express();
+const fs = require('fs');
 
 const port = 3000;
 
-app.use(express.static(path.join(__dirname, '../client')));
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, '../client', 'index.html'));
+});
 
-app.use((req, res) => {
-  console.log('request incoming');
-  console.log(req.path);
+app.get('/:pageName', (req, res) => {
+  console.log(`request incoming: ${Date.now()}, ${req.path}`);
+
+  let pageName = req.params.pageName;
+  let pagePath = path.join(__dirname, '../client', 'pages', `${pageName}.html`);
+  if (fs.existsSync(pagePath)) {
+    res.sendFile(pagePath);
+  } else {
+    res.status(404).send('404 Not Found');
+  }
 });
 
 app.listen(port, () => {
