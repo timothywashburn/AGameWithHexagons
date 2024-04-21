@@ -2,6 +2,7 @@ const path = require('path');
 const express = require('express');
 const app = express();
 const fs = require('fs');
+const chalk = require('chalk');
 
 const port = 3000;
 let viewsDir = __dirname + '/../client/views';
@@ -27,7 +28,8 @@ app.get('/:pageName', (req, res) => {
 });
 
 app.listen(port, () => {
-	console.log(`Listening on port ${port} in ${process.env.NODE_ENV} mode`);
+	let envColor = process.env.NODE_ENV === 'production' ? chalk.green : chalk.blue;
+	console.log(`Listening on port ${chalk.red(port)} in ${envColor(process.env.NODE_ENV)} mode`);
 });
 
 
