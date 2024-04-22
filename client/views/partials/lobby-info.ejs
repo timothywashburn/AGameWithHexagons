@@ -1,19 +1,24 @@
 <div class="container mt-4">
-    <div class="row justify-content-center">
-        <div class="col-lg-4">
-            <% let lobbies = data.lobbies; %>
-            <% for (let lobbyID in lobbies) { %>
-                <% let lobbyData = lobbies[lobbyID]; %>
-                <div class="card mb-3 lobby" id="<%= lobbyID %>">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between">
-                            <h5 class="card-title"><%= lobbyData.name %></h5>
-                            <div><%= lobbyData.players %> / <%= lobbyData.maxPlayers %> player<%= lobbyData.maxPlayers === 1 ? '' : 's' %></div>
-                        </div>
-                        <p class="card-text">Click to join the game</p>
-                    </div>
-                </div>
-            <% } %>
-        </div>
-    </div>
+	<div class="row justify-content-center">
+		<div class="col-lg-4">
+			<% let lobbies = data.lobbies; %> <% for (let lobbyID in lobbies) { %> <% let lobbyData = lobbies[lobbyID];
+			%>
+			<div class="card mb-3 lobby" id="<%= lobbyID %>">
+				<div class="card-body">
+					<div class="d-flex justify-content-between">
+						<h5 class="card-title"><%= lobbyData.name %></h5>
+						<div>
+							<%= lobbyData.players %>
+							/
+							<%= lobbyData.maxPlayers %>
+							player
+							<%= lobbyData.maxPlayers === 1 ? '' : 's' %>
+						</div>
+					</div>
+					<p class="card-text">Click to join the game</p>
+				</div>
+			</div>
+			<% } %>
+		</div>
+	</div>
 </div>

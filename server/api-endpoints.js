@@ -8,14 +8,14 @@ module.exports = {
 		console.log('lobby data requested');
 		let responseData = {
 			success: true,
-			lobbies: GameLobby.lobbies.map(lobby => {
+			lobbies: GameLobby.lobbies.map((lobby) => {
 				return {
 					name: lobby.getName(),
 					joinable: lobby.isJoinable(),
 					players: lobby.clients.length,
-					maxPlayers: lobby.maxPlayers
-				}
-			})
+					maxPlayers: lobby.maxPlayers,
+				};
+			}),
 		};
 
 		fs.readFile(`${__dirname}/../client/views/partials/lobby-info.ejs`, 'utf8', (err, file) => {
@@ -24,18 +24,22 @@ module.exports = {
 				return;
 			}
 
-			responseData.html = ejs.render(file, {data: responseData});
+			responseData.html = ejs.render(file, { data: responseData });
 			res.json(responseData);
 		});
 	},
 
 	join(req, res) {
 		const lobbyId = req.query.lobby;
-			const socketId = req.query.socketId;
+		const socketId = req.query.socketId;
 
-		res.json({ message: 'Successfully joined the lobby', lobbyId, socketId });
+		res.json({
+			message: 'Successfully joined the lobby',
+			lobbyId,
+			socketId,
+		});
 
 		let lobby = GameLobby.getLobby(lobbyId);
 		lobby.addClient(socketId);
-	}
-}
+	},
+};

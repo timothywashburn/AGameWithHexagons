@@ -25,7 +25,7 @@ app.get('/api/:endpoint', (req, res) => {
 	} else {
 		res.status(404).json({
 			success: false,
-			error: "Endpoint not found"
+			error: 'Endpoint not found',
 		});
 	}
 });
@@ -42,7 +42,7 @@ app.get('/:page', (req, res) => {
 	}
 });
 
-if(isDev) {
+if (isDev) {
 	app.use('/client/public', (req, res, next) => {
 		res.set('Cache-Control', 'no-store');
 		next();

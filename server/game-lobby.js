@@ -1,48 +1,48 @@
 let lobbies = [];
 
 function getLobby(lobbyId) {
-    return lobbies[lobbyId - 1];
+	return lobbies[lobbyId - 1];
 }
 
 class GameLobby {
-    clients = [];
+	clients = [];
 
-    constructor(io) {
-        this.io = io;
-        this.setupListeners();
-        this.maxPlayers = 8;
+	constructor(io) {
+		this.io = io;
+		this.setupListeners();
+		this.maxPlayers = 8;
 
-        lobbies.push(this);
-    }
+		lobbies.push(this);
+	}
 
-    getName() {
-        return `Lobby ${lobbies.indexOf(this) + 1}`;
-    }
+	getName() {
+		return `Lobby ${lobbies.indexOf(this) + 1}`;
+	}
 
-    isJoinable() {
-        return this.clients.length < this.maxPlayers;
-    }
+	isJoinable() {
+		return this.clients.length < this.maxPlayers;
+	}
 
-    addClient(client) {
-        this.clients.push(client);
+	addClient(client) {
+		this.clients.push(client);
 
-        console.log('clients in lobby: ', this.clients);
-    }
+		console.log('clients in lobby: ', this.clients);
+	}
 
-    setupListeners() {
-        this.io.on('connection', (socket) => {
-            console.log('a user connected');
+	setupListeners() {
+		this.io.on('connection', (socket) => {
+			console.log('a user connected');
 
-            socket.on('disconnect', () => {
-                let id = socket.id;
-                this.clients = this.clients.filter(client => client !== id);
-            });
-        });
-    }
+			socket.on('disconnect', () => {
+				let id = socket.id;
+				this.clients = this.clients.filter((client) => client !== id);
+			});
+		});
+	}
 }
 
 module.exports = {
-    GameLobby,
-    getLobby,
-    lobbies,
+	GameLobby,
+	getLobby,
+	lobbies,
 };

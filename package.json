@@ -1,39 +1,40 @@
 {
-  "name": "a-game-with-hexagons",
-  "version": "1.0.0",
-  "description": "",
-  "main": "server/server.js",
-  "scripts": {
-    "develop": "cross-env NODE_ENV=development nodemon server/server.js",
-    "start": "cross-env NODE_ENV=production node server/server.js",
-    "lint": "lint-staged"
-  },
-  "lint-staged": {
-    "*.{js,ts,json,css,html,md,yaml,yml}": "prettier --write"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/timothywashburn/AGameWithHexagons.git"
-  },
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/timothywashburn/AGameWithHexagons/issues"
-  },
-  "homepage": "https://github.com/timothywashburn/AGameWithHexagons#readme",
-  "dependencies": {
-    "axios": "^1.6.7",
-    "chalk": "^4.1.2",
-    "cross-env": "^7.0.3",
-    "ejs": "^3.1.10",
-    "express": "^4.18.2",
-    "socket.io": "^4.7.5",
-    "socket.io-client": "^4.7.5"
-  },
-  "devDependencies": {
-    "husky": "^9.0.11",
-    "lint-staged": "^15.2.2",
-    "nodemon": "^3.1.0",
-    "prettier": "^3.2.5"
-  }
+	"name": "a-game-with-hexagons",
+	"version": "1.0.0",
+	"description": "",
+	"main": "server/server.js",
+	"scripts": {
+		"develop": "cross-env NODE_ENV=development nodemon server/server.js",
+		"start": "cross-env NODE_ENV=production node server/server.js",
+		"lint": "lint-staged"
+	},
+	"lint-staged": {
+		"*.{js,ts,json,css,html,md,yaml,yml}": "prettier --write"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/timothywashburn/AGameWithHexagons.git"
+	},
+	"author": "",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/timothywashburn/AGameWithHexagons/issues"
+	},
+	"homepage": "https://github.com/timothywashburn/AGameWithHexagons#readme",
+	"dependencies": {
+		"axios": "^1.6.7",
+		"chalk": "^4.1.2",
+		"cross-env": "^7.0.3",
+		"ejs": "^3.1.10",
+		"express": "^4.18.2",
+		"socket.io": "^4.7.5",
+		"socket.io-client": "^4.7.5"
+	},
+	"devDependencies": {
+		"husky": "^9.0.11",
+		"lint-staged": "^15.2.2",
+		"nodemon": "^3.1.0",
+		"prettier": "^3.2.5",
+		"prettier-plugin-ejs": "^1.0.3"
+	}
 }
