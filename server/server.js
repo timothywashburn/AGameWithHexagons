@@ -26,9 +26,18 @@ app.get('/:pageName', (req, res) => {
 	}
 });
 
-app.listen(port, () => {
+app.use('/client/public', express.static(path.join(__dirname, '../client/public')));
+
+const http = require('http');
+const { Server } = require('socket.io');
+const GameLobby = require('./game-lobby');
+
+const server = http.createServer(app);
+const io = new Server(server);
+
+const gameLobby = new GameLobby(io);
+
+server.listen(port, () => {
 	let envColor = process.env.NODE_ENV === 'production' ? chalk.green : chalk.blue;
 	console.log(`Listening on port ${chalk.red(port)} in ${envColor(process.env.NODE_ENV)} mode`);
 });
-
-
