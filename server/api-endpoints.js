@@ -40,6 +40,8 @@ module.exports = {
 		});
 
 		let lobby = GameLobby.getLobby(lobbyId);
+		if (!lobby || lobby.clients.includes(socketId) || lobby.clients.length >= lobby.maxPlayers) return;
+
 		lobby.addClient(socketId);
 	},
 };

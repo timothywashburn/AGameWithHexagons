@@ -1,7 +1,7 @@
 let lobbies = [];
 
 function getLobby(lobbyId) {
-	return lobbies[lobbyId - 1];
+	return lobbies[lobbyId];
 }
 
 class GameLobby {
