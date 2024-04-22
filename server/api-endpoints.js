@@ -43,5 +43,13 @@ module.exports = {
 		if (!lobby || lobby.clients.includes(socketId) || lobby.clients.length >= lobby.maxPlayers) return;
 
 		lobby.addClient(socketId);
+
+		const server = require('./server');
+		const PacketClientGameInit = require('../shared/packet-client-game-init');
+
+		let packet = new PacketClientGameInit();
+		packet.addClient(socketId);
+
+		packet.send(server);
 	},
 };
