@@ -18,12 +18,11 @@ app.get('/:pageName', (req, res) => {
 	console.log(`request incoming: ${Date.now()}, ${req.path}`);
 
 	let pageName = req.params.pageName;
-	let pagePath = `${__dirname}/../client/views/pages/${pageName}.ejs`;
-
-	if (fs.existsSync(`${viewsDir}/${pageName}.ejs`)) {
+	let pagePath = `${viewsDir}/pages/${pageName}.ejs`;
+	if (fs.existsSync(pagePath)) {
 		res.render(pagePath);
 	} else {
-		res.status(404).render('404');
+		res.status(404).render('pages/404');
 	}
 });
 
