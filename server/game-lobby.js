@@ -10,8 +10,17 @@ class GameLobby {
     constructor(io) {
         this.io = io;
         this.setupListeners();
+        this.maxPlayers = 8;
 
         lobbies.push(this);
+    }
+
+    getName() {
+        return `Lobby ${lobbies.indexOf(this) + 1}`;
+    }
+
+    isJoinable() {
+        return this.clients.length < this.maxPlayers;
     }
 
     addClient(client) {
@@ -34,5 +43,6 @@ class GameLobby {
 
 module.exports = {
     GameLobby,
-    getLobby
+    getLobby,
+    lobbies,
 };

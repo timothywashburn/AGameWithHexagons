@@ -4,7 +4,15 @@ module.exports = {
 	lobbydata(req, res) {
 		console.log('lobby data requested')
 		res.json({
-			success: true
+			success: true,
+			lobbies: GameLobby.lobbies.map(lobby => {
+				return {
+					name: lobby.getName(),
+					joinable: lobby.isJoinable(),
+					players: lobby.clients.length,
+					maxPlayers: lobby.maxPlayers
+				}
+			})
 		});
 	},
 
