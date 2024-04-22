@@ -1,4 +1,4 @@
-const Packet = require('./packet.js');
+const Packet = require('../packet.js');
 
 class PacketClientGameInit extends Packet {
     constructor() {
