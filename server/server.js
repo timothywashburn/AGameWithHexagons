@@ -5,20 +5,20 @@ const fs = require('fs');
 const chalk = require('chalk');
 
 const port = 3000;
-let viewsDir = __dirname + '/../client/views';
+let viewsDir = `${__dirname}/../client/views`;
 
 app.set('view engine', 'ejs');
 app.set('views', viewsDir);
 
 app.get('/', (req, res) => {
-	res.render('index');
+	res.render('pages/index');
 });
 
 app.get('/:pageName', (req, res) => {
 	console.log(`request incoming: ${Date.now()}, ${req.path}`);
 
 	let pageName = req.params.pageName;
-	let pagePath = path.join(__dirname, '../client', 'views', `${pageName}.ejs`);
+	let pagePath = `${__dirname}/../client/views/pages/${pageName}.ejs`;
 
 	if (fs.existsSync(`${viewsDir}/${pageName}.ejs`)) {
 		res.render(pagePath);
