@@ -1,13 +1,20 @@
 class GameLobby {
+
+
+    clients = [];
+
     constructor(io) {
         this.io = io;
         this.setupListeners();
     }
 
+    addClient(client) {
+        this.clients.push(client);
+    }
+
     setupListeners() {
         this.io.on('connection', (socket) => {
             console.log('a user connected');
-            // You can add more event listeners here for this socket
         });
     }
 }

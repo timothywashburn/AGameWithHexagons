@@ -26,6 +26,13 @@ app.get('/:pageName', (req, res) => {
 	}
 });
 
+app.get('/api/join', (req, res) => {
+	const lobbyId = req.query.lobby;
+	const socketId = req.query.socketId;
+
+	res.json({ message: 'Successfully joined the lobby', lobbyId, socketId });
+});
+
 app.use('/client/public', express.static(path.join(__dirname, '../client/public')));
 
 const http = require('http');
