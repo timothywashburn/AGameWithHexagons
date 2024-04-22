@@ -5,7 +5,11 @@
   "main": "server/server.js",
   "scripts": {
     "develop": "cross-env NODE_ENV=development nodemon server/server.js",
-    "start": "cross-env NODE_ENV=production node server/server.js"
+    "start": "cross-env NODE_ENV=production node server/server.js",
+    "lint": "lint-staged"
+  },
+  "lint-staged": {
+    "*.{js,ts,json,css,html,md,yaml,yml}": "prettier --write"
   },
   "repository": {
     "type": "git",
@@ -27,6 +31,9 @@
     "socket.io-client": "^4.7.5"
   },
   "devDependencies": {
-    "nodemon": "^3.1.0"
+    "husky": "^9.0.11",
+    "lint-staged": "^15.2.2",
+    "nodemon": "^3.1.0",
+    "prettier": "^3.2.5"
   }
 }
