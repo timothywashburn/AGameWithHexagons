@@ -18,7 +18,7 @@ app.get('/', (req, res) => {
 });
 
 app.get('/api/:endpoint', (req, res) => {
-	let endpoint = req.params.endpoint;
+	let endpoint = req.params.endpoint.toLowerCase();
 
 	if (typeof endpoints[endpoint] === 'function') {
 		endpoints[endpoint](req, res);
