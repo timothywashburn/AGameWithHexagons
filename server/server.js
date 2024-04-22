@@ -53,7 +53,7 @@ app.use('/client/public', express.static(`${__dirname}/../client/public`));
 
 const http = require('http');
 const { Server } = require('socket.io');
-const GameLobby = require('./game-lobby');
+const { GameLobby } = require('./game-lobby');
 
 const server = http.createServer(app);
 const io = new Server(server);
