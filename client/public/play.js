@@ -8,7 +8,7 @@ function updateLobbies() {
 			const lobbyCards = document.querySelectorAll('.lobby');
 
 			lobbyCards.forEach((card) => {
-				card.addEventListener('click', function () {
+				card.addEventListener('click', () => {
 					const lobbyID = card.id;
 					console.log('Clicked lobby ID:', lobbyID);
 				});
