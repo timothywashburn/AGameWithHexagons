@@ -6,11 +6,13 @@ socket.on('connect', () => {
 });
 
 socket.on('packet', function(packet) {
-	if (!packet.clients.includes(window.socketID)) return;
+	let PacketType = window.PacketType;
+	let PacketServerNameSelect = window.PacketServerNameSelect;
 
-	if (packet.id === 0x01) {
+	if(!packet.clients.includes(window.socketID) || !packet.type === PacketType.CLIENT_BOUND) return;
 
-		let PacketServerNameSelect = window.PacketServerNameSelect;
+	if(packet.id === 0x01) {
+
 		let packet = new PacketServerNameSelect('Player');
 		packet.addClient(window.socketID);
 
