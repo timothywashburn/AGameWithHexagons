@@ -45,7 +45,7 @@ module.exports = {
 		lobby.addClient(socketId);
 
 		const server = require('./server');
-		const PacketClientGameInit = require('./packets/packet-client-game-init');
+		const PacketClientGameInit = require('../client/public/packets/packet-client-game-init');
 
 		let packet = new PacketClientGameInit();
 		packet.addClient(socketId);
