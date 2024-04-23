@@ -34,6 +34,7 @@ module.exports = {
 		const socketId = req.query.socketId;
 
 		res.json({
+			success: true,
 			message: 'Successfully joined the lobby',
 			lobbyId,
 			socketId,
