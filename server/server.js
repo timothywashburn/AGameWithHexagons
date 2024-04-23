@@ -64,3 +64,5 @@ server.listen(port, () => {
 	let envColor = isDev ? chalk.blue : chalk.green;
 	console.log(`Listening on port ${chalk.red(port)} in ${envColor(process.env.NODE_ENV)} mode`);
 });
+
+module.exports = io;

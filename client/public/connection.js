@@ -1,19 +1,15 @@
 let socket = io.connect();
-socket.on('connect', () => {
-	console.log(socket.id);
 
-	joinGame(1, socket.id);
+socket.on('connect', () => {
+	window.socketID = socket.id;
 });
 
-function joinGame(lobby, socket) {
-	let url = '/api/join';
-	let params = { lobby: lobby, socketId: socket };
-	url += '?' + new URLSearchParams(params).toString();
+socket.on('packet', function(packet) {
+	if (!packet.clients.includes(window.socketID)) return;
 
-	fetch(url)
-		.then((response) => response.json())
-		.then((data) => {
-			console.log('testing');
-			console.log(data);
-		});
-}
+	if (packet.id === 0x01) {
+		showCanvas();
+	}
+});
+
+

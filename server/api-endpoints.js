@@ -40,6 +40,16 @@ module.exports = {
 		});
 
 		let lobby = GameLobby.getLobby(lobbyId);
+		if (!lobby || lobby.clients.includes(socketId) || lobby.clients.length >= lobby.maxPlayers) return;
+
 		lobby.addClient(socketId);
+
+		const server = require('./server');
+		const PacketClientGameInit = require('./packets/packet-client-game-init');
+
+		let packet = new PacketClientGameInit();
+		packet.addClient(socketId);
+
+		packet.send(server);
 	},
 };
