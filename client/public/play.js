@@ -1,4 +1,3 @@
-
 function updateLobbies() {
 	fetch('/api/lobbydata')
 		.then((response) => response.json())
@@ -14,7 +13,6 @@ function updateLobbies() {
 					console.log('Clicked lobby ID:', lobbyID);
 
 					joinGame(lobbyID, window.socketID);
-
 				});
 			});
 		});
@@ -36,7 +34,7 @@ function joinGame(lobby, socket) {
 updateLobbies();
 
 function showCanvas() {
-	console.log('showing canvas')
+	console.log('showing canvas');
 	// let canvas = document.getElementById('gameCanvas');
 	// canvas.style.display = 'block';
 }
