@@ -1,3 +1,6 @@
+const { Packet, PacketType } = require('../client/public/packet.js');
+const { Client, globalClients } = require('./client.js');
+
 let lobbies = [];
 
 function getLobby(lobbyId) {
@@ -30,14 +33,7 @@ class GameLobby {
 	}
 
 	setupListeners() {
-		this.io.on('connection', (socket) => {
-			console.log('a user connected');
 
-			socket.on('disconnect', () => {
-				let id = socket.id;
-				this.clients = this.clients.filter((client) => client !== id);
-			});
-		});
 	}
 }
 

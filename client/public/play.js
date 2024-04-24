@@ -34,16 +34,14 @@ function joinGame(lobby, socket) {
 updateLobbies();
 
 function showCanvas() {
-	console.log('showing canvas');
-	alert("You have joined a game!");
-	// let canvas = document.getElementById('gameCanvas');
-	// canvas.style.display = 'block';
-	// canvas.height = window.innerHeight;
-	// canvas.width = window.innerWidth;
-	//
-	// let ctx = canvas.getContext("2d");
-	//
-	// ctx.fillStyle = "blue";
-	// ctx.fillRect(0, 0, canvas.width, canvas.height);
-
+	$.get('/game', function(data) {
+		$('body').html(data);
+	}).fail(function() {
+		console.error('Error loading EJS content');
+	});
 }
+
+//Add a listener for the confirmUsernameBtn
+
+
+

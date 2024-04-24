@@ -54,9 +54,16 @@ app.use('/client/public', express.static(`${__dirname}/../client/public`));
 const http = require('http');
 const { Server } = require('socket.io');
 const { GameLobby } = require('./game-lobby');
+const {globalClients, Client} = require("./client");
 
 const server = http.createServer(app);
 const io = new Server(server);
+
+io.on('connection', (socket) => {
+	globalClients.push(new Client(socket));
+
+	console.log('a user connected');
+});
 
 const gameLobby = new GameLobby(io);
 

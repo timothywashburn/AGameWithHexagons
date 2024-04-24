@@ -1,5 +1,6 @@
 const ejs = require('ejs');
 const fs = require('fs');
+const { Client, globalClients } = require('./client');
 
 const GameLobby = require('./game-lobby');
 
@@ -43,7 +44,11 @@ module.exports = {
 		let lobby = GameLobby.getLobby(lobbyId);
 		if (!lobby || lobby.clients.includes(socketId) || lobby.clients.length >= lobby.maxPlayers) return;
 
-		lobby.addClient(socketId);
+
+		let client = globalClients.find((client) => client.id === socketId);
+		if (!client) return;
+
+		lobby.addClient(client);
 
 		const server = require('./server');
 		const PacketClientGameInit = require('../client/public/packets/packet-client-game-init');

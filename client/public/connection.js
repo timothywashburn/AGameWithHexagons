@@ -1,5 +1,6 @@
 // import { PacketServerNameSelect } from './packets/packet-server-name-select.js';
 let socket = io.connect();
+window.socket = socket;
 
 socket.on('connect', () => {
 	window.socketID = socket.id;
@@ -11,15 +12,7 @@ socket.on('packet', function(packet) {
 
 	if(!packet.clients.includes(window.socketID) || !packet.type === PacketType.CLIENT_BOUND) return;
 
-	if(packet.id === 0x01) {
-
-		let packet = new PacketServerNameSelect('Player');
-		packet.addClient(window.socketID);
-
-		packet.send(socket);
-
-		showCanvas();
-	}
+	if(packet.id === 0x01) showCanvas();
 });
 
 

@@ -1,4 +1,4 @@
-class   Packet {
+class Packet {
 
     constructor(id, type) {
         this.id = id;
@@ -11,6 +11,7 @@ class   Packet {
     }
 
     send(socket) {
+        console.log('emitting!');
         socket.emit('packet', this);
     }
 }
