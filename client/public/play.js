@@ -34,14 +34,13 @@ function joinGame(lobby, socket) {
 updateLobbies();
 
 function showCanvas() {
-	$.get('/game', function(data) {
-		$('body').html(data);
-	}).fail(function() {
-		console.error('Error loading EJS content');
-	});
+	const lobbyDiv = document.getElementById('lobby');
+	const gameDiv = document.getElementById('game');
+
+	lobbyDiv.style.display = 'none';
+	gameDiv.style.display = 'block';
+
+	new bootstrap.Modal(document.getElementById('usernameModal')).show();
 }
 
 //Add a listener for the confirmUsernameBtn
-
-
-
