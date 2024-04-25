@@ -54,7 +54,7 @@ module.exports = {
 		const PacketClientGameInit = require('../client/public/packets/packet-client-game-init');
 
 		let packet = new PacketClientGameInit();
-		packet.addClient(socketId);
+		packet.addClient(client);
 
 		packet.send(server);
 	},

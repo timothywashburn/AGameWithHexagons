@@ -1,5 +1,6 @@
 const { Packet, PacketType } = require('../client/public/packet.js');
 const { Client, globalClients } = require('./client.js');
+const { PacketClientLobbyInfo } = require('../client/public/packets/packet-client-lobby-info.js');
 
 let lobbies = [];
 
@@ -12,7 +13,6 @@ class GameLobby {
 
 	constructor(io) {
 		this.io = io;
-		this.setupListeners();
 		this.maxPlayers = 8;
 
 		lobbies.push(this);
@@ -30,9 +30,17 @@ class GameLobby {
 		this.clients.push(client);
 
 		console.log('clients in lobby: ', this.clients);
-	}
 
-	setupListeners() {
+		this.sendUpdates();
+	}
+	sendUpdates() {
+		let packet = new PacketClientLobbyInfo(this.clients);
+
+		this.clients.forEach((client) => {
+			packet.addClient(client);
+			packet.send(client.socket);
+		});
+
 
 	}
 }

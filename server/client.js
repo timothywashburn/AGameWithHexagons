@@ -10,13 +10,15 @@ class Client {
     constructor(socket) {
         this.id = socket.id;
         this.name = 'User';
+        this.socket = socket;
 
         socket.on('disconnect', () => {
             let id = socket.id;
             globalClients = globalClients.filter((client) => client.id !== id);
 
             lobbies.forEach((lobby) => {
-                lobby.clients = lobby.clients.filter((client) => client.id !== id);
+                lobby.clients = lobby.clients.filter((client) =>
+                    client.id !== id);
             });
 
         });
@@ -34,17 +36,21 @@ class Client {
                 else if(packet.name.length > 30) code = NameErrorType.TOO_LONG.code;
 
                 let response = new PacketClientNameConfirm(selectedName, code);
-                response.addClient(this.id);
+                response.addClient(this);
 
                 response.send(socket);
-
                 this.name = packet.name;
+
+                if(code === 0x00) {
+                    this.getLobby().sendUpdates();
+                }
             }
         });
     }
 
-
-
+    getLobby() {
+        return lobbies.find((lobby) => lobby.clients.includes(this));
+    }
 }
 
 module.exports = { Client, globalClients };
