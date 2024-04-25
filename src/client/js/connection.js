@@ -6,13 +6,11 @@ socket.on('connect', () => {
 	window.socketID = socket.id;
 });
 
-socket.on('packet', function(packet) {
+socket.on('packet', function (packet) {
 	let PacketType = window.PacketType;
 	let PacketServerNameSelect = window.PacketServerNameSelect;
 
-	if(!packet.clients.includes(window.socketID) || !packet.type === PacketType.CLIENT_BOUND) return;
+	if (!packet.clients.includes(window.socketID) || !packet.type === PacketType.CLIENT_BOUND) return;
 
-	if(packet.id === 0x01) showCanvas();
+	if (packet.id === 0x01) showCanvas();
 });
-
-

@@ -1,4 +1,4 @@
-const { Packet, PacketType } = require('../client/public/packet.js');
+const { Packet, PacketType } = require('../client/js/packet.js');
 const { Client, globalClients } = require('./client.js');
 
 let lobbies = [];
@@ -32,9 +32,7 @@ class GameLobby {
 		console.log('clients in lobby: ', this.clients);
 	}
 
-	setupListeners() {
-
-	}
+	setupListeners() {}
 }
 
 module.exports = {

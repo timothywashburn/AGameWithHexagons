@@ -3,8 +3,11 @@ const express = require('express');
 const app = express();
 const fs = require('fs');
 const chalk = require('chalk');
+const webpack = require('webpack');
+const webpackDevMiddleware = require('webpack-dev-middleware');
 
-const endpoints = require('./api-endpoints');
+const endpoints = require('./api-endpoints.js');
+const webpackConfig = require('../../webpack.dev.js');
 
 const port = 3000;
 const viewsDir = `${__dirname}/../client/views`;
@@ -12,6 +15,22 @@ const isDev = process.env.NODE_ENV === 'development';
 
 app.set('view engine', 'ejs');
 app.set('views', viewsDir);
+
+if (isDev) {
+	// const compiler = webpack(webpackConfig);
+	// app.use(webpackDevMiddleware(compiler));
+	// app.use(express.static("dist"));
+	console.log('run');
+	app.use('/dist/', () => {
+		console.log('aafd');
+		express.static(`${__dirname}../../dist`);
+	});
+	// console.log(path.resolve(`${__dirname}/../../dist`))
+}
+
+// app.use('/dist', express.static(`${__dirname}/../../dist`));
+//
+// app.use(express.static("dist"));
 
 app.get('/', (req, res) => {
 	res.render('pages/index');
@@ -43,18 +62,18 @@ app.get('/:page', (req, res) => {
 });
 
 if (isDev) {
-	app.use('/client/public', (req, res, next) => {
+	app.use('/src/client/js', (req, res, next) => {
 		res.set('Cache-Control', 'no-store');
 		next();
 	});
 }
 
-app.use('/client/public', express.static(`${__dirname}/../client/public`));
+app.use('/src/client/js', express.static(`${__dirname}/../client/js`));
 
 const http = require('http');
 const { Server } = require('socket.io');
 const { GameLobby } = require('./game-lobby');
-const {globalClients, Client} = require("./client");
+const { globalClients, Client } = require('./client');
 
 const server = http.createServer(app);
 const io = new Server(server);

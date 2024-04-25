@@ -44,14 +44,13 @@ module.exports = {
 		let lobby = GameLobby.getLobby(lobbyId);
 		if (!lobby || lobby.clients.includes(socketId) || lobby.clients.length >= lobby.maxPlayers) return;
 
-
 		let client = globalClients.find((client) => client.id === socketId);
 		if (!client) return;
 
 		lobby.addClient(client);
 
 		const server = require('./server');
-		const PacketClientGameInit = require('../client/public/packets/packet-client-game-init');
+		const PacketClientGameInit = require('../client/js/packets/packet-client-game-init');
 
 		let packet = new PacketClientGameInit();
 		packet.addClient(socketId);
