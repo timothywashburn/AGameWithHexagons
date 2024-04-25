@@ -26,6 +26,27 @@
 		</div>
 
 		<div id="game">
+
+			<style>
+				#playerList {
+					position: fixed;
+					top: 0;
+					right: 0;
+					width: 200px; /* Adjust as needed */
+					height: 100vh; /* Full height */
+					padding: 20px;
+					background-color: #f8f9fa; /* Light gray */
+					overflow-y: auto; /* Add a scrollbar if the content is too long */
+					box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1); /* Add a shadow for a 3D effect */
+				}
+
+				#playerList li {
+					list-style-type: none; /* Remove bullet points */
+					font-size: 1.5em; /* Increase the font size */
+					margin-bottom: 10px; /* Add some space between the names */
+				}
+			</style>
+
 			<!-- Modal -->
 			<div class="container d-flex justify-content-center align-items-center vh-100">
 				<div class="text-center">
@@ -34,6 +55,7 @@
 					<p class="lead">
 						Return to <a href="/">Home</a>
 					</p>
+					<ul id="playerList"></ul>
 				</div>
 			</div>
 

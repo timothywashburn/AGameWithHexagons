@@ -16,11 +16,14 @@ class Client {
             let id = socket.id;
             globalClients = globalClients.filter((client) => client.id !== id);
 
+            let lobby = this.getLobby();
+
             lobbies.forEach((lobby) => {
                 lobby.clients = lobby.clients.filter((client) =>
                     client.id !== id);
             });
 
+            if(lobby) lobby.sendUpdates();
         });
 
 
