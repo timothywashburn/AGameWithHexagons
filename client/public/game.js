@@ -1,7 +1,7 @@
-let PacketServerNameSelect = window.PacketServerNameSelect;
-
 const confirmUsernameBtn = document.getElementById('confirmUsernameBtn');
 confirmUsernameBtn.addEventListener('click', () => {
+    let PacketServerNameSelect = window.PacketServerNameSelect;
+
     const username = document.getElementById('usernameInput').value;
 
     let packet = new PacketServerNameSelect(username);
@@ -9,3 +9,5 @@ confirmUsernameBtn.addEventListener('click', () => {
 
     packet.send(window.socket);
 });
+
+//Add a method to display an error messahe on the prompt

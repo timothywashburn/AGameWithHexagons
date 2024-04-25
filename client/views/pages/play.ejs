@@ -46,9 +46,11 @@
 						<div class="modal-body">
 							<!-- Username input field -->
 							<input type="text" class="form-control" id="usernameInput" placeholder="Enter your username">
+							<!-- Error message area -->
+							<div id="usernameError" class="text-danger" style="text-align: center;"></div>
 						</div>
 						<div class="modal-footer justify-content-center">
-							<button type="button" class="btn btn-primary" id="confirmUsernameBtn">Confirm</button>
+							<button type="button" class="btn btn-primary" id="confirmUsernameBtn" >Confirm</button>
 						</div>
 					</div>
 				</div>
@@ -66,5 +68,6 @@
 		<script src="/client/public/packets/packet-server-name-select.js" type="module"></script>
 		<script src="/client/public/play.js"></script>
 		<script src="/client/public/game.js"></script>
+		<script src="/client/public/enums.js"></script>
 	</body>
 </html>

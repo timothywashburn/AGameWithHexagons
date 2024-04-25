@@ -1,5 +1,9 @@
 const { PacketType} = require("../client/public/packet");
+const { PacketClientNameConfirm } = require("../client/public/packets/packet-client-name-confirm");
 const { GameLobby, getLobby, lobbies} = require("./game-lobby");
+const { NameErrorType } = require("../client/public/enums");
+const e = require("express");
+
 let globalClients = [];
 
 class Client {
@@ -22,6 +26,18 @@ class Client {
             if (!packet.type === PacketType.SERVER_BOUND) return;
 
             if (packet.id === 0x02) {
+                let selectedName = packet.name;
+
+                let code = 0x00
+                if(packet.name.toLowerCase() === 'admin') code = NameErrorType.BAD_NAME.code;
+                else if(packet.name.length < 3) code = NameErrorType.TOO_SHORT.code;
+                else if(packet.name.length > 30) code = NameErrorType.TOO_LONG.code;
+
+                let response = new PacketClientNameConfirm(selectedName, code);
+                response.addClient(this.id);
+
+                response.send(socket);
+
                 this.name = packet.name;
             }
         });

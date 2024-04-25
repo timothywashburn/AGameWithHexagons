@@ -5,8 +5,4 @@ class PacketServerNameSelect extends Packet {
     }
 }
 
-if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
-    module.exports = { PacketServerNameSelect };
-} else {
-    window.PacketServerNameSelect = PacketServerNameSelect;
-}
+window.PacketServerNameSelect = PacketServerNameSelect;
