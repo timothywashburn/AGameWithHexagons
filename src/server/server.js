@@ -17,20 +17,24 @@ app.set('view engine', 'ejs');
 app.set('views', viewsDir);
 
 if (isDev) {
-	// const compiler = webpack(webpackConfig);
-	// app.use(webpackDevMiddleware(compiler));
-	// app.use(express.static("dist"));
-	console.log('run');
-	app.use('/dist/', () => {
-		console.log('aafd');
-		express.static(`${__dirname}../../dist`);
-	});
-	// console.log(path.resolve(`${__dirname}/../../dist`))
+	const compiler = webpack(webpackConfig);
+	app.use(
+		webpackDevMiddleware(compiler, {
+			headers: (req, res) => {
+				res.set('Cache-Control', 'no-store');
+			},
+		}),
+	);
+} else {
+	app.use(
+		express.static('dist', {
+			setHeaders: (res) => {
+				// TODO: Switch to a content hashing cache system before removing this
+				res.set('Cache-Control', 'no-store');
+			},
+		}),
+	);
 }
-
-// app.use('/dist', express.static(`${__dirname}/../../dist`));
-//
-// app.use(express.static("dist"));
 
 app.get('/', (req, res) => {
 	res.render('pages/index');
@@ -60,15 +64,6 @@ app.get('/:page', (req, res) => {
 		res.status(404).render('pages/404');
 	}
 });
-
-if (isDev) {
-	app.use('/src/client/js', (req, res, next) => {
-		res.set('Cache-Control', 'no-store');
-		next();
-	});
-}
-
-app.use('/src/client/js', express.static(`${__dirname}/../client/js`));
 
 const http = require('http');
 const { Server } = require('socket.io');

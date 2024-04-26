@@ -1,4 +1,9 @@
-let PacketServerNameSelect = window.PacketServerNameSelect;
+import './play';
+import './connection';
+import Packet from '../../shared/packets/packet';
+import { PacketServerNameSelect } from '../../shared/packets/packet-server-name-select';
+
+console.log(Packet);
 
 const confirmUsernameBtn = document.getElementById('confirmUsernameBtn');
 confirmUsernameBtn.addEventListener('click', () => {

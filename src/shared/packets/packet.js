@@ -20,9 +20,7 @@ const PacketType = Object.freeze({
 	CLIENT_BOUND: 'CLIENT_BOUND',
 });
 
-if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
-	module.exports = { Packet, PacketType };
-} else {
-	window.Packet = Packet;
-	window.PacketType = PacketType;
-}
+module.exports = {
+	Packet,
+	PacketType,
+};

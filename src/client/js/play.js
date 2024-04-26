@@ -33,7 +33,7 @@ function joinGame(lobby, socket) {
 
 updateLobbies();
 
-function showCanvas() {
+export function showCanvas() {
 	const lobbyDiv = document.getElementById('lobby');
 	const gameDiv = document.getElementById('game');
 

@@ -1,4 +1,4 @@
-const { Packet, PacketType } = require('../client/js/packet.js');
+const { Packet, PacketType } = require('../shared/packets/packet.js');
 const { Client, globalClients } = require('./client.js');
 
 let lobbies = [];

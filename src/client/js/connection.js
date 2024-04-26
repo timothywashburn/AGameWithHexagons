@@ -1,4 +1,6 @@
-// import { PacketServerNameSelect } from './packets/packet-server-name-select.js';
+import { PacketType } from '../../shared/packets/packet';
+import { showCanvas } from './play';
+import { io } from 'socket.io-client';
 let socket = io.connect();
 window.socket = socket;
 
@@ -7,9 +9,6 @@ socket.on('connect', () => {
 });
 
 socket.on('packet', function (packet) {
-	let PacketType = window.PacketType;
-	let PacketServerNameSelect = window.PacketServerNameSelect;
-
 	if (!packet.clients.includes(window.socketID) || !packet.type === PacketType.CLIENT_BOUND) return;
 
 	if (packet.id === 0x01) showCanvas();
