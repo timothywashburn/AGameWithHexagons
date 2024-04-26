@@ -28,6 +28,7 @@ class Client {
 			if (!packet.type === PacketType.SERVER_BOUND) return;
 
 			if (packet.id === 0x02) {
+
 				let selectedName = packet.name;
 
 				let code = 0x00;

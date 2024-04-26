@@ -4,8 +4,6 @@ const NameErrorType = Object.freeze({
 	TOO_LONG: { code: 0x03, message: 'Name Too Long (30 Characters Maximum)' },
 });
 
-if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
-	module.exports = { NameErrorType };
-} else {
-	window.NameErrorType = NameErrorType;
-}
+module.exports = {
+	NameErrorType,
+};

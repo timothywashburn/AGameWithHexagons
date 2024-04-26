@@ -10,13 +10,25 @@ class Packet {
 		this.clients.push(client);
 	}
 
+	// send(socket) {
+	// 	if (socket) {
+	// 		socket.emit('packet', this);
+	// 	} else {
+	// 		let packetData = { ...this };
+	// 		delete packetData.clients;
+	// 		this.clients.forEach((client) => client.socket.emit('packet', packetData));
+	// 	}
+	// }
+
 	send(socket) {
-		if (socket) {
-			socket.emit('packet', this);
+		if(typeof window === 'undefined') {
+			this.clients.forEach((client) => {
+				let packetData = { ...this };
+				delete packetData.clients;
+				client.socket.emit('packet', packetData);
+			});
 		} else {
-			let packetData = { ...this };
-			delete packetData.clients;
-			this.clients.forEach((client) => client.socket.emit('packet', packetData));
+			socket.emit('packet', this);
 		}
 	}
 }
