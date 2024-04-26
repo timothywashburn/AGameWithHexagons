@@ -1,5 +1,6 @@
 const { PacketType } = require('../shared/packets/packet');
 const PacketClientNameConfirm = require('../shared/packets/packet-client-name-confirm');
+const PacketClientChat = require('../shared/packets/packet-client-chat');
 const { GameLobby, getLobby, lobbies } = require('./game-lobby');
 const { NameErrorType } = require('../shared/enums');
 
@@ -45,6 +46,18 @@ class Client {
 				if (code === 0x00) {
 					this.getLobby().sendUpdates();
 				}
+			}
+
+			if(packet.id === 0x05) {
+				let message = packet.message;
+				let response = new PacketClientChat(this.id, message);
+
+				let lobby = this.getLobby();
+				lobby.clients.forEach((client) => {
+					response.addClient(client);
+				});
+
+				response.send(socket);
 			}
 		});
 	}

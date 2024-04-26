@@ -10,14 +10,14 @@ socket.on('connect', () => {
 });
 
 socket.on('packet', function (packet) {
-	if (packet.type !== PacketType.CLIENT_BOUND) return;
+	if(packet.type !== PacketType.CLIENT_BOUND) return;
 	console.log('packet received');
 	console.log(packet);
 
-	if (packet.id === 0x01) showCanvas();
+	if(packet.id === 0x01) showCanvas();
 
-	if (packet.id === 0x03) {
-		if (packet.code === 0x00) {
+	if(packet.id === 0x03) {
+		if(packet.code === 0x00) {
 			window.clientName = packet.name;
 
 			let modal = document.getElementById('usernameModal');
@@ -36,7 +36,7 @@ socket.on('packet', function (packet) {
 		document.getElementById('usernameError').innerHTML = error.message;
 	}
 
-	if (packet.id === 0x04) {
+	if(packet.id === 0x04) {
 		window.clients = packet.lobbyClients;
 
 		const playerList = document.getElementById('playerList');
@@ -50,5 +50,17 @@ socket.on('packet', function (packet) {
 
 			playerList.appendChild(listItem);
 		});
+	}
+
+	if(packet.id === 0x06) {
+		const chatMessages = document.getElementById('chatMessages');
+		const message = document.createElement('div');
+
+		let client = window.clients.find((client) => client.id === packet.clientID);
+
+		message.innerHTML = client.name + ': ' + packet.message;
+
+		chatMessages.appendChild(message);
+		chatMessages.scrollTop = chatMessages.scrollHeight;
 	}
 });
