@@ -36,6 +36,9 @@ class Client {
 				else if (packet.name.length < 3) code = NameErrorType.TOO_SHORT.code;
 				else if (packet.name.length > 30) code = NameErrorType.TOO_LONG.code;
 
+				let illegalRegex = /[^a-zA-Z0-9]/;
+				if(illegalRegex.test(packet.name)) code = NameErrorType.BAD_NAME.code;
+
 				let response = new PacketClientNameConfirm(selectedName, code);
 				response.addClient(this);
 
