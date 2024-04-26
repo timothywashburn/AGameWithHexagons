@@ -1,7 +1,8 @@
 class Packet {
+	clients = [];
+
 	constructor(id, type) {
 		this.id = id;
-		this.clients = [];
 		this.type = type;
 	}
 
@@ -9,9 +10,14 @@ class Packet {
 		this.clients.push(client);
 	}
 
-	send(socket) {
-		console.log('emitting!');
-		socket.emit('packet', this);
+	send() {
+		if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
+			this.clients.forEach((client) => {
+				let packetData = { ...this };
+				delete packetData.clients;
+				client.socket.emit('packet', packetData);
+			});
+		} else window.socket.emit('packet', this);
 	}
 }
 
