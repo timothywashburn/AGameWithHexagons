@@ -1,7 +1,7 @@
 import './play';
 import './connection';
 import '../../shared/packets/packet';
-import { PacketServerNameSelect } from '../../shared/packets/packet-server-name-select';
+import PacketServerNameSelect from '../../shared/packets/packet-server-name-select';
 
 const confirmUsernameBtn = document.getElementById('confirmUsernameBtn');
 confirmUsernameBtn.addEventListener('click', () => {

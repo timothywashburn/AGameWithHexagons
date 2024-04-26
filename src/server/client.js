@@ -1,5 +1,5 @@
 const { PacketType } = require('../shared/packets/packet');
-const { PacketClientNameConfirm } = require('../shared/packets/packet-client-name-confirm');
+const PacketClientNameConfirm = require('../shared/packets/packet-client-name-confirm');
 const { GameLobby, getLobby, lobbies } = require('./game-lobby');
 const { NameErrorType } = require('../shared/enums');
 

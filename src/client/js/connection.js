@@ -1,13 +1,14 @@
+import { PacketType } from '../../shared/packets/packet';
+import { NameErrorType } from '../../shared/enums';
 import { showCanvas } from './play';
+import { io } from 'socket.io-client';
+let socket = io.connect();
 
 socket.on('connect', () => {
 	window.socketID = socket.id;
 });
 
 socket.on('packet', function (packet) {
-	let PacketType = window.PacketType;
-	let NameErrorType = window.NameErrorType;
-
 	if (packet.type !== PacketType.CLIENT_BOUND) return;
 	console.log(packet);
 
