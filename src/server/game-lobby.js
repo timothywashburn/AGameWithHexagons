@@ -29,8 +29,6 @@ class GameLobby {
 	addClient(client) {
 		this.clients.push(client);
 
-		console.log('clients in lobby: ', this.clients);
-
 		this.sendUpdates();
 	}
 

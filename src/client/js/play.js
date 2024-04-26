@@ -26,8 +26,7 @@ function joinGame(lobby, socket) {
 	fetch(url)
 		.then((response) => response.json())
 		.then((data) => {
-			console.log('testing');
-			console.log(data);
+			console.log(data.message);
 		});
 }
 

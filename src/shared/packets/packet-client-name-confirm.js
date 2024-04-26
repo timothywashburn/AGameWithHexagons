@@ -1,4 +1,4 @@
-const { Packet, PacketType } = require('./packet.js');
+const { Packet, PacketType } = require('./packet');
 
 module.exports = class PacketClientNameConfirm extends Packet {
 	constructor(name, code = 0x00) {

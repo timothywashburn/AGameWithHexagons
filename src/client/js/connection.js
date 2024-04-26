@@ -2,7 +2,8 @@ import { PacketType } from '../../shared/packets/packet';
 import { NameErrorType } from '../../shared/enums';
 import { showCanvas } from './play';
 import { io } from 'socket.io-client';
-let socket = io.connect();
+
+export const socket = io.connect();
 
 socket.on('connect', () => {
 	window.socketID = socket.id;
@@ -10,6 +11,7 @@ socket.on('connect', () => {
 
 socket.on('packet', function (packet) {
 	if (packet.type !== PacketType.CLIENT_BOUND) return;
+	console.log('packet received');
 	console.log(packet);
 
 	if (packet.id === 0x01) showCanvas();

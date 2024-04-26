@@ -10,14 +10,14 @@ class Packet {
 		this.clients.push(client);
 	}
 
-	send() {
-		if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
-			this.clients.forEach((client) => {
-				let packetData = { ...this };
-				delete packetData.clients;
-				client.socket.emit('packet', packetData);
-			});
-		} else window.socket.emit('packet', this);
+	send(socket) {
+		if (socket) {
+			socket.emit('packet', this);
+		} else {
+			let packetData = { ...this };
+			delete packetData.clients;
+			this.clients.forEach((client) => client.socket.emit('packet', packetData));
+		}
 	}
 }
 

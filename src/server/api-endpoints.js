@@ -49,12 +49,13 @@ module.exports = {
 
 		lobby.addClient(client);
 
-		const server = require('./server');
-		const PacketClientGameInit = require('../shared/packets/packet-client-game-init');
-
-		let packet = new PacketClientGameInit();
-		packet.addClient(client);
-
-		packet.send(server);
+		// const server = require('./server');
+		// const PacketClientGameInit = require('../shared/packets/packet-client-game-init');
+		//
+		// let packet = new PacketClientGameInit();
+		// packet.addClient(client);
+		//
+		// packet.send(server);
+		// console.log(server);
 	},
 };
