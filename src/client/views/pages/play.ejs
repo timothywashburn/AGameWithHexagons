@@ -31,8 +31,10 @@
 
 			<div id="chatBox">
 				<div id="chatMessages"></div>
-				<input type="text" id="chatInput" class="form-control" placeholder="Type a message..."> <!-- Add Bootstrap class -->
-				<button id="chatSend" class="btn btn-primary">Send</button> <!-- Add Bootstrap classes -->
+				<div id="inputWrapper">
+					<input type="text" id="chatInput" class="form-control" placeholder="Type a message...">
+					<button id="chatSend" class="btn btn-primary">Send</button>
+				</div>
 			</div>
 
 			<style>
@@ -66,9 +68,9 @@
 				#chatBox {
 					position: absolute;
 					bottom: 0;
-					right: 0;
-					width: 300px;
-					height: 300px;
+					left: 0;
+					width: 400px;
+					height: 190px;
 					background-color: #f8f9fa;
 					border: 1px solid #ccc;
 					padding: 10px;
@@ -86,10 +88,27 @@
 					margin-bottom: 10px; /* Add some space between the messages and the input field */
 				}
 
+				#inputWrapper {
+					position: relative;
+				}
+
 				#chatInput {
-					border-radius: 5px;
-					height: 40px; /* Adjust this value to make the text box taller */
-					margin-bottom: 10px; /* Add some space below the text box */
+					padding-right: 30px; /* Adjust as needed */
+				}
+
+				#chatSend {
+					position: absolute;
+					right: 10px; /* Adjust as needed */
+					top: 50%;
+					transform: translateY(-50%);
+					border-radius: 50%;
+					width: 30px; /* Adjust as needed */
+					height: 30px; /* Adjust as needed */
+					padding: 0;
+					text-indent: -9999px; /* Hide the text */
+					background: #56a5e8 url('../../images/white-arrow.png') no-repeat center center;
+					background-size: 65%; /* Make the icon bigger */
+					border: none; /* Remove the border */
 				}
 			</style>
 

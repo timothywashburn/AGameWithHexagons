@@ -53,6 +53,8 @@ app.get('/api/:endpoint', (req, res) => {
 	}
 });
 
+app.use('/images', express.static(path.join(__dirname, '../client/images')));
+
 app.get('/:page', (req, res) => {
 	console.log(`request incoming: ${Date.now()}, ${req.path}`);
 
