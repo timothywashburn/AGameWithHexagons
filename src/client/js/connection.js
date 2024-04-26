@@ -1,5 +1,5 @@
 import { PacketType } from '../../shared/packets/packet';
-import { NameErrorType } from '../../shared/enums';
+import { NameErrorType, AnnouncementType } from '../../shared/enums';
 import { showCanvas } from './play';
 import { io } from 'socket.io-client';
 
@@ -59,6 +59,21 @@ socket.on('packet', function (packet) {
 		let client = window.clients.find((client) => client.id === packet.clientID);
 
 		message.innerHTML = client.name + ': ' + packet.message;
+
+		chatMessages.appendChild(message);
+		chatMessages.scrollTop = chatMessages.scrollHeight;
+	}
+
+	if(packet.id === 0x07) {
+		const chatMessages = document.getElementById('chatMessages');
+		const message = document.createElement('div');
+
+		let client = window.clients.find((client) => client.id === packet.clientID);
+
+		let announcement = Object.values(AnnouncementType).find((announcement) => announcement.code === packet.code);
+
+		message.innerHTML = client.name + " " + announcement.message;
+		message.style.color = announcement.color;
 
 		chatMessages.appendChild(message);
 		chatMessages.scrollTop = chatMessages.scrollHeight;
