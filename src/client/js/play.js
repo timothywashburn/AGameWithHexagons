@@ -1,3 +1,7 @@
+import { startGame} from "./game";
+
+const devMode = false;
+
 function updateLobbies() {
 	fetch('/api/lobbydata')
 		.then((response) => response.json())
@@ -15,6 +19,12 @@ function updateLobbies() {
 					joinGame(lobbyID, window.socketID);
 				});
 			});
+
+			if(devMode) {
+				setTimeout(() => {
+					joinGame(0, window.socketID);
+				}, 200);
+			}
 		});
 }
 
@@ -27,6 +37,10 @@ function joinGame(lobby, socket) {
 		.then((response) => response.json())
 		.then((data) => {
 			console.log(data.message);
+			if(devMode) {
+				document.getElementById('chatBox').style.display = "none"
+				document.getElementById('playerList').style.display = "none"
+			}
 		});
 }
 
@@ -39,7 +53,15 @@ export function showCanvas() {
 	lobbyDiv.style.display = 'none';
 	gameDiv.style.display = 'block';
 
-	new bootstrap.Modal(document.getElementById('usernameModal')).show();
-}
+	let canvas = document.getElementById("gameCanvas");
+	canvas.width = window.innerWidth;
+	canvas.height = window.innerHeight;
+	window.addEventListener('resize', () => {
+		canvas.width = window.innerWidth;
+		canvas.height = window.innerHeight;
+	})
 
-//Add a listener for the confirmUsernameBtn
+	if(!devMode) new bootstrap.Modal(document.getElementById('usernameModal')).show();
+
+	startGame();
+}

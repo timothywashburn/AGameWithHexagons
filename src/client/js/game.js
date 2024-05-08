@@ -4,6 +4,12 @@ import '../../shared/packets/packet';
 import PacketServerNameSelect from '../../shared/packets/packet-server-name-select';
 import PacketServerChat from '../../shared/packets/packet-server-chat';
 import { socket } from './connection';
+import { step } from './render'
+
+export function startGame() {
+	console.log('Starting game render');
+	step();
+}
 
 const confirmUsernameBtn = document.getElementById('confirmUsernameBtn');
 confirmUsernameBtn.addEventListener('click', () => {
