@@ -1,6 +1,4 @@
-import { startGame} from "./game";
-
-const devMode = false;
+import { startGame } from "./game";
 
 function updateLobbies() {
 	fetch('/api/lobbydata')
@@ -20,7 +18,7 @@ function updateLobbies() {
 				});
 			});
 
-			if(devMode) {
+			if(window.devMode) {
 				setTimeout(() => {
 					joinGame(0, window.socketID);
 				}, 200);
@@ -37,7 +35,7 @@ function joinGame(lobby, socket) {
 		.then((response) => response.json())
 		.then((data) => {
 			console.log(data.message);
-			if(devMode) {
+			if(window.devMode) {
 				document.getElementById('chatBox').style.display = "none"
 				document.getElementById('playerList').style.display = "none"
 			}
@@ -61,7 +59,7 @@ export function showCanvas() {
 		canvas.height = window.innerHeight;
 	})
 
-	if(!devMode) new bootstrap.Modal(document.getElementById('usernameModal')).show();
+	if(!window.devMode) new bootstrap.Modal(document.getElementById('usernameModal')).show();
 
 	startGame();
 }
