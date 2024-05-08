@@ -88,4 +88,20 @@ server.listen(port, () => {
 	console.log(`Listening on port ${chalk.red(port)} in ${envColor(process.env.NODE_ENV)} mode`);
 });
 
-module.exports = io;
+const defaultConfig = require('./config.defaults.json');
+
+let localConfig = {};
+try {
+	localConfig = require('./config.local.json');
+} catch(err) {
+	if(err.code !== 'MODULE_NOT_FOUND') {
+		throw err;
+	}
+}
+
+const config = { ...defaultConfig, ...localConfig };
+console.log(config);
+const { init } = require('./authentication');
+init(config);
+
+module.exports = { io };
