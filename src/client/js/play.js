@@ -31,14 +31,18 @@ function joinGame(lobby, socket) {
 	let params = { lobby: lobby, socketId: socket };
 	url += '?' + new URLSearchParams(params).toString();
 
+
 	fetch(url)
 		.then((response) => response.json())
 		.then((data) => {
 			console.log(data.message);
-			if(window.devMode) {
-				document.getElementById('chatBox').style.display = "none"
-				document.getElementById('playerList').style.display = "none"
-			}
+
+			setTimeout(function(){
+				if(window.devMode) {
+					document.getElementById('chatBox').style.display = "none"
+					document.getElementById('playerList').style.display = "none"
+				}
+			}, 5)
 		});
 }
 
@@ -59,6 +63,7 @@ export function showCanvas() {
 		canvas.height = window.innerHeight;
 	})
 
+	console.log(window.devMode);
 	if(!window.devMode) new bootstrap.Modal(document.getElementById('usernameModal')).show();
 
 	startGame();
