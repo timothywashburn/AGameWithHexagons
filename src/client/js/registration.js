@@ -13,7 +13,7 @@ document.getElementById('registerForm').addEventListener('submit', function(e) {
 
     let params = new URLSearchParams({username: username, password: password}).toString();
 
-    fetch(`http://localhost:3000/api/register?${params}`, {
+    fetch(`/api/register?${params}`, {
         method: 'GET',
     })
         .then(response => response.json())

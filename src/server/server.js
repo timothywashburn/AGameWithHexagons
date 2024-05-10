@@ -100,8 +100,9 @@ try {
 }
 
 const config = { ...defaultConfig, ...localConfig };
-console.log(config);
+console.log('E CONFIG: ' + config);
 const { init } = require('./authentication');
-init(config);
 
-module.exports = { io };
+module.exports = { io, config };
+
+init(config);

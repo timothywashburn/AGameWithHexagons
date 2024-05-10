@@ -3,6 +3,7 @@ const fs = require('fs');
 const { Client, globalClients } = require('./client');
 
 const GameLobby = require('./game-lobby');
+const {generateToken} = require("./authentication");
 
 module.exports = {
 	lobbydata(req, res) {
@@ -88,4 +89,33 @@ module.exports = {
 				});
 			});
 	},
+
+	login(req, res) {
+		const username = req.query.username;
+		const password = req.query.password;
+
+		if(!username || !password) {
+			res.json({
+				success: false,
+				result: 'Invalid username or password',
+			});
+			return;
+		}
+
+		const { attemptLogin, generateToken } = require('./authentication');
+
+		attemptLogin(username, password)
+			.then(async result => {
+				res.json({
+					success: result,
+					token: await generateToken(username),
+				});
+			})
+			.catch(error => {
+				console.error('Error logging in:', error);
+				res.json({
+					success: false
+				});
+			});
+	}
 };

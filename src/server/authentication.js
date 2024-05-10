@@ -2,9 +2,12 @@ const { RegistrationError } = require('../shared/enums.js');
 const mysql = require('mysql');
 
 let connection = null;
+let config = null;
 
 function init(config) {
-    console.log(config);
+    this.config = config;
+
+    console.log('init config: ' + this.config);
 
     connection = mysql.createConnection({
         host: config.mysql.host,
@@ -111,10 +114,70 @@ async function createAccount(username, password) {
     return accountCreated;
 }
 
+async function attemptLogin(username, password) {
+    let exists = await accountExists(username);
+    if (!username || !password || !exists) return false;
+
+    return new Promise((resolve, reject) => {
+        connection.query('SELECT * FROM accounts WHERE username = ?', [username], (err, result) => {
+            if (err) reject(err);
+            if (result.length === 0) resolve(false);
+
+            resolve(verifyPassword(password, result[0].password));
+        });
+    });
+}
+
+async function accountExists(username) {
+    try {
+        return await new Promise((resolve, reject) => {
+            connection.query('SELECT * FROM accounts WHERE username = ?', [username], (err, result) => {
+                if (err) reject(err);
+                resolve(result.length > 0);
+            });
+        });
+    } catch (error) {
+        console.error(error);
+        return false;
+    }
+}
+
+async function generateToken(username) {
+    const jwt = require('jsonwebtoken');
+
+    let id = await new Promise((resolve, reject) => {
+        connection.query('SELECT id FROM accounts WHERE username = ?', [username], (err, result) => {
+            if (err) reject(err);
+            resolve(result[0].id);
+        });
+    });
+
+    const payload = {
+        userId: id,
+        username: username,
+    };
+
+    console.log('CONFIG: ' + this.config)
+    const secret = this.config.secret;
+
+    const options = {
+        expiresIn: '1h',
+    };
+
+    const token = jwt.sign(payload, secret, options);
+
+    console.log(token);
+    return token;
+}
+
+
+
 
 
 module.exports = {
     init,
     createAccount,
+    attemptLogin,
+    generateToken,
 };
 

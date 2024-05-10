@@ -4,5 +4,7 @@
     "user": "default_username",
     "password": "default_password",
     "database": "default_database"
-  }
+  },
+
+  "secret": "key"
 }

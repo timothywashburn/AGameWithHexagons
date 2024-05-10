@@ -3,7 +3,8 @@ const path = require('path');
 module.exports = {
 	entry: {
 		game: './src/client/js/game.js',
-		authentication: './src/client/js/authentication.js',
+		registration: './src/client/js/registration.js',
+		login: './src/client/js/login.js',
 	},
 	output: {
 		path: path.resolve(__dirname, 'dist'),
