@@ -1,54 +1,72 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
-let start, previousTimeStamp;
-
 let apothem, radius;
-const size = 10;
-let offsetX = 0;
-let offsetY = 0;
+const size = 5;
+
+let cameraX = 0;
+let cameraY = 0;
+let velocityX = 0;
+let velocityY = 0;
+let cameraZoom = 1;
+const MIN_ZOOM = 0.25;
+const MAX_ZOOM = 4;
+const SCROLL_SENSITIVITY = 0.1;
 
 let isDragging = false;
 let startX, startY;
 
-let frame = 0;
+let frame = 1;
 let renderTimes = []
 
+let mouseX;
+let mouseY;
+
 export function startRender() {
-	setApothem(50);
+	setApothem(30);
 	step();
 }
 
 function step() {
 	const renderStartTime = window.performance.now();
 
-	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	canvas.width = window.innerWidth;
+	canvas.height = window.innerHeight;
 
-	// drawGrid(canvas.width, canvas.height);
+	ctx.translate(window.innerWidth / 2, window.innerHeight / 2);
+	ctx.scale(cameraZoom, cameraZoom);
+	ctx.translate(-window.innerWidth / 2 + cameraX, -window.innerHeight / 2 + cameraY);
+	ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
 
 	drawGrid();
 
 	const finalRenderTime = window.performance.now() - renderStartTime;
 	renderTimes.push(finalRenderTime);
-	if(frame % 165 === 0) console.log((renderTimes.reduce((a, b) => a + b) / renderTimes.length).toFixed(2) + "ms per step");
-	if(renderTimes.length > 165) renderTimes.shift();
-	frame++;
 
+	frame++;
 	requestAnimationFrame(step);
 }
 
+setInterval(() => {
+	console.log((renderTimes.reduce((a, b) => a + b) / renderTimes.length).toFixed(2) + "ms per step")
+	renderTimes.clear();
+}, 5000);
+
 canvas.addEventListener('wheel', event => {
 	const delta = Math.sign(event.deltaY) * -1;
-	setApothem(apothem * (1 + delta * 0.1));
-	if (apothem * size * 4 < screen.height) setApothem(screen.height / size / 4);
-	if (apothem > screen.height / 4) setApothem(screen.height / 4);
+
+	cameraZoom *= 1 + delta * SCROLL_SENSITIVITY;
+	cameraZoom = Math.max(Math.min(cameraZoom, MAX_ZOOM), MIN_ZOOM);
 });
 
 canvas.addEventListener('mousedown', event => {
 	if (event.button === 1) {
 		setApothem(50);
-		offsetX = 0;
-		offsetY = 0;
+		cameraX = 0;
+		cameraY = 0;
+		velocityX = 0;
+		velocityY = 0;
+		cameraZoom = 1;
 	} else if (event.button === 0) {
 		isDragging = true;
 		startX = event.clientX;
@@ -63,19 +81,22 @@ canvas.addEventListener('mouseup', event => {
 });
 
 canvas.addEventListener('mousemove', event => {
+	mouseX = event.clientX;
+	mouseY = event.clientY;
+
 	if (isDragging) {
 		let deltaX = event.clientX - startX;
 		let deltaY = event.clientY - startY;
-		offsetX += deltaX;
-		offsetY += deltaY;
+		cameraX += deltaX / cameraZoom;
+		cameraY += deltaY / cameraZoom;
 		startX = event.clientX;
 		startY = event.clientY;
 	}
 });
 
 function drawGrid() {
-	let centerX = offsetX + canvas.width / 2;
-	let centerY = offsetY + canvas.height / 2;
+	let centerX = canvas.width / 2;
+	let centerY = canvas.height / 2;
 
 	drawHexagon(centerX, centerY);
 

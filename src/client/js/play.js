@@ -55,15 +55,6 @@ export function showCanvas() {
 	lobbyDiv.style.display = 'none';
 	gameDiv.style.display = 'block';
 
-	let canvas = document.getElementById("gameCanvas");
-	canvas.width = window.innerWidth;
-	canvas.height = window.innerHeight;
-	window.addEventListener('resize', () => {
-		canvas.width = window.innerWidth;
-		canvas.height = window.innerHeight;
-	})
-
-	console.log(window.devMode);
 	if(!window.devMode) new bootstrap.Modal(document.getElementById('usernameModal')).show();
 
 	startGame();
