@@ -3,17 +3,23 @@ const ctx = canvas.getContext('2d');
 
 let start, previousTimeStamp;
 
-let radius = 50;
+let apothem, radius;
 const size = 10;
-let offsetX = 100;
-let offsetY = 100;
+let offsetX = 0;
+let offsetY = 0;
 
 let isDragging = false;
 let startX, startY;
 
 let frame = 0;
 let renderTimes = []
-export function step() {
+
+export function startRender() {
+	setApothem(50);
+	step();
+}
+
+function step() {
 	const renderStartTime = window.performance.now();
 
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -33,14 +39,14 @@ export function step() {
 
 canvas.addEventListener('wheel', event => {
 	const delta = Math.sign(event.deltaY) * -1;
-	radius *= 1 + delta * 0.1;
-	if (radius * size * 4 < screen.height) radius = screen.height / size / 4;
-	if (radius > screen.height / 4) radius = screen.height / 4;
+	setApothem(apothem * (1 + delta * 0.1));
+	if (apothem * size * 4 < screen.height) setApothem(screen.height / size / 4);
+	if (apothem > screen.height / 4) setApothem(screen.height / 4);
 });
 
 canvas.addEventListener('mousedown', event => {
 	if (event.button === 1) {
-		radius = 50;
+		setApothem(50);
 		offsetX = 0;
 		offsetY = 0;
 	} else if (event.button === 0) {
@@ -68,33 +74,43 @@ canvas.addEventListener('mousemove', event => {
 });
 
 function drawGrid() {
-	let centerX = offsetX + canvas.width / 2 - (size - 1) * radius * Math.cos(Math.PI / 6);
-	let centerY = offsetY + canvas.height / 2 - (size - 1) * (radius + radius * Math.sin(Math.PI / 6));
+	let centerX = offsetX + canvas.width / 2;
+	let centerY = offsetY + canvas.height / 2;
 
-	const rotationAngle = 30 * Math.PI / 180;
+	drawHexagon(centerX, centerY);
 
-	for (let row = 0; row < size * 2 - 1; row++) {
-		for (let col = 0; col < size * 2 - 1; col++) {
-			let minimum = -size + row;
-			let maximum = size + row;
-			if(col > maximum - 1 || col < minimum + 1) continue;
+	for (let row = -size + 1; row < size; row++) {
+		// let coords = [];
+		// coords.push(row);
 
-			let x = centerX + radius * 3 / 2 * col * Math.cos(rotationAngle) - radius * Math.sqrt(3) * (row - col / 2) * Math.sin(rotationAngle);
-			let y = centerY + radius * 3 / 2 * col * Math.sin(rotationAngle) + radius * Math.sqrt(3) * (row - col / 2) * Math.cos(rotationAngle);
-
-			drawHexagon(x, y);
+		for (let column = Math.abs(row) - (size - 1) * 2; column <= -Math.abs(row) + (size - 1) * 2; column += 2) {
+			// coords.push(column);
+			let hexagonX = centerX + column * apothem;
+			let hexagonY = centerY - row * radius * (1 + Math.sin(Math.PI / 6));
+			drawHexagon(hexagonX, hexagonY);
 		}
+
+		// console.log(coords.join("  "));
 	}
 }
 
-function drawHexagon(x, y) {
+function drawHexagon(hexagonX, hexagonY) {
 	ctx.beginPath();
 	for (let i = 0; i < 6; i++) {
-		let px = x + radius * Math.cos(Math.PI / 3 * i + Math.PI / 6);
-		let py = y + radius * Math.sin(Math.PI / 3 * i + Math.PI / 6);
-		ctx.lineTo(px, py);
+		let pointX = hexagonX + radius * Math.cos(Math.PI / 3 * i + Math.PI / 6);
+		let pointY = hexagonY + radius * Math.sin(Math.PI / 3 * i + Math.PI / 6);
+		ctx.lineTo(pointX, pointY);
 	}
 	ctx.closePath();
 
 	ctx.stroke();
+}
+
+function calculateRadius() {
+	radius = apothem / Math.cos(Math.PI / 6);
+}
+
+function setApothem(newApothem) {
+	apothem = newApothem;
+	calculateRadius()
 }

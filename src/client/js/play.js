@@ -1,4 +1,5 @@
 import { startGame } from "./game";
+let autoJoin = true;
 
 function updateLobbies() {
 	fetch('/api/lobbydata')
@@ -18,7 +19,7 @@ function updateLobbies() {
 				});
 			});
 
-			if(window.devMode) {
+			if(autoJoin) {
 				setTimeout(() => {
 					joinGame(0, window.socketID);
 				}, 200);
@@ -30,7 +31,6 @@ function joinGame(lobby, socket) {
 	let url = '/api/join';
 	let params = { lobby: lobby, socketId: socket };
 	url += '?' + new URLSearchParams(params).toString();
-
 
 	fetch(url)
 		.then((response) => response.json())
