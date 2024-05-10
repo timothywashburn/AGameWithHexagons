@@ -13,7 +13,10 @@ socket.on('packet', function (packet) {
 	if(packet.type !== PacketType.CLIENT_BOUND) return;
 	console.log(packet);
 
-	if(packet.id === 0x01) showCanvas();
+	if(packet.id === 0x01) {
+		window.devMode = packet.isDev;
+		showCanvas();
+	}
 
 	if(packet.id === 0x03) {
 		if(packet.code === 0x00) {
