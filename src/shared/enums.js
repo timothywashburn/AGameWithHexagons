@@ -9,7 +9,16 @@ const AnnouncementType = Object.freeze({
 	LOBBY_LEAVE: { code: 0x02, message: 'Left the Lobby', color: 'red'},
 });
 
+const RegistrationError = Object.freeze({
+	SUCCESS: { code: 0x00, message: 'Account created successfully' },
+	USERNAME_EXISTS: { code: 0x01, message: 'Username already exists' },
+	USERNAME_INVALID: { code: 0x02, message: 'Invalid username' },
+	PASSWORD_INVALID: { code: 0x03, message: 'Invalid password' },
+});
+
+
 module.exports = {
 	NameErrorType,
 	AnnouncementType,
+	RegistrationError,
 };

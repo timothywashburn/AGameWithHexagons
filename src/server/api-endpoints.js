@@ -58,4 +58,34 @@ module.exports = {
 
 		packet.send(server);
 	},
+
+	register(req, res) {
+		const username = req.query.username;
+		const password = req.query.password;
+
+		if(!username || !password) {
+			res.json({
+				success: false,
+				result: 'Invalid username or password',
+			});
+			return;
+		}
+
+		const { createAccount } = require('./authentication');
+
+		createAccount(username, password)
+			.then(result => {
+				res.json({
+					success: result === 0x00,
+					result: result,
+				});
+			})
+			.catch(error => {
+				console.error('Error creating account:', error);
+				res.json({
+					success: false,
+					result: error,
+				});
+			});
+	},
 };
