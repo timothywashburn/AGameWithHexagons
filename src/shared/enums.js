@@ -16,6 +16,14 @@ exports.RegistrationError = Object.freeze({
 	PASSWORD_INVALID: { code: 0x03, message: 'Invalid password' },
 });
 
+class Color {
+	constructor(red, green, blue) {
+		this.red = red;
+		this.green = green;
+		this.blue = blue;
+	}
+}
+
 exports.TerrainType = Object.freeze({
 	PLAIN: {
 		color: new Color(134, 44, 54)
@@ -30,11 +38,3 @@ exports.ResourceType = Object.freeze({
 	DEPLETABLE_LARGE: 2,
 	RENEWABLE: 3
 });
-
-exports.Color = class Color {
-	constructor(red, green, blue) {
-		this.red = red;
-		this.green = green;
-		this.blue = blue;
-	}
-}
