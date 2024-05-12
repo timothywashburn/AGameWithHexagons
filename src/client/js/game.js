@@ -1,7 +1,6 @@
 import './play';
 import './connection';
 import '../../shared/packets/packet';
-import PacketServerNameSelect from '../../shared/packets/packet-server-name-select';
 import PacketServerChat from '../../shared/packets/packet-server-chat';
 import { socket } from './connection';
 import { startRender } from './render'
@@ -11,13 +10,13 @@ export function startGame() {
 	startRender();
 }
 
-const confirmUsernameBtn = document.getElementById('confirmUsernameBtn');
-confirmUsernameBtn.addEventListener('click', () => {
-	const username = document.getElementById('usernameInput').value;
-
-	let packet = new PacketServerNameSelect(username);
-	packet.send(socket);
-});
+// const confirmUsernameBtn = document.getElementById('confirmUsernameBtn');
+// confirmUsernameBtn.addEventListener('click', () => {
+// 	const username = document.getElementById('usernameInput').value;
+//
+// 	let packet = new PacketServerNameSelect(username);
+// 	packet.send(socket);
+// });
 
 document.getElementById('chatSend').addEventListener('click', function() {
 	const chatInput = document.getElementById('chatInput');

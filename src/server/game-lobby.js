@@ -32,6 +32,7 @@ class GameLobby {
 		this.clients.push(client);
 
 		this.sendUpdates();
+		this.sendAlert(client, AnnouncementType.LOBBY_JOIN);
 	}
 
 	sendUpdates() {

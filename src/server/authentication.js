@@ -170,6 +170,38 @@ async function generateToken(username) {
     return token;
 }
 
+function validateUser(token, client) {
+    const jwt = require('jsonwebtoken');
+    const { UserProfile } = require('./client');
+
+    try {
+        const decoded = jwt.verify(token, this.config.secret); // Replace 'config.secret' with your actual secret
+
+        client.authenticated = true;
+        client.profile = new UserProfile(decoded.id, decoded.username);
+
+    } catch (error) {
+        if (error.name === 'JsonWebTokenError') {
+            return false;
+        } else {
+            console.error('Error verifying JWT:', error);
+            return false;
+        }
+    }
+
+    return true;
+}
+
+async function getUserID(username) {
+    return new Promise((resolve, reject) => {
+        connection.query('SELECT id FROM accounts WHERE username = ?', [username], (err, result) => {
+            if (err) reject(err);
+            resolve(result[0].id);
+        });
+    });
+
+}
+
 
 
 
@@ -179,5 +211,7 @@ module.exports = {
     createAccount,
     attemptLogin,
     generateToken,
+    validateUser,
+    getUserID
 };
 

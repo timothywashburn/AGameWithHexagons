@@ -1,17 +1,18 @@
 const { PacketType } = require('../shared/packets/packet');
-const PacketClientNameConfirm = require('../shared/packets/packet-client-name-confirm');
 const PacketClientChat = require('../shared/packets/packet-client-chat');
-const PacketClientAnnouncement = require('../shared/packets/packet-client-announcement');
-const { GameLobby, getLobby, lobbies } = require('./game-lobby');
-const { NameErrorType, AnnouncementType } = require('../shared/enums');
+const {lobbies } = require('./game-lobby');
+const {AnnouncementType } = require('../shared/enums');
+const { generateUsername } = require("unique-username-generator");
+
 
 let globalClients = [];
 
 class Client {
 	constructor(socket) {
 		this.id = socket.id;
-		this.name = 'User';
 		this.socket = socket;
+		this.authenticated = false;
+		this.profile = new UserProfile(-1, generateUsername("", 3));
 
 		socket.on('disconnect', () => {
 			let id = socket.id;
@@ -32,30 +33,6 @@ class Client {
 		socket.on('packet', (packet) => {
 			if (!packet.type === PacketType.SERVER_BOUND) return;
 
-			if (packet.id === 0x02) {
-
-				let selectedName = packet.name;
-
-				let code = 0x00;
-				if (packet.name.toLowerCase() === 'admin') code = NameErrorType.BAD_NAME.code;
-				else if (packet.name.length < 3) code = NameErrorType.TOO_SHORT.code;
-				else if (packet.name.length > 30) code = NameErrorType.TOO_LONG.code;
-
-				let illegalRegex = /[^a-zA-Z0-9]/;
-				if(illegalRegex.test(packet.name)) code = NameErrorType.BAD_NAME.code;
-
-				let response = new PacketClientNameConfirm(selectedName, code);
-				response.addClient(this);
-
-				response.send(socket);
-				this.name = packet.name;
-
-				if (code === 0x00) {
-					this.getLobby().sendUpdates();
-					this.getLobby().sendAlert(this, AnnouncementType.LOBBY_JOIN);
-				}
-			}
-
 			if(packet.id === 0x05) {
 				let message = packet.message;
 				let response = new PacketClientChat(this.id, message);
@@ -75,4 +52,11 @@ class Client {
 	}
 }
 
-module.exports = { Client, globalClients };
+class UserProfile {
+	constructor(id, name) {
+		this.id = id;
+		this.name = name;
+	}
+}
+
+module.exports = { Client, UserProfile, globalClients };

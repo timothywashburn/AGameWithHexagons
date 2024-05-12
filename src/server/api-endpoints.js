@@ -4,6 +4,8 @@ const { Client, globalClients } = require('./client');
 
 const GameLobby = require('./game-lobby');
 const {generateToken} = require("./authentication");
+const PacketClientGameInit = require("../shared/packets/packet-client-game-init");
+const {AnnouncementType} = require("../shared/enums");
 
 module.exports = {
 	lobbydata(req, res) {
@@ -34,19 +36,25 @@ module.exports = {
 	join(req, res) {
 		const lobbyId = req.query.lobby;
 		const socketId = req.query.socketId;
+		const token= req.headers.authorization.split(' ')[1];
 
-		res.json({
-			success: true,
-			message: 'Successfully joined the lobby',
-			lobbyId,
-			socketId,
-		});
+		const { validateUser } = require('./authentication');
+
+		let client = globalClients.find((client) => client.id === socketId);
+		if (!client) return;
 
 		let lobby = GameLobby.getLobby(lobbyId);
 		if (!lobby || lobby.clients.includes(socketId) || lobby.clients.length >= lobby.maxPlayers) return;
 
-		let client = globalClients.find((client) => client.id === socketId);
-		if (!client) return;
+		let valid = token && validateUser(token, client);
+
+		res.json({
+			success: true,
+			message: 'Successfully joined the lobby',
+			authenticated: valid,
+			lobbyId,
+			socketId,
+		});
 
 		lobby.addClient(client);
 
@@ -54,7 +62,8 @@ module.exports = {
 		const PacketClientGameInit = require('../shared/packets/packet-client-game-init');
 
 		let isDev = process.env.NODE_ENV === 'development';
-		let packet = new PacketClientGameInit(isDev);
+		// let packet = new PacketClientGameInit(isDev);
+		let packet = new PacketClientGameInit(false);
 		packet.addClient(client);
 
 		packet.send(server);
@@ -108,7 +117,7 @@ module.exports = {
 			.then(async result => {
 				res.json({
 					success: result,
-					token: await generateToken(username),
+					token: result === true ? await generateToken(username) : null,
 				});
 			})
 			.catch(error => {

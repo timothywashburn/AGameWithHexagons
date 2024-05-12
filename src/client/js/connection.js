@@ -15,7 +15,6 @@ socket.on('packet', function (packet) {
 
 	if(packet.id === 0x01) {
 		window.devMode = packet.isDev;
-		showCanvas();
 	}
 
 	if(packet.id === 0x03) {
@@ -47,7 +46,7 @@ socket.on('packet', function (packet) {
 		window.clients.forEach((client) => {
 			const listItem = document.createElement('li');
 
-			const name = document.createTextNode(client.name); // Assuming each client object has a 'name' property
+			const name = document.createTextNode(client.profile.name); // Assuming each client object has a 'name' property
 			listItem.appendChild(name);
 
 			playerList.appendChild(listItem);
@@ -60,7 +59,7 @@ socket.on('packet', function (packet) {
 
 		let client = window.clients.find((client) => client.id === packet.clientID);
 
-		message.innerHTML = client.name + ': ' + packet.message;
+		message.innerHTML = client.profile.name + ': ' + packet.message;
 
 		chatMessages.appendChild(message);
 		chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -74,7 +73,7 @@ socket.on('packet', function (packet) {
 
 		let announcement = Object.values(AnnouncementType).find((announcement) => announcement.code === packet.code);
 
-		message.innerHTML = client.name + " " + announcement.message;
+		message.innerHTML = client.profile.name + " " + announcement.message;
 		message.style.color = announcement.color;
 
 		chatMessages.appendChild(message);

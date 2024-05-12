@@ -1,5 +1,5 @@
 import { startGame } from "./game";
-let autoJoin = true;
+let autoJoin = false;
 
 function updateLobbies() {
 	fetch('/api/lobbydata')
@@ -28,14 +28,24 @@ function updateLobbies() {
 }
 
 function joinGame(lobby, socket) {
+	let headers = new Headers();
+	headers.append("Authorization", "Bearer " + localStorage.token);
+
+	let requestOptions = {
+		method: 'GET',
+		headers: headers,
+		redirect: 'follow'
+	};
+
 	let url = '/api/join';
 	let params = { lobby: lobby, socketId: socket };
 	url += '?' + new URLSearchParams(params).toString();
 
-	fetch(url)
+	fetch(url, requestOptions)
 		.then((response) => response.json())
 		.then((data) => {
-			console.log(data.message);
+			window.authenticated = data.authenticated;
+			showCanvas();
 
 			setTimeout(function(){
 				if(window.devMode) {
@@ -55,7 +65,34 @@ export function showCanvas() {
 	lobbyDiv.style.display = 'none';
 	gameDiv.style.display = 'block';
 
-	if(!window.devMode) new bootstrap.Modal(document.getElementById('usernameModal')).show();
+
+	console.log('Authenticated:', window.authenticated);
+
+	if(!window.authenticated) {
+		let modal = new bootstrap.Modal(document.getElementById('promptModal'))
+		if(!window.devMode) modal.show();
+	}
+
+
 
 	startGame();
 }
+
+document.getElementById('guestBtn').addEventListener('click', function() {
+	let modal = document.getElementById('promptModal');
+	modal.classList.remove('show');
+	modal.style.display = 'none';
+
+	let backdrops = document.getElementsByClassName('modal-backdrop');
+	for (let i = 0; i < backdrops.length; i++) {
+		backdrops[i].parentNode.removeChild(backdrops[i]);
+	}
+});
+
+document.getElementById('registerBtn').addEventListener('click', function() {
+	window.location.href = '/register';
+});
+
+document.getElementById('loginBtn').addEventListener('click', function() {
+	window.location.href = '/login';
+});
