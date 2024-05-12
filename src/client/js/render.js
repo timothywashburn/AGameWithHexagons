@@ -150,3 +150,7 @@ function setApothem(newApothem) {
 	apothem = newApothem;
 	calculateRadius()
 }
+
+function getRBGAround(red, green, blue, random) {
+	return `rgb(${red + Math.random() * random - random / 2}, ${green + Math.random() * random - random / 2}, ${blue + Math.random() * random - random / 2})`;
+}
