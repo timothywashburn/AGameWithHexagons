@@ -1,5 +1,5 @@
-import { startGame } from "./game";
-let autoJoin = false;
+import { startGame } from "../game";
+let autoJoin = true;
 
 function updateLobbies() {
 	fetch('/api/lobbydata')
@@ -72,8 +72,6 @@ export function showCanvas() {
 		let modal = new bootstrap.Modal(document.getElementById('promptModal'))
 		if(!window.devMode) modal.show();
 	}
-
-
 
 	startGame();
 }

@@ -62,8 +62,8 @@ module.exports = {
 		const PacketClientGameInit = require('../shared/packets/packet-client-game-init');
 
 		let isDev = process.env.NODE_ENV === 'development';
-		// let packet = new PacketClientGameInit(isDev);
-		let packet = new PacketClientGameInit(false);
+		let packet = new PacketClientGameInit(isDev);
+		// let packet = new PacketClientGameInit(false);
 		packet.addClient(client);
 
 		packet.send(server);

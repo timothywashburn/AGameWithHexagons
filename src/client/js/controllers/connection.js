@@ -1,6 +1,6 @@
-import { PacketType } from '../../shared/packets/packet';
-import { NameErrorType, AnnouncementType } from '../../shared/enums';
-import { showCanvas } from './play';
+import { PacketType } from '../../../shared/packets/packet';
+import { NameErrorType, AnnouncementType } from '../../../shared/enums';
+import { showCanvas } from '../pages/play';
 import { io } from 'socket.io-client';
 
 export const socket = io.connect();
