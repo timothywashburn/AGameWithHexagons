@@ -81,13 +81,15 @@ module.exports = {
 			return;
 		}
 
-		const { createAccount } = require('./authentication');
+		const { createAccount, generateToken } = require('./authentication');
+
 
 		createAccount(username, password)
-			.then(result => {
+			.then(async result => {
 				res.json({
 					success: result === 0x00,
 					result: result,
+					token: result === 0x00 ? await generateToken(username) : null,
 				});
 			})
 			.catch(error => {

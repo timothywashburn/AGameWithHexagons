@@ -35,7 +35,10 @@
                     <label for="password">Password</label>
                     <input type="password" id="password" name="password" required>
                 </div>
-                <button type="submit" class="login-btn">Login</button>
+
+                <p id="loginError"></p>
+
+                <button type="submit" class="login-btn" id="loginBtn">Login</button>
             </form>
 
             <div class="register">
@@ -94,8 +97,18 @@
         }
 
         .register {
-            margin-top: 20px; /* Adjust as needed */
-            text-align: center; /* Center the text */
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .login-btn:active {
+            background-color: #1a5ad6;
+        }
+
+        #loginError {
+            height: 20px;
+            color: red;
+            visibility: hidden;
         }
     </style>
 
