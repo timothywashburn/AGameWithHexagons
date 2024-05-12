@@ -1,4 +1,5 @@
-import { RegistrationError } from '../../shared/enums.js';
+import { RegistrationError } from '../../../shared/enums.js';
+
 document.getElementById('registerForm').addEventListener('submit', function(e) {
     e.preventDefault();
 

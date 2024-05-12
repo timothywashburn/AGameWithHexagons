@@ -22,6 +22,9 @@ let renderTimes = []
 let mouseX;
 let mouseY;
 
+const hexagon = new Image();
+hexagon.src = 'images/hexagon.svg';
+
 export function startRender() {
 	setApothem(30);
 	step();
@@ -98,7 +101,7 @@ function drawGrid() {
 	let centerX = canvas.width / 2;
 	let centerY = canvas.height / 2;
 
-	drawHexagon(centerX, centerY);
+	// drawHexagon(centerX, centerY);
 
 	for (let row = -size + 1; row < size; row++) {
 		// let coords = [];
@@ -116,15 +119,27 @@ function drawGrid() {
 }
 
 function drawHexagon(hexagonX, hexagonY) {
-	ctx.beginPath();
+
+	let hexagonRegion = new Path2D();
 	for (let i = 0; i < 6; i++) {
 		let pointX = hexagonX + radius * Math.cos(Math.PI / 3 * i + Math.PI / 6);
 		let pointY = hexagonY + radius * Math.sin(Math.PI / 3 * i + Math.PI / 6);
-		ctx.lineTo(pointX, pointY);
+		if(i === 0) {
+			hexagonRegion.moveTo(pointX, pointY);
+		} else hexagonRegion.lineTo(pointX, pointY);
 	}
-	ctx.closePath();
+	hexagonRegion.closePath();
 
-	ctx.stroke();
+	ctx.save();
+	ctx.fillStyle = getRBGAround(134, 44, 54, 0);
+	ctx.fill(hexagonRegion);
+	ctx.restore();
+
+	ctx.save();
+	ctx.drawImage(hexagon, hexagonX - radius, hexagonY - radius, radius * 2, radius * 2);
+	ctx.restore();
+
+	ctx.stroke(hexagonRegion);
 }
 
 function calculateRadius() {
