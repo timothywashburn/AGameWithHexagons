@@ -35,7 +35,10 @@
                 <label for="confirmPassword">Confirm Password</label>
                 <input type="password" id="confirmPassword" name="confirmPassword" required>
             </div>
-            <button type="submit" class="login-btn">Register</button>
+
+            <p id="registrationError"></p>
+
+            <button type="submit" class="login-btn", id="registerBtn">Register</button>
         </form>
 
         <div class="register">
@@ -96,6 +99,16 @@
     .register {
         margin-top: 20px;
         text-align: center;
+    }
+
+    .login-btn:active {
+        background-color: #1a5ad6;
+    }
+
+    #registrationError {
+        height: 20px;
+        color: red;
+        visibility: hidden;
     }
 </style>
 
