@@ -184,7 +184,7 @@ function validateUser(token, client) {
         if (error.name === 'JsonWebTokenError') {
             return false;
         } else {
-            console.error('Error verifying JWT:', error);
+            console.error('Error verifying JWT');
             return false;
         }
     }
