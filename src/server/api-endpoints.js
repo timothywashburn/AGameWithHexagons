@@ -3,7 +3,7 @@ const fs = require('fs');
 const { Client, globalClients } = require('./client');
 
 const GameLobby = require('./game-lobby');
-const {generateToken} = require("./authentication");
+const {generateToken, validateUser} = require("./authentication");
 const PacketClientGameInit = require("../shared/packets/packet-client-game-init");
 const {AnnouncementType} = require("../shared/enums");
 
@@ -128,5 +128,13 @@ module.exports = {
 					success: false
 				});
 			});
+	},
+
+	logout(req, res) {
+		const token= req.headers.authorization.split(' ')[1];
+		const { validate } = require('./authentication');
+		let valid = token && validate(token);
+
+		//TODO: All tokens for this user after this time are invalid
 	}
 };

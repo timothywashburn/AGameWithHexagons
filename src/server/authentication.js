@@ -170,12 +170,18 @@ async function generateToken(username) {
     return token;
 }
 
+function validate(token) {
+    validateUser(token, null)
+}
+
 function validateUser(token, client) {
     const jwt = require('jsonwebtoken');
     const { UserProfile } = require('./client');
 
     try {
-        const decoded = jwt.verify(token, this.config.secret); // Replace 'config.secret' with your actual secret
+        const decoded = jwt.verify(token, this.config.secret);
+
+        if(!client) return true;
 
         client.authenticated = true;
         client.profile = new UserProfile(decoded.id, decoded.username);
@@ -211,6 +217,7 @@ module.exports = {
     createAccount,
     attemptLogin,
     generateToken,
+    validate,
     validateUser,
     getUserID
 };
