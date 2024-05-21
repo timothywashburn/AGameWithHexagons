@@ -135,6 +135,6 @@ module.exports = {
 		const { validate } = require('./authentication');
 		let valid = token && validate(token);
 
-		//TODO: All tokens for this user after this time are invalid
+		//TODO: All tokens for this user before this time are invalid
 	}
 };
