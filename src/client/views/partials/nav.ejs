@@ -7,6 +7,37 @@
 					<a class="nav-link<%= typeof current !== 'undefined' && current === 'play' ? ' active disabled' : '' %>" aria-current="page" href="/play">Play</a>
 				</li>
 			</ul>
+			<!-- Move the logout button to a new ul with ml-auto class -->
+			<ul class="navbar-nav ml-auto">
+				<li class="nav-item">
+					<a class="nav-link logout-link" href="/logout">Logout</a>
+				</li>
+			</ul>
 		</div>
 	</div>
 </nav>
+
+<script>
+	document.querySelector('.navbar-nav.ml-auto .logout-link').addEventListener('click', function(e) {
+		e.preventDefault();
+
+		fetch('/api/logout', {
+			method: 'GET',
+			headers: {
+				'Content-Type': 'application/json',
+				'Authorization': `Bearer ${localStorage.getItem('token')}`
+			}
+		})
+				.then(response => response.json())
+				.then(data => {
+					if (data.success) {
+						window.location.href = '/login';
+					} else {
+						console.error(data.error);
+					}
+				})
+				.catch((error) => {
+					console.error('Error:', error);
+				});
+	});
+</script>

@@ -7,8 +7,6 @@ let config = null;
 function init(config) {
     this.config = config;
 
-    console.log('init config: ' + this.config);
-
     connection = mysql.createConnection({
         host: config.mysql.host,
         user: config.mysql.user,
@@ -27,7 +25,9 @@ function init(config) {
     connection.query(`CREATE TABLE IF NOT EXISTS accounts (
         id INT PRIMARY KEY AUTO_INCREMENT,
         username VARCHAR(255) NOT NULL UNIQUE,
-        password VARCHAR(255) NOT NULL
+        password VARCHAR(255) NOT NULL,
+        last_logout BIGINT NOT NULL DEFAULT 0
+        
     )`, (err) => {
         if (err) {
             console.error('Error creating accounts table:', err);
@@ -79,8 +79,8 @@ async function createAccount(username, password) {
     try {
         userExists = await new Promise((resolve, reject) => {
             connection.query('SELECT * FROM accounts WHERE username = ?', [username], (err, result) => {
-                if (err) reject(RegistrationError.USERNAME_INVALID.code); // Error checking username
-                if (result.length > 0) resolve(RegistrationError.USERNAME_EXISTS.code); // Username already exists
+                if (err) reject(RegistrationError.USERNAME_INVALID.code);
+                if (result.length > 0) resolve(RegistrationError.USERNAME_EXISTS.code);
                 resolve(null);
             });
         });
@@ -166,31 +166,41 @@ async function generateToken(username) {
 
     const token = jwt.sign(payload, secret, options);
 
-    console.log(token);
     return token;
 }
 
-function validate(token) {
-    validateUser(token, null)
+async function validate(token) {
+    await validateUser(token, null);
 }
 
-function validateUser(token, client) {
+async function validateUser(token, client) {
     const jwt = require('jsonwebtoken');
     const { UserProfile } = require('./client');
 
     try {
         const decoded = jwt.verify(token, this.config.secret);
 
+        let loggedOut = await new Promise((resolve, reject) => {
+            connection.query('SELECT last_logout FROM accounts WHERE id = ?', [decoded.userId], (err, result) => {
+                if(err) reject(err);
+                if(result.length === 0) reject('User not found');
+
+                if((result[0].last_logout / 1000) > decoded.iat) reject('Token expired');
+                resolve(true);
+            });
+        });
+
+        if(!loggedOut) return false;
         if(!client) return true;
 
         client.authenticated = true;
-        client.profile = new UserProfile(decoded.id, decoded.username);
+        client.profile = new UserProfile(decoded.userId, decoded.username);
 
     } catch (error) {
         if (error.name === 'JsonWebTokenError') {
             return false;
         } else {
-            console.error('Error verifying JWT');
+            console.error('Error verifying JWT: ' + error);
             return false;
         }
     }
@@ -208,6 +218,33 @@ async function getUserID(username) {
 
 }
 
+ async function logout(token) {
+    const jwt = require('jsonwebtoken');
+
+    try {
+        const decoded = jwt.verify(token, this.config.secret);
+
+        let loggedOut = await new Promise((resolve, reject) => {
+            connection.query('UPDATE accounts SET last_logout = ? WHERE id = ?', [Date.now(), decoded.userId], (err, result) => {
+                if(err) reject(err);
+                resolve();
+            });
+        });
+
+        if(!loggedOut) return true;
+
+    } catch (error) {
+        if (error.name === 'JsonWebTokenError') {
+            return false;
+        } else {
+            console.error('Error verifying JWT');
+            return false;
+        }
+    }
+
+    return true;
+}
+
 
 
 
@@ -219,6 +256,7 @@ module.exports = {
     generateToken,
     validate,
     validateUser,
-    getUserID
+    getUserID,
+    logout
 };
 

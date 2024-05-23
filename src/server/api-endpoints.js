@@ -33,7 +33,7 @@ module.exports = {
 		});
 	},
 
-	join(req, res) {
+	async join(req, res) {
 		const lobbyId = req.query.lobby;
 		const socketId = req.query.socketId;
 		const token= req.headers.authorization.split(' ')[1];
@@ -46,7 +46,7 @@ module.exports = {
 		let lobby = GameLobby.getLobby(lobbyId);
 		if (!lobby || lobby.clients.includes(socketId) || lobby.clients.length >= lobby.maxPlayers) return;
 
-		let valid = token && validateUser(token, client);
+		let valid = token && await validateUser(token, client);
 
 		res.json({
 			success: true,
@@ -131,10 +131,25 @@ module.exports = {
 	},
 
 	logout(req, res) {
+
+		console.log('Logging out');
+
 		const token= req.headers.authorization.split(' ')[1];
-		const { validate } = require('./authentication');
+		const { validate, logout } = require('./authentication');
 		let valid = token && validate(token);
 
-		//TODO: All tokens for this user before this time are invalid
+		if(valid) logout(token)
+			.then(async result => {
+
+				res.json({
+					success: result,
+				});
+			})
+			.catch(error => {
+				console.error('Error logging out:', error);
+				res.json({
+					success: false
+				});
+			});
 	}
 };
