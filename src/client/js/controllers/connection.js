@@ -11,7 +11,7 @@ socket.on('connect', () => {
 
 socket.on('packet', function (packet) {
 	if(packet.type !== PacketType.CLIENT_BOUND) return;
-	console.log(packet);
+	// console.log(packet);
 
 	if(packet.id === 0x01) {
 		window.devMode = packet.isDev;
