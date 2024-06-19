@@ -1,5 +1,5 @@
 import { startGame } from "../game";
-let autoJoin = true;
+let autoJoin = false;
 
 function updateLobbies() {
 	fetch('/api/lobbydata')
