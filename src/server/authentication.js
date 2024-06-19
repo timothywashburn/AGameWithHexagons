@@ -1,5 +1,10 @@
 const { RegistrationError } = require('../shared/enums.js');
 const mysql = require('mysql');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const { UserProfile } = require('./client');
+
+const saltRounds = 10;
 
 let connection = null;
 let config = null;
@@ -35,14 +40,7 @@ function init(config) {
         }
         console.log('Created accounts table');
     });
-
-  exampleUsage().then(r => console.log(r));
-
-
 }
-
-const bcrypt = require('bcrypt');
-const saltRounds = 10;
 
 async function hashPassword(password) {
     try {
@@ -58,19 +56,6 @@ async function verifyPassword(password, hashedPassword) {
     } catch (error) {
         throw error;
     }
-}
-
-// Example usage
-async function exampleUsage() {
-    const password = 'user_password';
-
-    // Hash the password
-    const hashedPassword = await hashPassword(password);
-    console.log('Hashed password:', hashedPassword);
-
-    // Verify the password
-    const isMatch = await verifyPassword(password, hashedPassword);
-    console.log('Password match:', isMatch);
 }
 
 async function createAccount(username, password) {
@@ -143,8 +128,6 @@ async function accountExists(username) {
 }
 
 async function generateToken(username) {
-    const jwt = require('jsonwebtoken');
-
     let id = await new Promise((resolve, reject) => {
         connection.query('SELECT id FROM accounts WHERE username = ?', [username], (err, result) => {
             if (err) reject(err);
@@ -161,7 +144,8 @@ async function generateToken(username) {
     const secret = this.config.secret;
 
     const options = {
-        expiresIn: '1h',
+        // expiresIn: '1w',
+        expiresIn: '999y',
     };
 
     const token = jwt.sign(payload, secret, options);
@@ -171,9 +155,6 @@ async function generateToken(username) {
 }
 
 function validateUser(token, client) {
-    const jwt = require('jsonwebtoken');
-    const { UserProfile } = require('./client');
-
     try {
         const decoded = jwt.verify(token, this.config.secret); // Replace 'config.secret' with your actual secret
 
@@ -201,10 +182,6 @@ async function getUserID(username) {
     });
 
 }
-
-
-
-
 
 module.exports = {
     init,
