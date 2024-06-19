@@ -1,5 +1,5 @@
 import { startGame } from "../game";
-let autoJoin = true;
+let autoJoin = false;
 
 function updateLobbies() {
 	fetch('/api/lobbydata')
@@ -64,9 +64,6 @@ export function showCanvas() {
 
 	lobbyDiv.style.display = 'none';
 	gameDiv.style.display = 'block';
-
-
-	console.log('Authenticated:', window.authenticated);
 
 	if(!window.authenticated) {
 		let modal = new bootstrap.Modal(document.getElementById('promptModal'))
