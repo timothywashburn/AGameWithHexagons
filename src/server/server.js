@@ -6,8 +6,9 @@ const chalk = require('chalk');
 const webpack = require('webpack');
 const webpackDevMiddleware = require('webpack-dev-middleware');
 
-const endpoints = require('./api-endpoints.js');
-const webpackConfig = require('../../webpack.dev.js');
+const endpoints = require('./api-endpoints');
+const webpackConfig = require('../../webpack.dev');
+const authentication = require('./authentication');
 
 const port = 3000;
 const viewsDir = `${__dirname}/../client/views`;
@@ -88,21 +89,8 @@ server.listen(port, () => {
 	console.log(`Listening on port ${chalk.red(port)} in ${envColor(process.env.NODE_ENV)} mode`);
 });
 
-const defaultConfig = require('./config.defaults.json');
+Object.assign(module.exports, {
+	io
+});
 
-let localConfig = {};
-try {
-	localConfig = require('./config.local.json');
-} catch(err) {
-	if(err.code !== 'MODULE_NOT_FOUND') {
-		throw err;
-	}
-}
-
-const config = { ...defaultConfig, ...localConfig };
-console.log('E CONFIG: ' + config);
-const { init } = require('./authentication');
-
-module.exports = { io, config };
-
-init(config);
+authentication.init();

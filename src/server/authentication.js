@@ -1,17 +1,15 @@
-const { RegistrationError } = require('../shared/enums.js');
 const mysql = require('mysql');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const { UserProfile } = require('./client');
+
+const { RegistrationError } = require('../shared/enums.js');
+const config = require('./config.json');
 
 const saltRounds = 10;
 
-let connection = null;
-let config = null;
+let connection;
 
-function init(config) {
-    this.config = config;
-
+function init() {
     connection = mysql.createConnection({
         host: config.mysql.host,
         user: config.mysql.user,
@@ -140,8 +138,7 @@ async function generateToken(username) {
         username: username,
     };
 
-    console.log('CONFIG: ' + this.config)
-    const secret = this.config.secret;
+    const secret = config.secret;
 
     const options = {
         // expiresIn: '1w',
@@ -162,7 +159,7 @@ async function validateUser(token, client) {
     const { UserProfile } = require('./client');
 
     try {
-        const decoded = jwt.verify(token, this.config.secret);
+        const decoded = jwt.verify(token, config.secret);
 
         let loggedOut = await new Promise((resolve, reject) => {
             connection.query('SELECT last_logout FROM accounts WHERE id = ?', [decoded.userId], (err, result) => {
@@ -206,7 +203,7 @@ async function getUserID(username) {
     const jwt = require('jsonwebtoken');
 
     try {
-        const decoded = jwt.verify(token, this.config.secret);
+        const decoded = jwt.verify(token, config.secret);
 
         let loggedOut = await new Promise((resolve, reject) => {
             connection.query('UPDATE accounts SET last_logout = ? WHERE id = ?', [Date.now(), decoded.userId], (err, result) => {

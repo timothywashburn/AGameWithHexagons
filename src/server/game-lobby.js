@@ -42,8 +42,6 @@ class GameLobby {
 			packet.addClient(client);
 			packet.send(client.socket);
 		});
-
-
 	}
 
 	sendAlert(client, announcementType) {
