@@ -34,7 +34,7 @@ canvas.addEventListener('wheel', event => {
 
 	cameraZoom *= 1 + delta * SCROLL_SENSITIVITY;
 	cameraZoom = Math.max(Math.min(cameraZoom, MAX_ZOOM), MIN_ZOOM);
-});
+}, {passive: true});
 
 canvas.addEventListener('mousedown', event => {
 	if (event.button === 1) {
