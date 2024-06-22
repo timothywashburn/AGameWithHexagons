@@ -12,6 +12,7 @@ const MIN_ZOOM = 0.25;
 const MAX_ZOOM = 4;
 const SCROLL_SENSITIVITY = 0.1;
 
+let isMouseDown = false;
 let isDragging = false;
 let startX, startY;
 
@@ -45,7 +46,8 @@ canvas.addEventListener('mousedown', event => {
 		velocityY = 0;
 		cameraZoom = 1;
 	} else if (event.button === 0) {
-		isDragging = true;
+		isMouseDown = true;
+		isDragging = false;
 		startX = event.clientX;
 		startY = event.clientY;
 	}
@@ -53,18 +55,29 @@ canvas.addEventListener('mousedown', event => {
 
 canvas.addEventListener('mouseup', event => {
 	if (event.button === 0) {
+		if(!isDragging) stationaryClick(event);
+		isMouseDown = false;
 		isDragging = false;
 	}
 });
+
+const stationaryClick = event => {
+	let game = getGame();
+	let clickedTile = getTile(event.clientX, event.clientY);
+	if (clickedTile != null && clickedTile.isSelected) {
+		clickedTile.isSelected = false;
+	} else {
+		for (let tile of game.tiles) {
+			tile.isSelected = clickedTile === tile;
+		}
+	}
+}
 
 canvas.addEventListener('mousemove', event => {
 	mouseX = event.clientX;
 	mouseY = event.clientY;
 
-	let hoveredTile = getTile(mouseX, mouseY);
-	for (let tile of getGame().tiles) {
-		tile.isHovered = hoveredTile === tile;
-	}
+	if (isMouseDown) isDragging = true;
 
 	if (isDragging) {
 		let deltaX = event.clientX - startX;
@@ -74,17 +87,10 @@ canvas.addEventListener('mousemove', event => {
 		startX = event.clientX;
 		startY = event.clientY;
 	}
-});
 
-canvas.addEventListener('click', event => {
-	let game = getGame();
-	let clickedTile = getTile(event.clientX, event.clientY);
-	if (clickedTile != null && clickedTile.isSelected) {
-		clickedTile.isSelected = false;
-	} else {
-		for (let tile of game.tiles) {
-			tile.isSelected = clickedTile === tile;
-		}
+	let hoveredTile = getTile(mouseX, mouseY);
+	for (let tile of getGame().tiles) {
+		tile.isHovered = hoveredTile === tile;
 	}
 });
 
