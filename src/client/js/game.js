@@ -5,9 +5,16 @@ import '../../shared/packets/packet';
 import { prepareFrame } from './render';
 import Tile from './objects/tile'
 
+let game;
+
 export function startGame() {
-	new Game(5).start();
+	game = new Game(5);
+	game.start();
 	console.log('Starting game render');
+}
+
+export function getGame() {
+	return game;
 }
 
 class Game {
@@ -38,7 +45,7 @@ class Game {
 		this.frame = 1;
 		this.renderTimes = []
 
-		setInterval(() => {;
+		setInterval(() => {
 			let secondsElapsed = (Date.now() - this.startTime) / 1000;
 			let frameRate = (this.frame / secondsElapsed).toFixed(1);
 			this.renderTimes.splice(0, this.renderTimes.length - frameRate * 10);

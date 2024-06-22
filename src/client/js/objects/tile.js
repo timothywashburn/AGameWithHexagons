@@ -5,7 +5,11 @@ let apothem = 30
 let radius = apothem / Math.cos(Math.PI / 6);
 
 const hexagon = new Image();
+const hexagonSelected = new Image();
+const hexagonHover = new Image();
 hexagon.src = 'images/hexagon.svg';
+hexagonSelected.src = 'images/hexagon-selected.svg';
+hexagonHover.src = 'images/hexagon-hover.svg';
 
 export default class Tile {
 	constructor(x, y, terrainType) {
@@ -16,32 +20,41 @@ export default class Tile {
 		// this.terrainType = terrainType;
 		// this.resourceType = resourceType;
 		// this.isObscured = isObscured;
+
+		this.isSelected = false;
+		this.isHovered = false;
 	}
 
 	render() {
-		let hexagonX = canvas.width / 2 + this.x * apothem;
-		let hexagonY = canvas.height / 2 - this.y * radius * (1 + Math.sin(Math.PI / 6));
+		this.literalX = canvas.width / 2 + this.x * apothem;
+		this.literalY = canvas.height / 2 - this.y * radius * (1 + Math.sin(Math.PI / 6));
 
-		let hexagonRegion = new Path2D();
+		this.path = new Path2D();
 		for (let i = 0; i < 6; i++) {
-			let pointX = hexagonX + radius * Math.cos(Math.PI / 3 * i + Math.PI / 6);
-			let pointY = hexagonY + radius * Math.sin(Math.PI / 3 * i + Math.PI / 6);
+			let pointX = this.literalX + radius * Math.cos(Math.PI / 3 * i + Math.PI / 6);
+			let pointY = this.literalY + radius * Math.sin(Math.PI / 3 * i + Math.PI / 6);
 			if(i === 0) {
-				hexagonRegion.moveTo(pointX, pointY);
-			} else hexagonRegion.lineTo(pointX, pointY);
+				this.path.moveTo(pointX, pointY);
+			} else this.path.lineTo(pointX, pointY);
 		}
-		hexagonRegion.closePath();
+		this.path.closePath();
 
 		ctx.save();
 		ctx.fillStyle = this.color;
-		ctx.fill(hexagonRegion);
+		ctx.fill(this.path);
 		ctx.restore();
 
 		ctx.save();
-		ctx.drawImage(hexagon, hexagonX - radius, hexagonY - radius, radius * 2, radius * 2);
+		ctx.drawImage(this.getImage(), this.literalX - radius, this.literalY - radius, radius * 2, radius * 2);
 		ctx.restore();
 
-		ctx.stroke(hexagonRegion);
+		ctx.stroke(this.path);
+	}
+
+	getImage() {
+		if (this.isSelected) return hexagonSelected;
+		if (this.isHovered) return hexagonHover;
+		return hexagon;
 	}
 }
 

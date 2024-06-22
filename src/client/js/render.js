@@ -1,3 +1,5 @@
+import { getGame } from './game';
+
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
@@ -16,12 +18,11 @@ let startX, startY;
 let mouseX;
 let mouseY;
 
-const hexagon = new Image();
-hexagon.src = 'images/hexagon.svg';
-
 export function prepareFrame() {
-	canvas.width = window.innerWidth;
-	canvas.height = window.innerHeight;
+	if(canvas.width !== window.innerWidth || canvas.height !== window.innerWidth) {
+		canvas.width = window.innerWidth;
+		canvas.height = window.innerHeight;
+	}
 
 	ctx.translate(window.innerWidth / 2, window.innerHeight / 2);
 	ctx.scale(cameraZoom, cameraZoom);
@@ -60,6 +61,11 @@ canvas.addEventListener('mousemove', event => {
 	mouseX = event.clientX;
 	mouseY = event.clientY;
 
+	let hoveredTile = getTile(mouseX, mouseY);
+	for (let tile of getGame().tiles) {
+		tile.isHovered = hoveredTile === tile;
+	}
+
 	if (isDragging) {
 		let deltaX = event.clientX - startX;
 		let deltaY = event.clientY - startY;
@@ -69,3 +75,24 @@ canvas.addEventListener('mousemove', event => {
 		startY = event.clientY;
 	}
 });
+
+canvas.addEventListener('click', event => {
+	let game = getGame();
+	let clickedTile = getTile(event.clientX, event.clientY);
+	if (clickedTile != null && clickedTile.isSelected) {
+		clickedTile.isSelected = false;
+	} else {
+		for (let tile of game.tiles) {
+			tile.isSelected = clickedTile === tile;
+		}
+	}
+});
+
+const getTile = (mouseX, mouseY) => {
+	let game = getGame();
+	for (let tile of game.tiles) {
+		if (ctx.isPointInPath(tile.path, mouseX, mouseY)) {
+			return tile;
+		}
+	}
+}
