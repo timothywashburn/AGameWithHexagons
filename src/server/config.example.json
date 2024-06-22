@@ -5,6 +5,8 @@
     "password": "default_password",
     "database": "default_database"
   },
-
-  "secret": "key"
+  "secret": "key",
+  "dev": {
+    "autojoin": false
+  }
 }

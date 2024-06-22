@@ -6,12 +6,14 @@ const GameLobby = require('./game-lobby');
 const {generateToken, validateUser} = require("./authentication");
 const PacketClientGameInit = require("../shared/packets/packet-client-game-init");
 const {AnnouncementType} = require("../shared/enums");
+const config = require("./config.json");
 
 module.exports = {
 	lobbydata(req, res) {
 		console.log('lobby data requested');
 		let responseData = {
 			success: true,
+			autojoin: config.dev.autojoin,
 			lobbies: GameLobby.lobbies.map((lobby) => {
 				return {
 					name: lobby.getName(),

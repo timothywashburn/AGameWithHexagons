@@ -1,5 +1,4 @@
 import { startGame } from "../game";
-let autoJoin = true;
 
 function updateLobbies() {
 	fetch('/api/lobbydata')
@@ -19,7 +18,7 @@ function updateLobbies() {
 				});
 			});
 
-			if(autoJoin) {
+			if(data.autojoin) {
 				setTimeout(() => {
 					joinGame(0, window.socketID);
 				}, 200);
