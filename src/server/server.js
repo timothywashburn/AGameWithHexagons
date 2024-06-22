@@ -17,6 +17,37 @@ const isDev = process.env.NODE_ENV === 'development';
 app.set('view engine', 'ejs');
 app.set('views', viewsDir);
 
+const validateConfig = () => {
+	const configPath = path.join(__dirname, 'config.json');
+	const exampleConfigPath = path.join(__dirname, 'config.example.json');
+	if (!fs.existsSync(configPath)) {
+		console.error('config.json not found. Please copy config.example.json to config.json and fill in the required values');
+		process.exit(1);
+	}
+
+	const config = require(configPath);
+	const exampleConfig = require(exampleConfigPath);
+
+// Function to check for missing keys, including nested keys
+	const checkMissingKeys = (example, actual, prefix = '') => {
+		Object.keys(example).forEach((key) => {
+			const fullKey = prefix ? `${prefix}.${key}` : key;
+			if (typeof example[key] === 'object' && !Array.isArray(example[key])) {
+				if (!actual[key] || typeof actual[key] !== 'object') {
+					console.error(`config.json is missing the key: ${fullKey}`);
+					process.exit(1);
+				}
+				checkMissingKeys(example[key], actual[key], fullKey);
+			} else if (!actual.hasOwnProperty(key)) {
+				console.error(`config.json is missing the key: ${fullKey}`);
+				process.exit(1);
+			}
+		});
+	}
+	checkMissingKeys(exampleConfig, config);
+}
+validateConfig();
+
 if (isDev) {
 	const compiler = webpack(webpackConfig);
 	app.use(
