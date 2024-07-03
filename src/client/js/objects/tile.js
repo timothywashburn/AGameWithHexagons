@@ -15,6 +15,11 @@ export default class Tile {
 	constructor(x, y, terrainType) {
 		this.x = x;
 		this.y = y;
+
+		if((this.x + this.y) % 2 !== 0) {
+			throw new Error(`Tile at ${this.x}, ${this.y} is not valid`);
+		}
+
 		this.color = getRBGAround(134, 44, 54, 40);
 		// this.occupant = occupant;
 		// this.terrainType = terrainType;
