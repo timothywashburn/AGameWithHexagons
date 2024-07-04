@@ -25,25 +25,26 @@ function updateGames() {
 			}
 
 			gameCards.forEach((card) => {
-			const gameCards = document.querySelectorAll('.gameLobby');
+				const gameCards = document.querySelectorAll('.gameLobby');
 
-			gameCards.forEach((card) => {
-				card.addEventListener('click', () => {
-					const gameID = card.id;
-					console.log('Clicked game ID:', gameID);
+				gameCards.forEach((card) => {
+					card.addEventListener('click', () => {
+						const gameID = card.id;
+						console.log('Clicked game ID:', gameID);
 
-					joinGame(gameID, window.socketID);
+						joinGame(gameID, window.socketID);
+					});
 				});
-			});
 
-			if (data.dev) {
-				devConfig = data.dev;
-				if (devConfig.autoJoin) {
-					setTimeout(() => {
-						joinGame(0, window.socketID);
-					}, 200);
+				if (data.dev) {
+					devConfig = data.dev;
+					if (devConfig.autoJoin) {
+						setTimeout(() => {
+							joinGame(0, window.socketID);
+						}, 200);
+					}
 				}
-			}
+			});
 		});
 }
 
