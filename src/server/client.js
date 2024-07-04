@@ -7,8 +7,8 @@ let globalClients = [];
 class Client {
 	constructor(game, socket) {
 		this.game = game;
-		this.id = socket.id;
 		this.socket = socket;
+		this.id = socket.id;
 		this.authenticated = false;
 		this.profile = new UserProfile(-1, generateUsername("", 3));
 

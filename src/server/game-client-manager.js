@@ -1,4 +1,4 @@
-const PacketClientGameInfo = require('../shared/packets/packet-client-game-info.js');
+const PacketClientServerListInfo = require('../shared/packets/packet-client-player-list-info.js');
 const PacketClientAnnouncement = require('../shared/packets/packet-client-announcement.js');
 const { AnnouncementType } = require('../shared/enums.js');
 
@@ -21,7 +21,10 @@ class GameClientManager {
 	}
 
 	updatePlayerList() {
-		let packet = new PacketClientGameInfo(this.clients);
+		let playerListInfo = [];
+		for (let client of this.clients) playerListInfo.push(client.profile);
+
+		let packet = new PacketClientServerListInfo(playerListInfo);
 
 		this.clients.forEach((client) => {
 			packet.addClient(client);
