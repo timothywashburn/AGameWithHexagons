@@ -1,6 +1,6 @@
-const PacketClientServerListInfo = require('../shared/packets/packet-client-player-list-info.js');
-const PacketClientAnnouncement = require('../shared/packets/packet-client-announcement.js');
-const { AnnouncementType } = require('../shared/enums.js');
+const PacketClientServerListInfo = require('../../shared/packets/packet-client-player-list-info.js');
+const PacketClientAnnouncement = require('../../shared/packets/packet-client-announcement.js');
+const { AnnouncementType } = require('../../shared/enums.js');
 
 class GameClientManager {
 	clients = [];

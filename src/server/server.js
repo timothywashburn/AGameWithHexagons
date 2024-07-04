@@ -6,11 +6,11 @@ const chalk = require('chalk');
 const webpack = require('webpack');
 const webpackDevMiddleware = require('webpack-dev-middleware');
 
-const endpoints = require('./api-endpoints');
+const endpoints = require('./api/api-endpoints');
 const webpackConfig = require('../../webpack.dev');
 const authentication = require('./authentication');
-const config = require('./config.json');
-const { isDev } = require('./utils');
+const config = require('../../config.json');
+const { isDev } = require('./misc/utils');
 
 const viewsDir = `${__dirname}/../client/views`;
 
@@ -18,8 +18,8 @@ app.set('view engine', 'ejs');
 app.set('views', viewsDir);
 
 const validateConfig = () => {
-	const configPath = path.join(__dirname, 'config.json');
-	const exampleConfigPath = path.join(__dirname, 'config.example.json');
+	const configPath = path.join(__dirname, '../../config.json');
+	const exampleConfigPath = path.join(__dirname, '../../config.example.json');
 	if (!fs.existsSync(configPath)) {
 		console.error('config.json not found. Please copy config.example.json to config.json and fill in the required values');
 		process.exit(1);
@@ -101,7 +101,7 @@ app.get('/:page', (req, res) => {
 
 const http = require('http');
 const { Server } = require('socket.io');
-const { globalClients, Client } = require('./client');
+const { globalClients, Client } = require('./objects/client');
 const { Game } = require('./objects/server-game');
 
 const server = http.createServer(app);
@@ -113,7 +113,6 @@ const serverSocket = new Server(server);
 
 serverSocket.on('connection', (socket) => {
 	globalClients.push(new Client(game, socket));
-	console.log("client created")
 });
 
 server.listen(config.port, () => {
