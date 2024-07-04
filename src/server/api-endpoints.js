@@ -10,11 +10,17 @@ const {AnnouncementType} = require("../shared/enums");
 const config = require("./config.json");
 
 module.exports = {
-	lobbydata(req, res) {
-		console.log('lobby data requested');
+	async gamedata(req, res) {
+
+		const token = req.headers.authorization.split(' ')[1];
+
+		let valid = token && await validateUser(token, null);
+
+		console.log('game data requested');
 		let responseData = {
 			success: true,
-			lobbies: GameLobby.lobbies.map((lobby) => {
+			authenticated: valid,
+			games: games.map((game) => {
 				return {
 					name: lobby.getName(),
 					joinable: lobby.isJoinable(),
@@ -23,6 +29,7 @@ module.exports = {
 				};
 			}),
 		};
+
 
 		if (isDev) responseData.dev = config.dev;
 
@@ -42,9 +49,7 @@ module.exports = {
 		const socketId = req.query.socketId;
 		const token= req.headers.authorization.split(' ')[1];
 
-		const { validateUser } = require('./authentication');
-
-		let client = globalClients.find((client) => client.id === socketId);
+		let client = globalClients.find((client) => client.socket.id === socketId);
 		if (!client) return;
 
 		let lobby = GameLobby.getLobby(lobbyId);

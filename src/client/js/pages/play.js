@@ -1,20 +1,36 @@
 export let devConfig;
 
-function updateLobbies() {
-	fetch('/api/lobbydata')
+function updateGames() {
+	let headers = new Headers();
+	headers.append("Authorization", "Bearer " + localStorage.token);
+
+	let requestOptions = {
+		method: 'GET',
+		headers: headers,
+		redirect: 'follow'
+	};
+
+	fetch('/api/gamedata', requestOptions)
 		.then((response) => response.json())
 		.then((data) => {
 			let lobbyContainer = document.getElementById('lobbyContainer');
 			lobbyContainer.innerHTML = data.html;
 
-			const lobbyCards = document.querySelectorAll('.lobby');
+			console.log("Authenticated:", data.authenticated);
 
-			lobbyCards.forEach((card) => {
+			if (!data.authenticated) {
+				let modal = new bootstrap.Modal(document.getElementById('promptModal'))
+				modal.show();
+			}
+
+			const gameCards = document.querySelectorAll('.gameLobby');
+
+			gameCards.forEach((card) => {
 				card.addEventListener('click', () => {
-					const lobbyID = card.id;
-					console.log('Clicked lobby ID:', lobbyID);
+					const gameID = card.id;
+					console.log('Clicked game ID:', gameID);
 
-					joinGame(lobbyID, window.socketID);
+					joinGame(gameID, window.socketID);
 				});
 			});
 
@@ -29,7 +45,7 @@ function updateLobbies() {
 		});
 }
 
-function joinGame(lobby, socket) {
+function joinGame(game, socket) {
 	let headers = new Headers();
 	headers.append("Authorization", "Bearer " + localStorage.token);
 
@@ -40,7 +56,7 @@ function joinGame(lobby, socket) {
 	};
 
 	let url = '/api/join';
-	let params = { lobby: lobby, socketId: socket };
+	let params = { game: game, socketId: socket };
 	url += '?' + new URLSearchParams(params).toString();
 
 	fetch(url, requestOptions)
@@ -56,19 +72,14 @@ function joinGame(lobby, socket) {
 		});
 }
 
-updateLobbies();
+updateGames();
 
 export function showCanvas() {
-	const lobbyDiv = document.getElementById('lobby');
+	const lobbyDiv = document.getElementById('gameLobby');
 	const gameDiv = document.getElementById('game');
 
 	lobbyDiv.style.display = 'none';
 	gameDiv.style.display = 'block';
-
-	if(!window.authenticated) {
-		let modal = new bootstrap.Modal(document.getElementById('promptModal'))
-		if(!window.devMode) modal.show();
-	}
 }
 
 document.getElementById('guestBtn').addEventListener('click', function() {
