@@ -1,4 +1,4 @@
-import { ClientPacket, PacketType } from '../../../shared/packets/packet';
+import { ClientPacket, PacketType, getPacket } from '../../../shared/packets/packet';
 import { AnnouncementType } from '../../../shared/enums';
 import { io } from 'socket.io-client';
 import { devConfig, joinGame } from '../pages/play';
@@ -15,7 +15,8 @@ clientSocket.on('connect', () => {
 
 clientSocket.on('packet', function (packet) {
 	if(packet.type !== PacketType.CLIENT_BOUND) return;
-	console.log(`receiving packet: 0x${packet.id.toString(16)}`);
+	console.log(packet);
+	console.log(`receiving packet: ` + getPacket(packet.id));
 
 	if(packet.id === ClientPacket.GAME_INIT.id) {
 		new Game();
