@@ -1,5 +1,7 @@
 import { startGame } from "../game";
 
+export let devConfig;
+
 function updateLobbies() {
 	fetch('/api/lobbydata')
 		.then((response) => response.json())
@@ -18,10 +20,13 @@ function updateLobbies() {
 				});
 			});
 
-			if(data.autojoin) {
-				setTimeout(() => {
-					joinGame(0, window.socketID);
-				}, 200);
+			if (data.dev) {
+				devConfig = data.dev;
+				if (devConfig.autoJoin) {
+					setTimeout(() => {
+						joinGame(0, window.socketID);
+					}, 200);
+				}
 			}
 		});
 }
@@ -47,7 +52,7 @@ function joinGame(lobby, socket) {
 			showCanvas();
 
 			setTimeout(function(){
-				if(window.devMode) {
+				if(devConfig) {
 					document.getElementById('chatBox').style.display = "none"
 					document.getElementById('playerList').style.display = "none"
 				}

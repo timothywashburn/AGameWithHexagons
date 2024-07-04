@@ -1,7 +1,8 @@
 const ejs = require('ejs');
 const fs = require('fs');
-const { Client, globalClients } = require('./client');
 
+const { isDev } = require('./utils');
+const { Client, globalClients } = require('./client');
 const GameLobby = require('./game-lobby');
 const {generateToken, validateUser} = require("./authentication");
 const PacketClientGameInit = require("../shared/packets/packet-client-game-init");
@@ -13,7 +14,6 @@ module.exports = {
 		console.log('lobby data requested');
 		let responseData = {
 			success: true,
-			autojoin: config.dev.autojoin,
 			lobbies: GameLobby.lobbies.map((lobby) => {
 				return {
 					name: lobby.getName(),
@@ -23,6 +23,9 @@ module.exports = {
 				};
 			}),
 		};
+
+		console.log(isDev);
+		if (isDev) responseData.dev = config.dev;
 
 		fs.readFile(`${__dirname}/../client/views/partials/lobby-info.ejs`, 'utf8', (err, file) => {
 			if (err) {

@@ -9,10 +9,10 @@ const webpackDevMiddleware = require('webpack-dev-middleware');
 const endpoints = require('./api-endpoints');
 const webpackConfig = require('../../webpack.dev');
 const authentication = require('./authentication');
+const config = require('./config.json');
+const { isDev } = require('./utils');
 
-const port = 3000;
 const viewsDir = `${__dirname}/../client/views`;
-const isDev = process.env.NODE_ENV === 'development';
 
 app.set('view engine', 'ejs');
 app.set('views', viewsDir);
@@ -115,9 +115,9 @@ io.on('connection', (socket) => {
 
 const gameLobby = new GameLobby(io);
 
-server.listen(port, () => {
+server.listen(config.port, () => {
 	let envColor = isDev ? chalk.blue : chalk.green;
-	console.log(`Listening on port ${chalk.red(port)} in ${envColor(process.env.NODE_ENV)} mode`);
+	console.log(`Listening on port ${chalk.red(config.port)} in ${envColor(process.env.NODE_ENV)} mode`);
 });
 
 Object.assign(module.exports, {
