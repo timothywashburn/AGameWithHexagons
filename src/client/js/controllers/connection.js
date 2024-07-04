@@ -10,22 +10,19 @@ export const clientSocket = io.connect();
 clientSocket.on('connect', () => {
 	window.gameData.socketID = clientSocket.id;
 
-	if (devConfig.autoJoin) joinGame(0, window.gameData.socketID);
+	if (devConfig.autoJoin && !document.getElementById('promptModal').style.display) joinGame(0, window.gameData.socketID);
 });
 
 clientSocket.on('packet', function (packet) {
 	if(packet.type !== PacketType.CLIENT_BOUND) return;
-	console.log(packet);
 	console.log(`receiving packet: ` + getPacket(packet.id));
 
 	if(packet.id === ClientPacket.GAME_INIT.id) {
+		window.gameData.initData = packet.initData;
 		new Game();
 
-		setTimeout(function(){
-			if (devConfig.hideChat) document.getElementById('chatBox').style.display = "none"
-			if (devConfig.hidePlayerList) document.getElementById('playerList').style.display = "none"
-		}, 5);
-
+		if (devConfig.hideChat) document.getElementById('chatBox').style.display = "none"
+		if (devConfig.hidePlayerList) document.getElementById('playerList').style.display = "none"
 	} else if(packet.id === ClientPacket.GAME_SNAPSHOT.id) {
 		getGame().loadBoard(packet.snapshot.tiles);
 

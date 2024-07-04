@@ -112,7 +112,7 @@ let game2 = new Game(server, 5);
 const serverSocket = new Server(server);
 
 serverSocket.on('connection', (socket) => {
-	globalClients.push(new Client(game, socket));
+	globalClients.push(new Client(socket));
 });
 
 server.listen(config.port, () => {

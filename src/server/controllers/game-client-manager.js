@@ -1,6 +1,8 @@
 const PacketClientServerListInfo = require('../../shared/packets/packet-client-player-list-info.js');
 const PacketClientAnnouncement = require('../../shared/packets/packet-client-announcement.js');
 const { AnnouncementType } = require('../../shared/enums.js');
+const PacketClientGameInit = require('../../shared/packets/packet-client-game-init');
+const server = require('../server');
 
 class GameClientManager {
 	clients = [];
@@ -11,8 +13,14 @@ class GameClientManager {
 		this.maxPlayers = 8;
 	}
 
-	addClientToGame(client) {
+	async addClientToGame(client, initData) {
 		this.clients.push(client);
+		client.game = this.game;
+
+		let packet = new PacketClientGameInit(initData);
+		packet.addClient(client);
+		await packet.send(server);
+
 		this.game.sendSnapshot(client);
 
 		this.updatePlayerList();

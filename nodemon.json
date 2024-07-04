@@ -1,6 +1,7 @@
 {
 	"watch": [
 		"src/server",
-		"src/shared"
+		"src/shared",
+		"config.json"
 	]
 }
