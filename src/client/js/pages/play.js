@@ -1,5 +1,3 @@
-import { startGame } from "../game";
-
 export let devConfig;
 
 function updateLobbies() {
@@ -73,8 +71,6 @@ export function showCanvas() {
 		let modal = new bootstrap.Modal(document.getElementById('promptModal'))
 		if(!window.devMode) modal.show();
 	}
-
-	startGame();
 }
 
 document.getElementById('guestBtn').addEventListener('click', function() {

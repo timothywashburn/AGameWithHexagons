@@ -1,5 +1,6 @@
 const { Packet, PacketType } = require('../shared/packets/packet.js');
 const { Client, globalClients } = require('./client.js');
+const { Game } = require('./game.js');
 const PacketClientLobbyInfo = require('../shared/packets/packet-client-lobby-info.js');
 const PacketClientAnnouncement = require('../shared/packets/packet-client-announcement.js');
 const { AnnouncementType } = require('../shared/enums.js');
@@ -18,6 +19,8 @@ class GameLobby {
 		this.maxPlayers = 8;
 
 		lobbies.push(this);
+
+		this.game = new Game(5);
 	}
 
 	getName() {
@@ -33,6 +36,8 @@ class GameLobby {
 
 		this.sendUpdates();
 		this.sendAlert(client, AnnouncementType.LOBBY_JOIN);
+
+		this.game.sendBoard(client);
 	}
 
 	sendUpdates() {
@@ -52,6 +57,13 @@ class GameLobby {
 		});
 
 		packet.send();
+	}
+
+	sendPacket(packet) {
+		this.clients.forEach((client) => {
+			packet.addClient(client);
+			packet.send(client.socket);
+		});
 	}
 }
 

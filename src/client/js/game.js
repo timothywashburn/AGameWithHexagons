@@ -17,10 +17,8 @@ export function getGame() {
 	return game;
 }
 
-class Game {
-	constructor(boardSize) {
-		this.boardSize = boardSize;
-
+export default class Game {
+	constructor() {
 		this.startTime = Date.now();
 
 		this.setupDebug();
@@ -31,15 +29,6 @@ class Game {
 		}
 
 		this.tiles = []
-		this.generateTiles();
-	}
-
-	generateTiles() {
-		for (let row = -this.boardSize + 1; row < this.boardSize; row++) {
-			for (let column = Math.abs(row) - (this.boardSize - 1) * 2; column <= -Math.abs(row) + (this.boardSize - 1) * 2; column += 2) {
-				this.tiles.push(new Tile(column, row));
-			}
-		}
 	}
 
 	setupDebug() {
@@ -55,6 +44,10 @@ class Game {
 		}, 5000);
 
 		console.log("debugging enabled");
+	}
+
+	loadBoard(tileMap) {
+		this.tiles = tileMap.map(tile => new Tile(tile.x, tile.y));
 	}
 
 	startRender() {

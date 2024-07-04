@@ -1,17 +1,19 @@
 import { PacketType } from '../../../shared/packets/packet';
 import { NameErrorType, AnnouncementType } from '../../../shared/enums';
-import { showCanvas } from '../pages/play';
 import { io } from 'socket.io-client';
+import { startGame, getGame } from '../game';
 
 export const socket = io.connect();
 
 socket.on('connect', () => {
 	window.socketID = socket.id;
+
+	startGame();
 });
 
 socket.on('packet', function (packet) {
 	if(packet.type !== PacketType.CLIENT_BOUND) return;
-	// console.log(packet);
+	console.log(packet.id);
 
 	if(packet.id === 0x01) {
 		window.devMode = packet.isDev;
@@ -78,5 +80,12 @@ socket.on('packet', function (packet) {
 
 		chatMessages.appendChild(message);
 		chatMessages.scrollTop = chatMessages.scrollHeight;
+	}
+
+	if(packet.id === 0x08) {
+		console.log(packet.tileMap);
+		let game = getGame();
+
+		game.loadBoard(packet.tileMap);
 	}
 });

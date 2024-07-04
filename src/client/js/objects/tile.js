@@ -12,7 +12,7 @@ hexagonSelected.src = 'images/hexagon-selected.svg';
 hexagonHover.src = 'images/hexagon-hover.svg';
 
 export default class Tile {
-	constructor(x, y, terrainType) {
+	constructor(x, y) {
 		this.x = x;
 		this.y = y;
 
