@@ -33,7 +33,7 @@ document.getElementById('registerForm').addEventListener('submit', function(e) {
                 if(token) localStorage.setItem('token', token);
 
             } else {
-                let errorMessage = Object.values(RegistrationError).find((error) => error.code === data.result);
+                let errorMessage = Object.values(RegistrationError).find((error) => error.id === data.result);
                 error.textContent = errorMessage.message;
                 error.style.visibility = 'visible';
             }

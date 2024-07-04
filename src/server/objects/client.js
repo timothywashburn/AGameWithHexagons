@@ -1,7 +1,7 @@
 const { PacketType } = require('../../shared/packets/packet');
 const PacketClientChat = require('../../shared/packets/packet-client-chat');
 const { generateUsername } = require("unique-username-generator");
-const { ServerPacket } = require('../shared/packets/packet');
+const { ServerPacket } = require('../../shared/packets/packet');
 
 let globalClients = [];
 
@@ -20,7 +20,7 @@ class Client {
 		socket.on('packet', (packet) => {
 			if (!packet.type === PacketType.SERVER_BOUND) return;
 
-			if(packet.id === ServerPacket.CHAT.code) {
+			if(packet.id === ServerPacket.CHAT.id) {
 				console.log(`Receiving chat message from client ${this.id}: ${packet.message}`);
 				let message = packet.message;
 				let response = new PacketClientChat(this.profile.id, message);

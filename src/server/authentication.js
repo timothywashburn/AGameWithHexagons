@@ -35,7 +35,6 @@ function init() {
     )`, (err) => {
         if (err) {
             console.error('error creating accounts table:', err);
-            return;
         }
     });
 }
@@ -62,8 +61,8 @@ async function createAccount(username, password) {
     try {
         userExists = await new Promise((resolve, reject) => {
             connection.query('SELECT * FROM accounts WHERE username = ?', [username], (err, result) => {
-                if (err) reject(RegistrationError.USERNAME_INVALID.code);
-                if (result.length > 0) resolve(RegistrationError.USERNAME_EXISTS.code);
+                if (err) reject(RegistrationError.USERNAME_INVALID.id);
+                if (result.length > 0) resolve(RegistrationError.USERNAME_EXISTS.id);
                 resolve(null);
             });
         });
@@ -77,7 +76,7 @@ async function createAccount(username, password) {
     try {
         hash = await hashPassword(password);
     } catch (error) {
-        return RegistrationError.PASSWORD_INVALID.code; // Error hashing password
+        return RegistrationError.PASSWORD_INVALID.id; // Error hashing password
     }
 
     let accountCreated;
@@ -86,7 +85,7 @@ async function createAccount(username, password) {
         accountCreated = await new Promise((resolve, reject) => {
             connection.query('INSERT INTO accounts (username, password) VALUES (?, ?)', [username, hash], (err, result) => {
                 if (err) reject(); // Error creating account
-                resolve(RegistrationError.SUCCESS.code);
+                resolve(RegistrationError.SUCCESS.id);
             });
         });
     } catch (error) {

@@ -13,11 +13,10 @@ class GameClientManager {
 
 	addClientToGame(client) {
 		this.clients.push(client);
+		this.game.sendSnapshot(client);
 
 		this.updatePlayerList();
 		this.sendAlert(client, AnnouncementType.GAME_JOIN);
-
-		this.game.sendSnapshot(client);
 	}
 
 	updatePlayerList() {
@@ -33,7 +32,7 @@ class GameClientManager {
 	}
 
 	sendAlert(client, announcementType) {
-		let packet = new PacketClientAnnouncement(client.profile.id, announcementType.code);
+		let packet = new PacketClientAnnouncement(client.profile.id, announcementType.id);
 
 		this.clients.forEach((client) => {
 			packet.addClient(client);

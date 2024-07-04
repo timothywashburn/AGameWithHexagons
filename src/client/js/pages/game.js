@@ -19,7 +19,7 @@ export class Game {
 
 		this.tiles = []
 
-		console.log('Starting game render');
+		console.log('starting game render');
 		this.startRender();
 	}
 
