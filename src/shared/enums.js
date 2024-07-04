@@ -1,15 +1,3 @@
-exports.ClientPacket = Object.freeze({
-	GAME_INIT: { code: 0x01 },
-	GAME_SNAPSHOT: { code: 0x02 },
-	PLAYER_LIST_INFO: { code: 0x04 },
-	CHAT: { code: 0x06 },
-	ANNOUNCEMENT: { code: 0x07 },
-});
-
-exports.ServerPacket = Object.freeze({
-	CHAT: { code: 0x05 },
-});
-
 exports.NameErrorType = Object.freeze({
 	BAD_NAME: { code: 0x01, message: 'Illegal Name' },
 	TOO_SHORT: { code: 0x02, message: 'Name Too Short (3 Characters Minimum)' },

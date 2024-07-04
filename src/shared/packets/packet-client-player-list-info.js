@@ -1,8 +1,8 @@
-const { Packet, PacketType } = require('./packet');
+const { Packet, PacketType, ClientPacket } = require('./packet');
 
 module.exports = class PacketClientPlayerListInfo extends Packet {
 	constructor(playerListInfo) {
-		super(0x04, PacketType.CLIENT_BOUND);
+		super(ClientPacket.PLAYER_LIST_INFO.code, PacketType.CLIENT_BOUND);
 
 		this.playerListInfo = playerListInfo;
 	}

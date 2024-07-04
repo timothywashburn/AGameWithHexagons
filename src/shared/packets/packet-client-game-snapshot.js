@@ -1,8 +1,8 @@
-const { Packet, PacketType } = require('./packet');
+const { Packet, PacketType, ClientPacket } = require('./packet');
 
 module.exports = class PacketClientGameSnapshot extends Packet {
 	constructor(snapshot) {
-		super(0x02, PacketType.CLIENT_BOUND);
+		super(ClientPacket.GAME_SNAPSHOT.code, PacketType.CLIENT_BOUND);
 
 		this.snapshot = snapshot;
 	}

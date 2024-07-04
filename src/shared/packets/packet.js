@@ -38,7 +38,21 @@ const PacketType = Object.freeze({
 	CLIENT_BOUND: 'CLIENT_BOUND',
 });
 
+const ClientPacket = Object.freeze({
+	GAME_INIT: { code: 0x01 },
+	GAME_SNAPSHOT: { code: 0x02 },
+	PLAYER_LIST_INFO: { code: 0x04 },
+	CHAT: { code: 0x06 },
+	ANNOUNCEMENT: { code: 0x07 },
+});
+
+const ServerPacket = Object.freeze({
+	CHAT: { code: 0x05 },
+});
+
 module.exports = {
 	Packet,
 	PacketType,
+	ClientPacket,
+	ServerPacket
 };
