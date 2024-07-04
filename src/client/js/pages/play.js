@@ -21,23 +21,19 @@ function updateGames() {
 			let lobbyContainer = document.getElementById('lobbyContainer');
 			lobbyContainer.innerHTML = data.html;
 
-			const gameCards = document.querySelectorAll('.gameLobby');
-
 			if (!data.authenticated) {
 				let modal = new bootstrap.Modal(document.getElementById('promptModal'))
 				modal.show();
 			}
 
+			const gameCards = document.querySelectorAll('.gameLobby');
+
 			gameCards.forEach((card) => {
-				const gameCards = document.querySelectorAll('.gameLobby');
+				card.addEventListener('click', () => {
+					const gameID = card.id;
+					console.log('Clicked game ID:', gameID);
 
-				gameCards.forEach((card) => {
-					card.addEventListener('click', () => {
-						const gameID = card.id;
-						console.log('Clicked game ID:', gameID);
-
-						joinGame(gameID, window.gameData.socketID);
-					});
+					joinGame(gameID, window.gameData.socketID);
 				});
 			});
 
