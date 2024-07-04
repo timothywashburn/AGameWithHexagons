@@ -101,19 +101,20 @@ app.get('/:page', (req, res) => {
 
 const http = require('http');
 const { Server } = require('socket.io');
-const { GameLobby } = require('./game-lobby');
 const { globalClients, Client } = require('./client');
+const { Game } = require('./objects/server-game');
 
 const server = http.createServer(app);
+
+let game = new Game(server, 5);
+
 const io = new Server(server);
 
 io.on('connection', (socket) => {
-	globalClients.push(new Client(socket));
+	globalClients.push(new Client(game, socket));
 
 	console.log('a user connected');
 });
-
-const gameLobby = new GameLobby(io);
 
 server.listen(config.port, () => {
 	let envColor = isDev ? chalk.blue : chalk.green;

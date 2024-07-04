@@ -21,7 +21,6 @@ document.getElementById('chatInput').addEventListener('keypress', function(event
 document.addEventListener('keypress', function (e) {
 	if (e.key === 'Enter') {
 		e.preventDefault();
-		// Focus on the chatbox input field
 		document.getElementById('chatInput').focus();
 	}
 });

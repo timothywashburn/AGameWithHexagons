@@ -3,7 +3,7 @@ const fs = require('fs');
 
 const { isDev } = require('./utils');
 const { Client, globalClients } = require('./client');
-const GameLobby = require('./game-lobby');
+const { games, getGame } = require('./game-manager');
 const {generateToken, validateUser} = require("./authentication");
 const PacketClientGameInit = require("../shared/packets/packet-client-game-init");
 const {AnnouncementType} = require("../shared/enums");
@@ -22,18 +22,17 @@ module.exports = {
 			authenticated: valid,
 			games: games.map((game) => {
 				return {
-					name: lobby.getName(),
-					joinable: lobby.isJoinable(),
-					players: lobby.clients.length,
-					maxPlayers: lobby.maxPlayers,
+					name: game.getName(),
+					joinable: game.isJoinable(),
+					players: game.clientManager.clients.length,
+					maxPlayers: game.maxPlayers,
 				};
 			}),
 		};
 
-
 		if (isDev) responseData.dev = config.dev;
 
-		fs.readFile(`${__dirname}/../client/views/partials/lobby-info.ejs`, 'utf8', (err, file) => {
+		fs.readFile(`${__dirname}/../client/views/partials/game-info.ejs`, 'utf8', (err, file) => {
 			if (err) {
 				console.error('Error reading file:', err);
 				return;
@@ -45,36 +44,32 @@ module.exports = {
 	},
 
 	async join(req, res) {
-		const lobbyId = req.query.lobby;
+		const gameID = req.query.game;
 		const socketId = req.query.socketId;
-		const token= req.headers.authorization.split(' ')[1];
+		const token = req.headers.authorization.split(' ')[1];
 
 		let client = globalClients.find((client) => client.socket.id === socketId);
 		if (!client) return;
 
-		let lobby = GameLobby.getLobby(lobbyId);
-		if (!lobby || lobby.clients.includes(socketId) || lobby.clients.length >= lobby.maxPlayers) return;
+		let game = getGame(gameID);
+		if (!game || game.clientManager.clients.includes(client) || game.clientManager.clients.length >= game.maxPlayers) return;
 
 		let valid = token && await validateUser(token, client);
 
 		res.json({
 			success: true,
-			message: 'Successfully joined the lobby',
+			message: 'Successfully joined the game',
 			authenticated: valid,
-			lobbyId,
+			gameID: gameID,
 			socketId,
 		});
 
-		lobby.addClient(client);
+		game.clientManager.addClientToGame(client);
 
 		const server = require('./server');
 		const PacketClientGameInit = require('../shared/packets/packet-client-game-init');
-
-		let isDev = process.env.NODE_ENV === 'development';
-		let packet = new PacketClientGameInit(isDev);
-		// let packet = new PacketClientGameInit(false);
+		let packet = new PacketClientGameInit();
 		packet.addClient(client);
-
 		packet.send(server);
 	},
 
@@ -91,7 +86,6 @@ module.exports = {
 		}
 
 		const { createAccount, generateToken } = require('./authentication');
-
 
 		createAccount(username, password)
 			.then(async result => {

@@ -1,9 +1,14 @@
-const { Tile } = require('./objects/tile');
-const PacketClientBoardInit = require('../shared/packets/packet-client-board-init');
+const GameClientManager = require('../game-client-manager');
+const { Tile } = require('./tile');
+const PacketClientBoardInit = require('../../shared/packets/packet-client-board-init');
+const { games } = require('../game-manager');
+const {AnnouncementType} = require('../../shared/enums');
+let { globalClients } = require('../client');
 
+class ServerGame {
+    constructor(server, boardSize) {
+        this.clientManager = new GameClientManager(this);
 
-class Game {
-    constructor(boardSize) {
         this.boardSize = boardSize;
 
         this.startTime = Date.now();
@@ -15,6 +20,16 @@ class Game {
 
         this.tiles = []
         this.generateTiles();
+
+        games.push(this);
+    }
+
+    getName() {
+        return `Game ${games.indexOf(this) + 1}`;
+    }
+
+    isJoinable() {
+        return this.clientManager.clients.length < this.clientManager.maxPlayers;
     }
 
     generateTiles() {
@@ -44,8 +59,18 @@ class Game {
     tileIsValid(tile) {
         return (tile.x + tile.y) % 2 === 0;
     }
+
+    addPlayer() {
+    }
+
+    removePlayer(client) {
+        this.clientManager.clients = this.clientManager.clients.filter(testClient => testClient !== client);
+
+        this.clientManager.sendAlert(client, AnnouncementType.GAME_LEAVE);
+        this.clientManager.updatePlayerList();
+    }
 }
 
 module.exports = {
-    Game
+    Game: ServerGame
 };

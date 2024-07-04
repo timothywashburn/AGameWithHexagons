@@ -13,7 +13,7 @@ socket.on('connect', () => {
 
 socket.on('packet', function (packet) {
 	if(packet.type !== PacketType.CLIENT_BOUND) return;
-	console.log(packet.id);
+	console.log(`Receiving packet: 0x${packet.id.toString(16)}`);
 
 	if(packet.id === 0x01) {
 		window.devMode = packet.isDev;
@@ -40,15 +40,15 @@ socket.on('packet', function (packet) {
 	}
 
 	if(packet.id === 0x04) {
-		window.clients = packet.lobbyClients;
+		window.clients = packet.playerListInfo;
 
 		const playerList = document.getElementById('playerList');
-		playerList.innerHTML = ''; // Clear the list
+		playerList.innerHTML = '';
 
 		window.clients.forEach((client) => {
 			const listItem = document.createElement('li');
 
-			const name = document.createTextNode(client.profile.name); // Assuming each client object has a 'name' property
+			const name = document.createTextNode(client.name);
 			listItem.appendChild(name);
 
 			playerList.appendChild(listItem);
@@ -75,7 +75,7 @@ socket.on('packet', function (packet) {
 
 		let announcement = Object.values(AnnouncementType).find((announcement) => announcement.code === packet.code);
 
-		message.innerHTML = client.profile.name + " " + announcement.message;
+		message.innerHTML = client.name + " " + announcement.message;
 		message.style.color = announcement.color;
 
 		chatMessages.appendChild(message);

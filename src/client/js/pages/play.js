@@ -16,6 +16,7 @@ function updateGames() {
 			let lobbyContainer = document.getElementById('lobbyContainer');
 			lobbyContainer.innerHTML = data.html;
 
+			const gameCards = document.querySelectorAll('.gameLobby');
 			console.log("Authenticated:", data.authenticated);
 
 			if (!data.authenticated) {
@@ -23,6 +24,7 @@ function updateGames() {
 				modal.show();
 			}
 
+			gameCards.forEach((card) => {
 			const gameCards = document.querySelectorAll('.gameLobby');
 
 			gameCards.forEach((card) => {
