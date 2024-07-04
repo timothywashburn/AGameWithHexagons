@@ -84,7 +84,6 @@ canvas.addEventListener('mousemove', event => {
 		let deltaX = startPreDragX - mouseX;
 		let deltaY = startPreDragY - mouseY;
 		let distance = Math.sqrt(deltaX ** 2 + deltaY ** 2);
-		console.log(`${distance.toFixed(1)} ${Date.now() - mouseDownTime}`);
 
 		if (distance > 7 || Date.now() - mouseDownTime > 125) {
 			isDragging = true;

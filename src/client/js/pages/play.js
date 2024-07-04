@@ -50,10 +50,8 @@ function joinGame(lobby, socket) {
 			showCanvas();
 
 			setTimeout(function(){
-				if(devConfig) {
-					document.getElementById('chatBox').style.display = "none"
-					document.getElementById('playerList').style.display = "none"
-				}
+				if (devConfig.hideChat) document.getElementById('chatBox').style.display = "none"
+				if (devConfig.hidePlayerList) document.getElementById('playerList').style.display = "none"
 			}, 5)
 		});
 }

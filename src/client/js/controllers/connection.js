@@ -83,9 +83,7 @@ socket.on('packet', function (packet) {
 	}
 
 	if(packet.id === 0x08) {
-		console.log(packet.tileMap);
 		let game = getGame();
-
 		game.loadBoard(packet.tileMap);
 	}
 });

@@ -9,7 +9,7 @@
   "secret": "key",
   "dev": {
     "autoJoin": false,
-    "showChat": true,
-    "showPlayerList": true
+    "hideChat": true,
+    "hidePlayerList": true
   }
 }

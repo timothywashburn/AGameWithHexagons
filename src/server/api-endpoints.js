@@ -24,7 +24,6 @@ module.exports = {
 			}),
 		};
 
-		console.log(isDev);
 		if (isDev) responseData.dev = config.dev;
 
 		fs.readFile(`${__dirname}/../client/views/partials/lobby-info.ejs`, 'utf8', (err, file) => {
