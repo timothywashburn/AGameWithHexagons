@@ -3,7 +3,7 @@ const { Tile } = require('./tile');
 const PacketClientBoardInit = require('../../shared/packets/packet-client-board-init');
 const { games } = require('../game-manager');
 const {AnnouncementType} = require('../../shared/enums');
-const { globalClients } = require('../client');
+let { globalClients } = require('../client');
 
 class ServerGame {
     constructor(server, boardSize) {
@@ -64,13 +64,9 @@ class ServerGame {
     }
 
     removePlayer(client) {
-        for (let globalClient of globalClients) {
-            if(globalClient.id !== client) continue;
-            delete globalClients[client];
-            break;
-        }
+        this.clientManager.clients = this.clientManager.clients.filter(testClient => testClient !== client);
 
-        this.clientManager.sendAlert(this, AnnouncementType.GAME_LEAVE);
+        this.clientManager.sendAlert(client, AnnouncementType.GAME_LEAVE);
         this.clientManager.updatePlayerList();
     }
 }

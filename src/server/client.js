@@ -8,12 +8,12 @@ class Client {
 	constructor(game, socket) {
 		this.game = game;
 		this.socket = socket;
-		this.id = socket.id;
 		this.authenticated = false;
 		this.profile = new UserProfile(-1, generateUsername("", 3));
 
 		socket.on('disconnect', () => {
 			game.removePlayer(this);
+			globalClients = globalClients.filter(client => client !== this);
 		});
 
 		socket.on('packet', (packet) => {

@@ -7,7 +7,7 @@ function updateGames() {
 			let lobbyContainer = document.getElementById('lobbyContainer');
 			lobbyContainer.innerHTML = data.html;
 
-			const gameCards = document.querySelectorAll('.game');
+			const gameCards = document.querySelectorAll('.gameLobby');
 
 			gameCards.forEach((card) => {
 				card.addEventListener('click', () => {
@@ -59,7 +59,7 @@ function joinGame(game, socket) {
 updateGames();
 
 export function showCanvas() {
-	const lobbyDiv = document.getElementById('lobby');
+	const lobbyDiv = document.getElementById('gameLobby');
 	const gameDiv = document.getElementById('game');
 
 	lobbyDiv.style.display = 'none';

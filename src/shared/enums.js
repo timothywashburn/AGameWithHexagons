@@ -5,8 +5,8 @@ exports.NameErrorType = Object.freeze({
 });
 
 exports.AnnouncementType = Object.freeze({
-	GAME_JOIN: { code: 0x01, message: 'Joined the Game', color: 'green'},
-	GAME_LEAVE: { code: 0x02, message: 'Left the Game', color: 'red'},
+	GAME_JOIN: { code: 0x01, message: 'Joined the game', color: 'green'},
+	GAME_LEAVE: { code: 0x02, message: 'Left the game', color: 'red'},
 });
 
 exports.RegistrationError = Object.freeze({

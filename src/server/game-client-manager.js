@@ -33,7 +33,7 @@ class GameClientManager {
 	}
 
 	sendAlert(client, announcementType) {
-		let packet = new PacketClientAnnouncement(client.id, announcementType.code);
+		let packet = new PacketClientAnnouncement(client.profile.id, announcementType.code);
 
 		this.clients.forEach((client) => {
 			packet.addClient(client);

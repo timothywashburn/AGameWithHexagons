@@ -40,15 +40,15 @@ module.exports = {
 	async join(req, res) {
 		const gameID = req.query.game;
 		const socketId = req.query.socketId;
-		const token= req.headers.authorization.split(' ')[1];
+		const token = req.headers.authorization.split(' ')[1];
 
 		const { validateUser } = require('./authentication');
 
-		let client = globalClients.find((client) => client.id === socketId);
+		let client = globalClients.find((client) => client.socket.id === socketId);
 		if (!client) return;
 
 		let game = getGame(gameID);
-		if (!game || game.clientManager.clients.includes(socketId) || game.clientManager.clients.length >= game.maxPlayers) return;
+		if (!game || game.clientManager.clients.includes(client) || game.clientManager.clients.length >= game.maxPlayers) return;
 
 		let valid = token && await validateUser(token, client);
 
