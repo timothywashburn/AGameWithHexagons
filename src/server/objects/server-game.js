@@ -1,6 +1,6 @@
 const GameClientManager = require('../game-client-manager');
 const { Tile } = require('./tile');
-const PacketClientBoardInit = require('../../shared/packets/packet-client-board-init');
+const PacketClientGameSnapshot = require('../../shared/packets/packet-client-game-snapshot');
 const { games } = require('../game-manager');
 const {AnnouncementType} = require('../../shared/enums');
 let { globalClients } = require('../client');
@@ -50,8 +50,12 @@ class ServerGame {
         // this.tiles.push(new Tile(-5, 0)); //This tile should Error
     }
 
-    sendBoard(client) {
-        let packet = new PacketClientBoardInit(this.tiles);
+    sendSnapshot(client) {
+        let snapshot = {
+            tiles: this.tiles
+        }
+
+        let packet = new PacketClientGameSnapshot(snapshot);
         packet.addClient(client);
         packet.send();
     }

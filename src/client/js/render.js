@@ -1,4 +1,4 @@
-import { getGame } from './game';
+import game, { getGame } from './game';
 
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
@@ -65,12 +65,11 @@ canvas.addEventListener('mouseup', event => {
 });
 
 const stationaryClick = event => {
-	let game = getGame();
 	let clickedTile = getTile(event.clientX, event.clientY);
 	if (clickedTile != null && clickedTile.isSelected) {
 		clickedTile.isSelected = false;
 	} else {
-		for (let tile of game.tiles) {
+		for (let tile of getGame().tiles) {
 			tile.isSelected = clickedTile === tile;
 		}
 	}
@@ -108,8 +107,7 @@ canvas.addEventListener('mousemove', event => {
 });
 
 const getTile = (mouseX, mouseY) => {
-	let game = getGame();
-	for (let tile of game.tiles) {
+	for (let tile of getGame().tiles) {
 		if (ctx.isPointInPath(tile.path, mouseX, mouseY)) {
 			return tile;
 		}

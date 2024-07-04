@@ -1,24 +1,13 @@
-import './pages/play';
-import './controllers/connection';
-import './misc/ui'
-import '../../shared/packets/packet';
 import { prepareFrame } from './render';
 import Tile from './objects/tile'
 
 let game;
 
-export function startGame() {
-	game = new Game(5);
-	game.startRender();
-	console.log('Starting game render');
-}
+export const getGame = () => game;
 
-export function getGame() {
-	return game;
-}
-
-export default class Game {
+export class Game {
 	constructor() {
+		game = this;
 		this.startTime = Date.now();
 
 		this.setupDebug();
@@ -29,6 +18,9 @@ export default class Game {
 		}
 
 		this.tiles = []
+
+		console.log('Starting game render');
+		this.startRender();
 	}
 
 	setupDebug() {
@@ -46,11 +38,17 @@ export default class Game {
 		console.log("debugging enabled");
 	}
 
-	loadBoard(tileMap) {
-		this.tiles = tileMap.map(tile => new Tile(tile.x, tile.y));
+	loadBoard(tiles) {
+		this.tiles = tiles.map(tile => new Tile(tile.x, tile.y));
 	}
 
 	startRender() {
+		const lobbyDiv = document.getElementById('gameLobby');
+		const gameDiv = document.getElementById('game');
+
+		lobbyDiv.style.display = 'none';
+		gameDiv.style.display = 'block';
+
 		this.tick()
 	}
 

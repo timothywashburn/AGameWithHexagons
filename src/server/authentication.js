@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 
 const { RegistrationError } = require('../shared/enums.js');
 const config = require('./config.json');
+const { UserProfile } = require('./client');
 
 const saltRounds = 10;
 
@@ -155,13 +156,10 @@ async function validate(token) {
 }
 
 async function validateUser(token, client) {
-    const jwt = require('jsonwebtoken');
-    const { UserProfile } = require('./client');
-
     try {
         const decoded = jwt.verify(token, config.secret);
 
-        let loggedOut = await new Promise((resolve, reject) => {
+        let loggedIn = await new Promise((resolve, reject) => {
             connection.query('SELECT last_logout FROM accounts WHERE id = ?', [decoded.userId], (err, result) => {
                 if(err) reject(err);
                 if(result.length === 0) reject('User not found');
@@ -171,7 +169,7 @@ async function validateUser(token, client) {
             });
         });
 
-        if(!loggedOut) return false;
+        if(!loggedIn) return false;
         if(!client) return true;
 
         client.authenticated = true;
@@ -185,8 +183,6 @@ async function validateUser(token, client) {
             return false;
         }
     }
-
-    return true;
 }
 
 async function getUserID(username) {

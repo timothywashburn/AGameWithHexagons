@@ -2,7 +2,7 @@ const path = require('path');
 
 module.exports = {
 	entry: {
-		game: './src/client/js/game.js',
+		play: './src/client/js/pages/play.js',
 		registration: './src/client/js/pages/registration.js',
 		login: './src/client/js/pages/login.js',
 	},

@@ -107,13 +107,13 @@ const { Game } = require('./objects/server-game');
 const server = http.createServer(app);
 
 let game = new Game(server, 5);
+let game2 = new Game(server, 5);
 
-const io = new Server(server);
+const serverSocket = new Server(server);
 
-io.on('connection', (socket) => {
+serverSocket.on('connection', (socket) => {
 	globalClients.push(new Client(game, socket));
-
-	console.log('a user connected');
+	console.log("client created")
 });
 
 server.listen(config.port, () => {
@@ -122,7 +122,7 @@ server.listen(config.port, () => {
 });
 
 Object.assign(module.exports, {
-	io
+	io: serverSocket
 });
 
 authentication.init();

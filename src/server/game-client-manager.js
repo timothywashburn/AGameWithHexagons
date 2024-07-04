@@ -17,7 +17,7 @@ class GameClientManager {
 		this.updatePlayerList();
 		this.sendAlert(client, AnnouncementType.GAME_JOIN);
 
-		this.game.sendBoard(client);
+		this.game.sendSnapshot(client);
 	}
 
 	updatePlayerList() {

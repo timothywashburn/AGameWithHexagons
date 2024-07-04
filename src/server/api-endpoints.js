@@ -8,12 +8,11 @@ const {generateToken, validateUser} = require("./authentication");
 const PacketClientGameInit = require("../shared/packets/packet-client-game-init");
 const {AnnouncementType} = require("../shared/enums");
 const config = require("./config.json");
+const server = require('./server');
 
 module.exports = {
 	async gamedata(req, res) {
-
 		const token = req.headers.authorization.split(' ')[1];
-
 		let valid = token && await validateUser(token, null);
 
 		console.log('game data requested');
@@ -45,14 +44,24 @@ module.exports = {
 
 	async join(req, res) {
 		const gameID = req.query.game;
-		const socketId = req.query.socketId;
+		const socketId = req.query.socketID;
 		const token = req.headers.authorization.split(' ')[1];
 
 		let client = globalClients.find((client) => client.socket.id === socketId);
-		if (!client) return;
+		if (!client) {
+			// TODO: Implement
+			return;
+		}
 
 		let game = getGame(gameID);
-		if (!game || game.clientManager.clients.includes(client) || game.clientManager.clients.length >= game.maxPlayers) return;
+		if (!game) {
+			// TODO: Implement
+			return;
+		} else if (game.clientManager.clients.includes(client)) {
+
+		} else if (game.clientManager.clients.length >= game.maxPlayers) {
+
+		}
 
 		let valid = token && await validateUser(token, client);
 
@@ -64,13 +73,11 @@ module.exports = {
 			socketId,
 		});
 
-		game.clientManager.addClientToGame(client);
-
-		const server = require('./server');
-		const PacketClientGameInit = require('../shared/packets/packet-client-game-init');
 		let packet = new PacketClientGameInit();
 		packet.addClient(client);
-		packet.send(server);
+		await packet.send(server);
+
+		game.clientManager.addClientToGame(client);
 	},
 
 	register(req, res) {

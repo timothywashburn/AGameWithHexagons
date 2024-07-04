@@ -1,3 +1,8 @@
+import '../game';
+import '../controllers/connection';
+import '../misc/ui'
+import '../../../shared/packets/packet';
+
 export let devConfig;
 
 function updateGames() {
@@ -17,7 +22,6 @@ function updateGames() {
 			lobbyContainer.innerHTML = data.html;
 
 			const gameCards = document.querySelectorAll('.gameLobby');
-			console.log("Authenticated:", data.authenticated);
 
 			if (!data.authenticated) {
 				let modal = new bootstrap.Modal(document.getElementById('promptModal'))
@@ -32,19 +36,19 @@ function updateGames() {
 						const gameID = card.id;
 						console.log('Clicked game ID:', gameID);
 
-						joinGame(gameID, window.socketID);
+						joinGame(gameID, window.gameData.socketID);
 					});
 				});
-
-				if (data.dev) {
-					devConfig = data.dev;
-					if (devConfig.autoJoin) {
-						setTimeout(() => {
-							joinGame(0, window.socketID);
-						}, 200);
-					}
-				}
 			});
+
+			if (data.dev) {
+				devConfig = data.dev;
+				if (devConfig.autoJoin) {
+					setTimeout(() => {
+						joinGame(0, window.gameData.socketID);
+					}, 200);
+				}
+			}
 		});
 }
 
@@ -59,31 +63,17 @@ function joinGame(game, socket) {
 	};
 
 	let url = '/api/join';
-	let params = { game: game, socketId: socket };
+	let params = { game: game, socketID: socket };
 	url += '?' + new URLSearchParams(params).toString();
 
 	fetch(url, requestOptions)
 		.then((response) => response.json())
 		.then((data) => {
-			window.authenticated = data.authenticated;
-			showCanvas();
-
-			setTimeout(function(){
-				if (devConfig.hideChat) document.getElementById('chatBox').style.display = "none"
-				if (devConfig.hidePlayerList) document.getElementById('playerList').style.display = "none"
-			}, 5)
+			// TODO: Finish + figure out how to use data
 		});
 }
 
 updateGames();
-
-export function showCanvas() {
-	const lobbyDiv = document.getElementById('gameLobby');
-	const gameDiv = document.getElementById('game');
-
-	lobbyDiv.style.display = 'none';
-	gameDiv.style.display = 'block';
-}
 
 document.getElementById('guestBtn').addEventListener('click', function() {
 	let modal = document.getElementById('promptModal');
