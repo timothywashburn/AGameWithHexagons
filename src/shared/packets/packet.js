@@ -33,6 +33,22 @@ class Packet {
 	}
 }
 
+function getPacket(id) {
+	for (let packetName in ClientPacket) {
+		if (ClientPacket[packetName].id === id) {
+			return packetName;
+		}
+	}
+
+	for (let packetName in ServerPacket) {
+		if (ServerPacket[packetName].id === id) {
+			return packetName;
+		}
+	}
+
+	return null;
+}
+
 const PacketType = Object.freeze({
 	SERVER_BOUND: 'SERVER_BOUND',
 	CLIENT_BOUND: 'CLIENT_BOUND',
@@ -52,6 +68,7 @@ const ServerPacket = Object.freeze({
 
 module.exports = {
 	Packet,
+	getPacket,
 	PacketType,
 	ClientPacket,
 	ServerPacket
