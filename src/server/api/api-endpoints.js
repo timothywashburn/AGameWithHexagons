@@ -1,14 +1,14 @@
 const ejs = require('ejs');
 const fs = require('fs');
 
-const { isDev } = require('./utils');
-const { Client, globalClients } = require('./client');
-const { games, getGame } = require('./game-manager');
-const {generateToken, validateUser} = require("./authentication");
-const PacketClientGameInit = require("../shared/packets/packet-client-game-init");
-const {AnnouncementType} = require("../shared/enums");
-const config = require("./config.json");
-const server = require('./server');
+const { isDev } = require('../misc/utils');
+const { Client, globalClients } = require('../objects/client');
+const { games, getGame } = require('../controllers/game-manager');
+const {generateToken, validateUser} = require("../authentication");
+const PacketClientGameInit = require("../../shared/packets/packet-client-game-init");
+const {AnnouncementType} = require("../../shared/enums");
+const config = require("../../../config.json");
+const server = require('../server');
 
 module.exports = {
 	async gamedata(req, res) {
@@ -31,7 +31,7 @@ module.exports = {
 
 		if (isDev) responseData.dev = config.dev;
 
-		fs.readFile(`${__dirname}/../client/views/partials/game-info.ejs`, 'utf8', (err, file) => {
+		fs.readFile(`${__dirname}/../../client/views/partials/game-info.ejs`, 'utf8', (err, file) => {
 			if (err) {
 				console.error('Error reading file:', err);
 				return;
@@ -92,7 +92,7 @@ module.exports = {
 			return;
 		}
 
-		const { createAccount, generateToken } = require('./authentication');
+		const { createAccount, generateToken } = require('../authentication');
 
 		createAccount(username, password)
 			.then(async result => {
@@ -123,7 +123,7 @@ module.exports = {
 			return;
 		}
 
-		const { attemptLogin, generateToken } = require('./authentication');
+		const { attemptLogin, generateToken } = require('../authentication');
 
 		attemptLogin(username, password)
 			.then(async result => {
@@ -145,7 +145,7 @@ module.exports = {
 		console.log('Logging out');
 
 		const token= req.headers.authorization.split(' ')[1];
-		const { validate, logout } = require('./authentication');
+		const { validate, logout } = require('../authentication');
 		let valid = token && validate(token);
 
 		if(valid) logout(token)

@@ -1,9 +1,9 @@
-const GameClientManager = require('../game-client-manager');
+const GameClientManager = require('../controllers/game-client-manager');
 const { Tile } = require('./tile');
 const PacketClientGameSnapshot = require('../../shared/packets/packet-client-game-snapshot');
-const { games } = require('../game-manager');
+const { games } = require('../controllers/game-manager');
 const {AnnouncementType} = require('../../shared/enums');
-let { globalClients } = require('../client');
+let { globalClients } = require('./client');
 
 class ServerGame {
     constructor(server, boardSize) {

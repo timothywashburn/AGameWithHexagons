@@ -3,8 +3,8 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
 const { RegistrationError } = require('../shared/enums.js');
-const config = require('./config.json');
-const { UserProfile } = require('./client');
+const config = require('../../config.json');
+const { UserProfile } = require('./objects/client');
 
 const saltRounds = 10;
 
@@ -20,10 +20,10 @@ function init() {
 
     connection.connect((err) => {
         if (err) {
-            console.error('Error connecting to MySQL:', err);
+            console.error('error connecting to MySQL:', err);
             return;
         }
-        console.log('Connected to MySQL database');
+        console.log('connected to MySQL database');
     });
 
     connection.query(`CREATE TABLE IF NOT EXISTS accounts (
@@ -34,10 +34,9 @@ function init() {
         
     )`, (err) => {
         if (err) {
-            console.error('Error creating accounts table:', err);
+            console.error('error creating accounts table:', err);
             return;
         }
-        console.log('Created accounts table');
     });
 }
 

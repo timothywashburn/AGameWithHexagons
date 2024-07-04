@@ -2,8 +2,8 @@ import { PacketType, ClientPacket } from '../../../shared/packets/packet';
 import { AnnouncementType } from '../../../shared/enums';
 import { io } from 'socket.io-client';
 import { devConfig } from '../pages/play';
-import { getGame } from '../game'
-import { Game } from '../game';
+import { getGame } from '../pages/game'
+import { Game } from '../pages/game';
 
 export const clientSocket = io.connect();
 

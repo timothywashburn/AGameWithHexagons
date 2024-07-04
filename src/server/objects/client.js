@@ -1,5 +1,5 @@
-const { PacketType } = require('../shared/packets/packet');
-const PacketClientChat = require('../shared/packets/packet-client-chat');
+const { PacketType } = require('../../shared/packets/packet');
+const PacketClientChat = require('../../shared/packets/packet-client-chat');
 const { generateUsername } = require("unique-username-generator");
 const { ServerPacket } = require('../shared/packets/packet');
 
