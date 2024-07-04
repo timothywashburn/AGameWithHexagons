@@ -40,7 +40,7 @@ socket.on('packet', function (packet) {
 	}
 
 	if(packet.id === 0x04) {
-		window.clients = packet.lobbyClients;
+		window.clients = packet.gameClients;
 
 		const playerList = document.getElementById('playerList');
 		playerList.innerHTML = ''; // Clear the list

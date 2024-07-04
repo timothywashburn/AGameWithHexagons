@@ -1,20 +1,20 @@
 export let devConfig;
 
-function updateLobbies() {
-	fetch('/api/lobbydata')
+function updateGames() {
+	fetch('/api/gamedata')
 		.then((response) => response.json())
 		.then((data) => {
 			let lobbyContainer = document.getElementById('lobbyContainer');
 			lobbyContainer.innerHTML = data.html;
 
-			const lobbyCards = document.querySelectorAll('.lobby');
+			const gameCards = document.querySelectorAll('.game');
 
-			lobbyCards.forEach((card) => {
+			gameCards.forEach((card) => {
 				card.addEventListener('click', () => {
-					const lobbyID = card.id;
-					console.log('Clicked lobby ID:', lobbyID);
+					const gameID = card.id;
+					console.log('Clicked game ID:', gameID);
 
-					joinGame(lobbyID, window.socketID);
+					joinGame(gameID, window.socketID);
 				});
 			});
 
@@ -29,7 +29,7 @@ function updateLobbies() {
 		});
 }
 
-function joinGame(lobby, socket) {
+function joinGame(game, socket) {
 	let headers = new Headers();
 	headers.append("Authorization", "Bearer " + localStorage.token);
 
@@ -40,7 +40,7 @@ function joinGame(lobby, socket) {
 	};
 
 	let url = '/api/join';
-	let params = { lobby: lobby, socketId: socket };
+	let params = { game: game, socketId: socket };
 	url += '?' + new URLSearchParams(params).toString();
 
 	fetch(url, requestOptions)
@@ -56,7 +56,7 @@ function joinGame(lobby, socket) {
 		});
 }
 
-updateLobbies();
+updateGames();
 
 export function showCanvas() {
 	const lobbyDiv = document.getElementById('lobby');
