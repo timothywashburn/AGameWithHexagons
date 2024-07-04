@@ -65,9 +65,9 @@ export function showCanvas() {
 	lobbyDiv.style.display = 'none';
 	gameDiv.style.display = 'block';
 
-	if(!window.authenticated) {
+	if (!window.authenticated) {
 		let modal = new bootstrap.Modal(document.getElementById('promptModal'))
-		if(!window.devMode) modal.show();
+		modal.show();
 	}
 }
 
