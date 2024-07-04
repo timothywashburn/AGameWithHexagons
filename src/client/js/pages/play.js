@@ -57,7 +57,13 @@ export function joinGame(game, socket) {
 	fetch(url, requestOptions)
 		.then((response) => response.json())
 		.then((data) => {
-			// TODO: Finish + figure out how to use data
+			if (!data.success) {
+				if (data.alert) {
+					window.alert(data.message);
+				} else {
+					console.error(data.message);
+				}
+			}
 		});
 }
 

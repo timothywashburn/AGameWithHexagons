@@ -49,35 +49,44 @@ module.exports = {
 
 		let client = globalClients.find((client) => client.socket.id === socketId);
 		if (!client) {
-			// TODO: Implement
+			res.json({
+				success: false,
+				alert: false,
+				message: "Could not find your client"
+			});
 			return;
 		}
+
+		let isAuthenticated = token && await validateUser(token, client);
 
 		let game = getGame(gameID);
 		if (!game) {
-			// TODO: Implement
+			res.json({
+				success: false,
+				alert: false,
+				message: "This is not a valid game"
+			});
 			return;
-		} else if (game.clientManager.clients.includes(client)) {
-
+		} else if (client.profile.id !== -1 && game.clientManager.clients.find(testClient => testClient.profile.id === client.profile.id)) {
+			res.json({
+				success: false,
+				alert: true,
+				message: "You are already in this game"
+			});
+			return;
 		} else if (game.clientManager.clients.length >= game.maxPlayers) {
-
+			res.json({
+				success: false,
+				alert: true,
+				message: "This game is already full"
+			});
+			return;
 		}
 
-		let valid = token && await validateUser(token, client);
-
-		res.json({
-			success: true,
-			message: 'Successfully joined the game',
-			authenticated: valid,
-			gameID: gameID,
-			socketId,
-		});
-
-		let packet = new PacketClientGameInit();
-		packet.addClient(client);
-		await packet.send(server);
-
-		game.clientManager.addClientToGame(client);
+		let initData = {
+			isAuthenticated
+		}
+		await game.clientManager.addClientToGame(client, initData);
 	},
 
 	register(req, res) {

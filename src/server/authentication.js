@@ -175,12 +175,13 @@ async function validateUser(token, client) {
 
     } catch (error) {
         if (error.name === 'JsonWebTokenError') {
-            return false;
+            console.error('Error with token: ' + error);
         } else {
             console.error('Error verifying JWT: ' + error);
-            return false;
         }
+        return false;
     }
+    return true;
 }
 
 async function getUserID(username) {

@@ -6,14 +6,15 @@ const { ServerPacket } = require('../../shared/packets/packet');
 let globalClients = [];
 
 class Client {
-	constructor(game, socket) {
-		this.game = game;
+	game;
+
+	constructor(socket) {
 		this.socket = socket;
 		this.authenticated = false;
 		this.profile = new UserProfile(-1, generateUsername("", 3));
 
 		socket.on('disconnect', () => {
-			game.removePlayer(this);
+			if (this.game) this.game.removePlayer(this);
 			globalClients = globalClients.filter(client => client !== this);
 		});
 
