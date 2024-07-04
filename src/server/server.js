@@ -34,12 +34,12 @@ const validateConfig = () => {
 			const fullKey = prefix ? `${prefix}.${key}` : key;
 			if (typeof example[key] === 'object' && !Array.isArray(example[key])) {
 				if (!actual[key] || typeof actual[key] !== 'object') {
-					console.error(`config.json is missing the key: ${fullKey}`);
+					console.error(`config.json is missing the key: ${fullKey}. please reference config.example.json`);
 					process.exit(1);
 				}
 				checkMissingKeys(example[key], actual[key], fullKey);
 			} else if (!actual.hasOwnProperty(key)) {
-				console.error(`config.json is missing the key: ${fullKey}`);
+				console.error(`config.json is missing the key: ${fullKey}. please reference config.example.json`);
 				process.exit(1);
 			}
 		});
