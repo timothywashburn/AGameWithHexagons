@@ -14,7 +14,9 @@ const SCROLL_SENSITIVITY = 0.1;
 
 let isMouseDown = false;
 let isDragging = false;
-let startX, startY;
+let mouseDownTime;
+let startPreDragX, startPreDragY;
+let currentDragX, currentDragY;
 
 let mouseX;
 let mouseY;
@@ -48,8 +50,9 @@ canvas.addEventListener('mousedown', event => {
 	} else if (event.button === 0) {
 		isMouseDown = true;
 		isDragging = false;
-		startX = event.clientX;
-		startY = event.clientY;
+		mouseDownTime = Date.now();
+		startPreDragX = event.clientX;
+		startPreDragY = event.clientY;
 	}
 });
 
@@ -77,15 +80,26 @@ canvas.addEventListener('mousemove', event => {
 	mouseX = event.clientX;
 	mouseY = event.clientY;
 
-	if (isMouseDown) isDragging = true;
+	if (isMouseDown && !isDragging) {
+		let deltaX = startPreDragX - mouseX;
+		let deltaY = startPreDragY - mouseY;
+		let distance = Math.sqrt(deltaX ** 2 + deltaY ** 2);
+		console.log(`${distance.toFixed(1)} ${Date.now() - mouseDownTime}`);
+
+		if (distance > 7 || Date.now() - mouseDownTime > 125) {
+			isDragging = true;
+			currentDragX = startPreDragX;
+			currentDragY = startPreDragY;
+		}
+	}
 
 	if (isDragging) {
-		let deltaX = event.clientX - startX;
-		let deltaY = event.clientY - startY;
+		let deltaX = event.clientX - currentDragX;
+		let deltaY = event.clientY - currentDragY;
 		cameraX += deltaX / cameraZoom;
 		cameraY += deltaY / cameraZoom;
-		startX = event.clientX;
-		startY = event.clientY;
+		currentDragX = event.clientX;
+		currentDragY = event.clientY;
 	}
 
 	let hoveredTile = getTile(mouseX, mouseY);

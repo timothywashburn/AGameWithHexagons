@@ -35,16 +35,11 @@ class Game {
 	}
 
 	generateTiles() {
-		// for (let row = -this.boardSize + 1; row < this.boardSize; row++) {
-		// 	for (let column = Math.abs(row) - (this.boardSize - 1) * 2; column <= -Math.abs(row) + (this.boardSize - 1) * 2; column += 2) {
-		// 		this.tiles.push(new Tile(column, row));
-		// 	}
-		// }
-		this.tiles.push(new Tile(0, 0));
-		this.tiles.push(new Tile(-4, 0));
-		this.tiles.push(new Tile(-6, 0));
-		this.tiles.push(new Tile(-5, -1));
-		this.tiles.push(new Tile(-5, 0));
+		for (let row = -this.boardSize + 1; row < this.boardSize; row++) {
+			for (let column = Math.abs(row) - (this.boardSize - 1) * 2; column <= -Math.abs(row) + (this.boardSize - 1) * 2; column += 2) {
+				this.tiles.push(new Tile(column, row));
+			}
+		}
 	}
 
 	setupDebug() {
