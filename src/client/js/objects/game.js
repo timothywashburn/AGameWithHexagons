@@ -1,5 +1,5 @@
 import { prepareFrame } from '../render';
-import Tile from '../objects/tile'
+import Tile from './tile'
 
 let game;
 

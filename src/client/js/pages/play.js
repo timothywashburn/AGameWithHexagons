@@ -1,4 +1,4 @@
-import './game';
+import '../objects/game';
 import '../controllers/connection';
 import '../misc/ui'
 import '../../../shared/packets/packet';
