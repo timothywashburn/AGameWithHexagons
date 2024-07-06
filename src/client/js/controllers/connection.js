@@ -58,7 +58,7 @@ clientSocket.on('packet', function (packet) {
 
 		let client = window.gameData.playerListInfo.find((client) => client.id === packet.clientID);
 
-		let announcement = Object.values(AnnouncementType).find((announcement) => announcement.id === packet.code);
+		let announcement = Object.values(AnnouncementType).find((announcement) => announcement.id === packet.announcementID);
 
 		message.innerHTML = client.name + " " + announcement.message;
 		message.style.color = announcement.color;

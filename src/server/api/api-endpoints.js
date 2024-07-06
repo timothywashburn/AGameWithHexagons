@@ -90,6 +90,8 @@ module.exports = {
 	},
 
 	register(req, res) {
+		//TODO: Implement name restrictions
+
 		const username = req.query.username;
 		const password = req.query.password;
 
@@ -121,6 +123,8 @@ module.exports = {
 	},
 
 	login(req, res) {
+		//TODO: Implement rate limits and
+
 		const username = req.query.username;
 		const password = req.query.password;
 
