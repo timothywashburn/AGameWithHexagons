@@ -6,6 +6,7 @@ const server = require('../server');
 
 class GameClientManager {
 	clients = [];
+	teamColors = []
 
 	constructor(game) {
 		this.game = game;
@@ -13,11 +14,17 @@ class GameClientManager {
 		this.maxPlayers = 8;
 	}
 
+	getClientInitData() {
+		return {
+			tiles: this.game.tiles
+		}
+	}
+
 	async addClientToGame(client, initData) {
 		this.clients.push(client);
 		client.game = this.game;
 
-		let packet = new PacketClientGameInit(initData);
+		let packet = new PacketClientGameInit({...initData, ...this.getClientInitData()});
 		packet.addClient(client);
 		await packet.send(server);
 
@@ -40,7 +47,7 @@ class GameClientManager {
 	}
 
 	sendAlert(client, announcementType) {
-		let packet = new PacketClientAnnouncement(client.profile.id, announcementType.id);
+		let packet = new PacketClientAnnouncement(client.profile.userID, announcementType.id);
 
 		this.clients.forEach((client) => {
 			packet.addClient(client);

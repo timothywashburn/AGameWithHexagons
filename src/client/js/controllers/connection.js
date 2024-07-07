@@ -19,12 +19,12 @@ clientSocket.on('packet', function (packet) {
 
 	if(packet.id === ClientPacket.GAME_INIT.id) {
 		window.gameData.initData = packet.initData;
-		new Game();
+		new Game(packet.initData);
 
 		if (devConfig.hideChat) document.getElementById('chatBox').style.display = "none"
 		if (devConfig.hidePlayerList) document.getElementById('playerList').style.display = "none"
 	} else if(packet.id === ClientPacket.GAME_SNAPSHOT.id) {
-		getGame().loadBoard(packet.snapshot.tiles);
+		getGame().updateGame(packet.snapshot);
 
 	} else if(packet.id === ClientPacket.PLAYER_LIST_INFO.id) {
 		window.gameData.playerListInfo = packet.playerListInfo;

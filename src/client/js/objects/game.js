@@ -6,18 +6,13 @@ let game;
 export const getGame = () => game;
 
 export class Game {
-	constructor() {
+	constructor(initData) {
 		game = this;
 		this.startTime = Date.now();
 
 		this.setupDebug();
 
-		this.resources = {
-			"energy": 0,
-			"goo": 0,
-		}
-
-		this.tiles = []
+		this.loadGame(initData);
 
 		console.log('starting game render');
 		this.startRender();
@@ -32,14 +27,31 @@ export class Game {
 			let frameRate = (this.frame / secondsElapsed).toFixed(1);
 			this.renderTimes.splice(0, this.renderTimes.length - frameRate * 10);
 			let MSPT = (this.renderTimes.reduce((a, b) => a + b) / this.renderTimes.length).toFixed(2);
-			console.log(`${MSPT} ms per tick (${frameRate} fps)`);
+			let maxLoad = 1000 / frameRate;
+			let currentLoad = MSPT / maxLoad * 100;
+			console.log(`${MSPT} ms (${currentLoad.toFixed(1)}% load) per tick (${frameRate} fps)`);
 		}, 5000);
 
 		console.log("debugging enabled");
 	}
 
-	loadBoard(tiles) {
-		this.tiles = tiles.map(tile => new Tile(tile.x, tile.y));
+	loadGame(initData) {
+		// console.log("initData");
+		// console.log(initData);
+
+		this.resources = {
+			"energy": 0,
+			"goo": 0,
+		}
+
+		this.tiles = initData.tiles.map(tileData => new Tile(tileData));
+	}
+
+	updateGame(snapshot) {
+		// console.log("snapshot");
+		// console.log(snapshot);
+
+		this.tiles.forEach(tile => tile.updateTile(snapshot.tiles.find(testTile => testTile.x === tile.x && testTile.y === tile.y)));
 	}
 
 	startRender() {
@@ -59,7 +71,7 @@ export class Game {
 			prepareFrame();
 
 			// Render tiles
-			this.tiles.forEach(tile => tile.render());
+			this.tiles.forEach(tile => tile.renderTile());
 
 			const finalRenderTime = window.performance.now() - renderStartTime;
 			this.renderTimes.push(finalRenderTime);

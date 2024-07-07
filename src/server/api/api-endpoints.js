@@ -67,7 +67,7 @@ module.exports = {
 				message: "This is not a valid game"
 			});
 			return;
-		} else if (client.profile.id !== -1 && game.clientManager.clients.find(testClient => testClient.profile.id === client.profile.id)) {
+		} else if (client.profile.userID !== -1 && game.clientManager.clients.find(testClient => testClient.profile.id === client.profile.id)) {
 			res.json({
 				success: false,
 				alert: true,

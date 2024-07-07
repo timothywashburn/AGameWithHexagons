@@ -30,7 +30,11 @@ export default class Tile {
 		this.isHovered = false;
 	}
 
-	render() {
+	updateTile() {
+		//
+	}
+
+	renderTile() {
 		this.literalX = canvas.width / 2 + this.x * apothem;
 		this.literalY = canvas.height / 2 - this.y * radius * (1 + Math.sin(Math.PI / 6));
 

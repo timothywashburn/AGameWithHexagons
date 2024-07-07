@@ -2,13 +2,18 @@ const { PacketType } = require('../../shared/packets/packet');
 const PacketClientChat = require('../../shared/packets/packet-client-chat');
 const { generateUsername } = require("unique-username-generator");
 const { ServerPacket } = require('../../shared/packets/packet');
+const { TeamColor } = require('../../shared/enums');
 
 let globalClients = [];
+let nextColor = 0;
 
 class Client {
 	game;
 
 	constructor(socket) {
+		this.color = TeamColor[nextColor++ % TeamColor.length];
+		console.log(TeamColor[0])
+
 		this.socket = socket;
 		this.authenticated = false;
 		this.profile = new UserProfile(-1, generateUsername("", 3));
@@ -24,7 +29,7 @@ class Client {
 			if(packet.id === ServerPacket.CHAT.id) {
 				console.log(`Receiving chat message from client ${this.id}: ${packet.message}`);
 				let message = packet.message;
-				let response = new PacketClientChat(this.profile.id, message);
+				let response = new PacketClientChat(this.profile.userID, message);
 
 				this.game.clientManager.clients.forEach((client) => {
 					response.addClient(client);
@@ -34,12 +39,17 @@ class Client {
 			}
 		});
 	}
+
+	getID() {
+		// TODO: Figure out if ids should be done this way or not
+		return this.profile.userID;
+	}
 }
 
 class UserProfile {
-	constructor(id, name) {
-		this.id = id;
-		this.name = name;
+	constructor(userID, username) {
+		this.userID = userID;
+		this.username = username;
 	}
 }
 

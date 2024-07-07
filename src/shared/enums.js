@@ -16,25 +16,28 @@ exports.RegistrationError = Object.freeze({
 	PASSWORD_INVALID: { id: 0x03, message: 'Invalid password' },
 });
 
-class Color {
-	constructor(red, green, blue) {
-		this.red = red;
-		this.green = green;
-		this.blue = blue;
-	}
-}
-
-exports.TerrainType = Object.freeze({
-	PLAIN: {
-		color: new Color(134, 44, 54)
-	},
-	WATER: 1,
-	MOUNTAIN: 2
+exports.TeamColor = Object.freeze({
+	RED: "rgb(255, 0, 0)",
+	ORANGE: "rgb(255, 127, 0)",
+	YELLOW: "rgb(255, 255, 0)",
+	GREEN: "rgb(0, 255, 0)",
+	CYAN: "rgb(0, 255, 255)",
+	BLUE: "rgb(0, 0, 255)",
+	PURPLE: "rgb(127, 0, 255)",
+	MAGENTA: "rgb(255, 0, 255)"
 });
 
-exports.ResourceType = Object.freeze({
-	NONE: 0,
-	DEPLETABLE: 1,
-	DEPLETABLE_LARGE: 2,
-	RENEWABLE: 3
-});
+// exports.TerrainType = Object.freeze({
+// 	PLAIN: {
+// 		color: new Color(134, 44, 54)
+// 	},
+// 	WATER: 1,
+// 	MOUNTAIN: 2
+// });
+//
+// exports.ResourceType = Object.freeze({
+// 	NONE: 0,
+// 	DEPLETABLE: 1,
+// 	DEPLETABLE_LARGE: 2,
+// 	RENEWABLE: 3
+// });
