@@ -12,15 +12,16 @@ hexagonSelected.src = 'images/hexagon-selected.svg';
 hexagonHover.src = 'images/hexagon-hover.svg';
 
 export default class Tile {
-	constructor(x, y) {
-		this.x = x;
-		this.y = y;
+	constructor(tileData) {
+		this.id = tileData.id;
+		this.x = tileData.x;
+		this.y = tileData.y;
 
 		if((this.x + this.y) % 2 !== 0) {
 			throw new Error(`Tile at ${this.x}, ${this.y} is not valid`);
 		}
 
-		this.color = getRBGAround(134, 44, 54, 40);
+		this.color = tileData.color;
 		// this.occupant = occupant;
 		// this.terrainType = terrainType;
 		// this.resourceType = resourceType;
@@ -65,10 +66,4 @@ export default class Tile {
 		if (this.isHovered) return hexagonHover;
 		return hexagon;
 	}
-}
-
-function getRBGAround(red, green, blue, random) {
-	let randomMultiplier = Math.random();
-	let getRandom = value => value + randomMultiplier * random - random / 2;
-	return `rgb(${getRandom(red)}, ${getRandom(green)}, ${getRandom(blue)}`;
 }
