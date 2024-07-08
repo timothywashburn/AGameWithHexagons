@@ -19,7 +19,6 @@ function updateGames() {
 		.then((response) => response.json())
 		.then((data) => {
 			devConfig = data.dev;
-			console.log("devConfig:", devConfig);
 
 			let lobbyContainer = document.getElementById('lobbyContainer');
 			lobbyContainer.innerHTML = data.html;

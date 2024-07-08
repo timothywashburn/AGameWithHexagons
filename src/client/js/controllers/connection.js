@@ -33,7 +33,7 @@ clientSocket.on('packet', function (packet) {
 		window.gameData.playerListInfo.forEach((client) => {
 			const listItem = document.createElement('li');
 
-			const name = document.createTextNode(client.name);
+			const name = document.createTextNode(client.username);
 			listItem.appendChild(name);
 
 			playerList.appendChild(listItem);
@@ -43,9 +43,8 @@ clientSocket.on('packet', function (packet) {
 		const chatMessages = document.getElementById('chatMessages');
 		const message = document.createElement('div');
 
-		let client = window.gameData.playerListInfo.find((client) => client.id === packet.clientID);
-
-		message.innerHTML = client.name + ': ' + packet.message;
+		let client = window.gameData.playerListInfo.find((client) => client.userID === packet.clientID);
+		message.innerHTML = client.username + ': ' + packet.message;
 
 		chatMessages.appendChild(message);
 		chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -54,11 +53,11 @@ clientSocket.on('packet', function (packet) {
 		const chatMessages = document.getElementById('chatMessages');
 		const message = document.createElement('div');
 
-		let client = window.gameData.playerListInfo.find((client) => client.id === packet.clientID);
+		let client = window.gameData.playerListInfo.find((client) => client.userID === packet.clientID);
 
 		let announcement = Object.values(AnnouncementType).find((announcement) => announcement.id === packet.announcementID);
 
-		message.innerHTML = client.name + " " + announcement.message;
+		message.innerHTML = client.username + " " + announcement.message;
 		message.style.color = announcement.color;
 
 		chatMessages.appendChild(message);
