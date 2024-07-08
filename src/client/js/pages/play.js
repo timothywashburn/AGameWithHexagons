@@ -19,6 +19,7 @@ function updateGames() {
 		.then((response) => response.json())
 		.then((data) => {
 			devConfig = data.dev;
+			console.log("devConfig:", devConfig);
 
 			let lobbyContainer = document.getElementById('lobbyContainer');
 			lobbyContainer.innerHTML = data.html;
@@ -37,6 +38,8 @@ function updateGames() {
 				let modal = new bootstrap.Modal(document.getElementById('promptModal'))
 				modal.show();
 			}
+
+			if (devConfig.autoJoin && !document.getElementById('promptModal').style.display) joinGame(0, window.gameData.socketID);
 		});
 }
 

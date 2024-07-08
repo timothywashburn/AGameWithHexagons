@@ -9,8 +9,6 @@ export const clientSocket = io.connect();
 
 clientSocket.on('connect', () => {
 	window.gameData.socketID = clientSocket.id;
-
-	if (devConfig.autoJoin && !document.getElementById('promptModal').style.display) joinGame(0, window.gameData.socketID);
 });
 
 clientSocket.on('packet', function (packet) {
