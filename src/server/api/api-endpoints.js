@@ -4,11 +4,14 @@ const fs = require('fs');
 const { isDev } = require('../misc/utils');
 const { Client, globalClients } = require('../objects/client');
 const { games, getGame } = require('../controllers/game-manager');
-const {generateToken, validateUser, validate, getAccountInfo, logout, changeUsername, changeEmail, changePassword} = require("../authentication");
+const { generateToken, validateUser, getAccountInfo, logout, changeUsername, changeEmail, changePassword,
+	requestPasswordReset
+} = require("../authentication");
 const PacketClientGameInit = require("../../shared/packets/packet-client-game-init");
-const {AnnouncementType, NameChangeError, EmailChangeError, PasswordChangeError} = require("../../shared/enums");
+const { AnnouncementType, NameChangeError, EmailChangeError, PasswordChangeError} = require("../../shared/enums");
 const config = require("../../../config.json");
 const server = require('../server');
+const { sendResetEmail } = require("../controllers/mail");
 
 module.exports = {
 	async gamedata(req, res) {
@@ -225,7 +228,6 @@ module.exports = {
 	},
 
 	async changeemail(req, res) {
-
 		const token= req.headers.authorization.split(' ')[1];
 		let email = req.query.email;
 
@@ -272,5 +274,36 @@ module.exports = {
 		else res.json({
 			result: PasswordChangeError.ERROR.id
 		});
-	}
+	},
+
+	async resetpassword(req, res) {
+		const token = req.query.token;
+		const password = req.query.password;
+
+		let valid = token && password && await validateUser(token);
+		if(valid) changePassword(token, null, password, false)
+			.then(async result => {
+				res.json({
+					result: result
+				});
+			})
+			.catch(error => {
+				console.error('Error changing email:', error);
+				res.json({
+					result: PasswordChangeError.ERROR.id
+				});
+			});
+		else res.json({
+			result: PasswordChangeError.ERROR.id
+		});
+	},
+
+	async forgotpassword(req, res) {
+		const email = req.query.email;
+		await requestPasswordReset(email);
+
+		res.json({
+			success: true
+		});
+	},
 };

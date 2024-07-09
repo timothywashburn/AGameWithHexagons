@@ -2,10 +2,12 @@ const mysql = require('mysql');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const validator = require("email-validator");
+const { mailjet, senderEmail } = require('./controllers/mail');
 
 const { RegistrationError, NameChangeError, EmailChangeError, PasswordChangeError } = require('../shared/enums.js');
 const config = require('../../config.json');
 const { UserProfile } = require('./objects/client');
+const { sendResetEmail } = require('./controllers/mail');
 
 
 const saltRounds = 10;
@@ -128,7 +130,7 @@ async function accountExists(username) {
     }
 }
 
-async function generateToken(username) {
+async function generateToken(username, expires = '1w') {
     let id = await new Promise((resolve, reject) => {
         connection.query('SELECT id FROM accounts WHERE username = ?', [username], (err, result) => {
             if (err) reject(err);
@@ -143,8 +145,7 @@ async function generateToken(username) {
     const secret = config.secret;
 
     const options = {
-        // expiresIn: '1w',
-        expiresIn: '999y',
+        expiresIn: expires,
     };
 
     return jwt.sign(payload, secret, options);
@@ -304,20 +305,22 @@ async function changeEmail(token, newEmail) {
     }
 }
 
-async function changePassword(token, oldPassword, newPassword) {
+async function changePassword(token, oldPassword, newPassword, requireOld = true) {
     //TODO: Add password restrictions
 
     try {
         const decoded = jwt.verify(token, config.secret);
 
-        let passwordValid = await new Promise((resolve, reject) => {
-            connection.query('SELECT password FROM accounts WHERE id = ?', [decoded.userId], (err, result) => {
-                if(err) reject(err);
-                resolve(verifyPassword(oldPassword, result[0].password));
+        if (requireOld) {
+            let passwordValid = await new Promise((resolve, reject) => {
+                connection.query('SELECT password FROM accounts WHERE id = ?', [decoded.userId], (err, result) => {
+                    if(err) reject(err);
+                    resolve(verifyPassword(oldPassword, result[0].password));
+                });
             });
-        });
 
-        if (!passwordValid) return PasswordChangeError.PASSWORD_INCORRECT.id;
+            if (!passwordValid) return PasswordChangeError.PASSWORD_INCORRECT.id;
+        }
 
         let hash = await hashPassword(newPassword);
         let promise = new Promise((resolve, reject) => {
@@ -336,11 +339,71 @@ async function changePassword(token, oldPassword, newPassword) {
 
     } catch (error) {
         if (error.name === 'JsonWebTokenError') {
-            return false;
+            return PasswordChangeError.ERROR.id;
         } else {
+            console.error(error);
             console.error('Error verifying JWT');
-            return false;
+            return PasswordChangeError.ERROR.id;
         }
+    }
+}
+
+async function requestPasswordReset(email) {
+
+    try {
+        let username = await new Promise((resolve, reject) => {
+            connection.query('SELECT username FROM accounts WHERE email = ?', [email], (err, result) => {
+                if (err) reject(err);
+                if (result.length === 0) {
+                    resolve(false);
+                    return;
+                }
+                resolve(result[0].username);
+            });
+        });
+
+        if (!username) {
+            return;
+        }
+
+        let token = await generateToken(username, '15m');
+        let link = config.host + `/reset?token=${token}`;
+
+        const request = mailjet
+            .post("send", {'version': 'v3.1'})
+            .request({
+                "Messages": [
+                    {
+                        "From": {
+                            "Email": senderEmail,
+                            "Name": "Hexagon Game"
+                        },
+                        "To": [
+                            {
+                                "Email": email,
+                                "Name": username
+                            }
+                        ],
+                        "Subject": "Password Reset",
+                        "TextPart": "Password Reset",
+                        "HTMLPart": `<h3>Hello ${username},</h3><br/>Please click the button below to reset your password. If you did not request a password reset, 
+                       <br/>please ignore this email. This link will expire in 15 minutes.<br/><br/>    
+                       <a href="${link}" style="background-color: #4CAF50; border: none; color: white; padding: 15px 32px; text-align: center;
+                       text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer;">Reset Password</a>`,
+                        "CustomID": "PasswordReset"
+                    }
+                ]
+            })
+        request
+            .then((result) => {
+                console.log(result.body)
+            })
+            .catch((err) => {
+                console.log(err)
+            })
+
+    } catch (error) {
+        console.error('Error in requestPasswordReset:', error);
     }
 }
 
@@ -379,6 +442,7 @@ module.exports = {
     getAccountInfo,
     changeUsername,
     changeEmail,
-    changePassword
+    changePassword,
+    requestPasswordReset
 };
 

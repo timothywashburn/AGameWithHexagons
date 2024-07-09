@@ -6,7 +6,7 @@
             name="viewport"
             content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Login</title>
+    <title>Reset Password</title>
 
     <link
             href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
@@ -21,31 +21,23 @@
 
 
 
-    <div class="login-wrapper">
-        <div class="login-container">
-            <h2>Login</h2>
-            <form id="loginForm">
+    <div class="reset-wrapper">
+        <div class="reset-container">
+            <h2>Reset Password</h2>
+            <form id="resetForm">
                 <div class="input-group">
-                    <label for="username">Username</label>
-                    <input type="text" id="username" name="username" required>
-                </div>
-                <div class="input-group">
-                    <label for="password">Password</label>
+                    <label for="username">New Password</label>
                     <input type="password" id="password" name="password" required>
                 </div>
+                <div class="input-group">
+                    <label for="password">Confirm Password</label>
+                    <input type="password" id="confirm-password" name="confirm-password" required>
+                </div>
 
-                <p id="loginError"></p>
+                <p id="resetError"></p>
 
-                <button type="submit" class="login-btn" id="loginBtn">Login</button>
+                <button type="submit" class="reset-btn danger" id="resetBtn">Reset</button>
             </form>
-
-            <div class="forgot">
-                <p><a href="/forgot">Forgot Password or Username?</a></p>
-            </div>
-
-            <div class="register">
-                <p>Don't have an account? <a href="/register">Register</a></p>
-            </div>
         </div>
     </div>
 
@@ -55,14 +47,14 @@
             margin: 0;
         }
 
-        .login-wrapper {
+        .reset-wrapper {
             display: flex;
             justify-content: center;
             align-items: center;
             height: 60vh;
         }
 
-        .login-container {
+        .reset-container {
             font-family: Arial, sans-serif;
             background-color: white;
             padding: 20px;
@@ -88,7 +80,7 @@
             border: 1px solid #cccccc;
         }
 
-        .login-btn {
+        .reset-btn {
             width: 100%;
             padding: 10px;
             border: none;
@@ -99,26 +91,21 @@
         }
 
         .register {
-            margin-top: 30px;
-            text-align: center;
-        }
-
-        .forgot {
             margin-top: 20px;
             text-align: center;
         }
 
-        .login-btn:active {
+        .reset-btn:active {
             background-color: #1a5ad6;
         }
 
-        #loginError {
+        #resetError {
             height: 20px;
             color: red;
             visibility: hidden;
         }
     </style>
 
-    <script src="login.js"></script>
+    <script src="reset.js"></script>
 </body>
 </html>
