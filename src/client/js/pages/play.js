@@ -37,6 +37,8 @@ function updateGames() {
 				let modal = new bootstrap.Modal(document.getElementById('promptModal'))
 				modal.show();
 			}
+
+			if (devConfig.autoJoin && !document.getElementById('promptModal').style.display) joinGame(0, window.gameData.socketID);
 		});
 }
 
