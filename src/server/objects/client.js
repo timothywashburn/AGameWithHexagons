@@ -16,7 +16,7 @@ class Client {
 
 		this.socket = socket;
 		this.authenticated = false;
-		this.profile = new UserProfile(-1, generateUsername("", 3));
+		this.profile = new UserProfile(-1, generateUsername("", 0, 20));
 
 		socket.on('disconnect', () => {
 			if (this.game) this.game.removePlayer(this);
