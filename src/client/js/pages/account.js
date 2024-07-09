@@ -92,6 +92,29 @@ function setupButtons() {
         }
     });
 
+    let logoutButton = document.getElementById('logoutBtn');
+
+    logoutButton.addEventListener('click', function() {
+        fetch('/api/logout', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.href = '/login';
+                } else {
+                    console.error(data.error);
+                }
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+    });
+
     let modal = document.getElementById('promptModal');
 
     modal.addEventListener('hidden.bs.modal', function () {

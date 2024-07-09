@@ -81,6 +81,14 @@
         <label>Confirm New Password</label>
         <input type="password" class="form-control" id="confirm-new-password">
     </div>
+
+
+    <div class="spacer"></div>
+
+    <div class="logout">
+        <button class="btn btn-outline-secondary" type="button" id="logoutBtn">Log Out</button>
+    </div>
+
 </div>
 
 
@@ -114,10 +122,19 @@
     .input-group-append button {
         padding: 5px 10px;
 
-        border-color: red;
-        color: red;
+        border-color: orange;
+        color: orange;
         cursor: pointer;
         margin-left: 10px;
+    }
+
+    .logout button {
+        background-color: firebrick; /* Make the button solid red */
+        width: 200px; /* Adjust this value to make the button longer */
+        display: block; /* This allows the button to be centered */
+        margin: auto; /* This centers the button */
+        color: white;
+        border-color: white;
     }
 
     .input-group-append button:hover {
