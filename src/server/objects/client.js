@@ -11,8 +11,7 @@ class Client {
 	game;
 
 	constructor(socket) {
-		this.color = TeamColor[nextColor++ % TeamColor.length];
-		console.log(TeamColor[0])
+		this.color = Object.values(TeamColor)[nextColor++ % Object.keys(TeamColor).length];
 
 		this.socket = socket;
 		this.authenticated = false;
