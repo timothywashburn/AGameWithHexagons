@@ -6,6 +6,7 @@ const { TeamColor } = require('../../shared/enums');
 
 let globalClients = [];
 let nextColor = 0;
+let nextID = -1;
 
 class Client {
 	game;
@@ -15,7 +16,7 @@ class Client {
 
 		this.socket = socket;
 		this.authenticated = false;
-		this.profile = new UserProfile(-1, generateUsername("", 3));
+		this.profile = new UserProfile(nextID--, generateUsername("", 3));
 
 		socket.on('disconnect', () => {
 			if (this.game) this.game.removePlayer(this);
