@@ -1,4 +1,4 @@
-import { NameChangeError, EmailChangeError } from '../../../shared/enums.js';
+import { NameChangeError, EmailChangeError, PasswordChangeError } from '../../../shared/enums.js';
 
 window.onload = function() {
 
@@ -124,6 +124,21 @@ function setupButtons() {
 
         resetErrors();
     });
+
+    let changePasswordButton = document.getElementById('change-password');
+    changePasswordButton.onclick = function() {
+        let oldPassword = document.getElementById('old-password').value;
+        let newPassword = document.getElementById('new-password').value;
+        let confirm = document.getElementById('confirm-new-password').value;
+
+        if (newPassword !== confirm) {
+            resetErrors();
+            showPasswordError('Passwords do not match', false);
+            return;
+        }
+
+        changePassword(oldPassword, confirm);
+    }
 }
 
 function changeUsername(newUsername) {
@@ -162,12 +177,36 @@ function changeEmail(newEmail) {
             resetErrors();
 
             let error = Object.values(EmailChangeError).find((error) => error.id === data.result);
-            console.log(error);
 
             if (error.id === EmailChangeError.SUCCESS.id) location.reload();
             else showError(error.message);
         })
         .catch(error => console.error('Error:', error));
+}
+
+function changePassword(oldPassword, newPassword) {
+    let params = new URLSearchParams({oldPassword: oldPassword, newPassword: newPassword}).toString();
+
+    fetch(`/api/changepassword?${params}`, {
+        method: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + localStorage.token
+        }
+    })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);
+
+            resetErrors();
+
+            let error = Object.values(PasswordChangeError).find((error) => error.id === data.result);
+            console.log(error);
+
+            if (error.id === PasswordChangeError.SUCCESS.id) location.reload();
+            else showPasswordError(error.message, true);
+        })
+        .catch(error => console.error('Error:', error));
+
 }
 
 function changeEmailButton() {
@@ -186,6 +225,8 @@ function changeEmailButton() {
     };
 }
 
+let errorTimeout;
+
 function showError(message) {
     let inputElements = document.querySelectorAll('.modal-body input');
 
@@ -195,6 +236,24 @@ function showError(message) {
 
     let errorMessage = document.getElementById('error-message');
     errorMessage.textContent = message;
+
+    clearTimeout(errorTimeout);
+    errorTimeout = setTimeout(resetErrors, 3000);
+}
+
+function showPasswordError(message, highlightOld) {
+    let passwordInputElements = document.querySelectorAll('.info-field input[type="password"]');
+    let passwordErrorMessage = document.getElementById('main-error-message');
+
+    passwordInputElements.forEach((input, index) => {
+        if (!highlightOld && index === 0) input.borderColor = '';
+        else input.style.borderColor = 'red';
+    });
+
+    passwordErrorMessage.textContent = message;
+
+    clearTimeout(errorTimeout);
+    errorTimeout = setTimeout(resetErrors, 3000);
 }
 
 function resetErrors() {
@@ -206,6 +265,15 @@ function resetErrors() {
 
     let errorMessage = document.getElementById('error-message');
     errorMessage.textContent = '';
+
+    let passwordInputElements = document.querySelectorAll('.info-field input[type="password"]');
+
+    passwordInputElements.forEach(input => {
+        input.style.borderColor = '';
+    });
+
+    let passwordErrorMessage = document.getElementById('main-error-message');
+    passwordErrorMessage.textContent = '';
 }
 
 function updateModal(type) {

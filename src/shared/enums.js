@@ -30,6 +30,13 @@ exports.EmailChangeError = Object.freeze({
 	ERROR: { id: 0x03, message: 'Error changing email' },
 });
 
+exports.PasswordChangeError = Object.freeze({
+	SUCCESS: { id: 0x00, message: 'Password changed successfully' },
+	PASSWORD_INCORRECT: { id: 0x01, message: 'Incorrect password' },
+	INSECURE_PASSWORD: { id: 0x02, message: 'Password is insecure' },
+	ERROR: { id: 0x03, message: 'Error changing password'}
+})
+
 exports.TeamColor = Object.freeze({
 	RED: "rgb(255, 0, 0)",
 	ORANGE: "rgb(255, 127, 0)",

@@ -3,7 +3,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const validator = require("email-validator");
 
-const { RegistrationError, NameChangeError, EmailChangeError } = require('../shared/enums.js');
+const { RegistrationError, NameChangeError, EmailChangeError, PasswordChangeError } = require('../shared/enums.js');
 const config = require('../../config.json');
 const { UserProfile } = require('./objects/client');
 
@@ -304,6 +304,46 @@ async function changeEmail(token, newEmail) {
     }
 }
 
+async function changePassword(token, oldPassword, newPassword) {
+    //TODO: Add password restrictions
+
+    try {
+        const decoded = jwt.verify(token, config.secret);
+
+        let passwordValid = await new Promise((resolve, reject) => {
+            connection.query('SELECT password FROM accounts WHERE id = ?', [decoded.userId], (err, result) => {
+                if(err) reject(err);
+                resolve(verifyPassword(oldPassword, result[0].password));
+            });
+        });
+
+        if (!passwordValid) return PasswordChangeError.PASSWORD_INCORRECT.id;
+
+        let hash = await hashPassword(newPassword);
+        let promise = new Promise((resolve, reject) => {
+
+            connection.query('UPDATE accounts SET password = ? WHERE id = ?', [hash, decoded.userId], (err, result) => {
+                if(err) {
+                    console.error('Error updating password:', err);
+                    reject(err);
+                }
+                resolve(result);
+            });
+        });
+
+        if (promise) return PasswordChangeError.SUCCESS.id;
+        else return PasswordChangeError.ERROR.id;
+
+    } catch (error) {
+        if (error.name === 'JsonWebTokenError') {
+            return false;
+        } else {
+            console.error('Error verifying JWT');
+            return false;
+        }
+    }
+}
+
 async function isUsernameTaken(username) {
     return new Promise((resolve, reject) => {
         connection.query('SELECT * FROM accounts WHERE username = ?', [username], (err, result) => {
@@ -338,6 +378,7 @@ module.exports = {
     logout,
     getAccountInfo,
     changeUsername,
-    changeEmail
+    changeEmail,
+    changePassword
 };
 
