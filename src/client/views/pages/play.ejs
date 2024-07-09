@@ -27,7 +27,6 @@
 
 			<div id="lobbyContainer"></div>
 
-			<!-- Prompt Box -->
 			<div class="modal" id="promptModal" tabindex="-1" aria-labelledby="promptModalLabel" aria-hidden="true" data-bs-backdrop="static">
 				<div class="modal-dialog modal-dialog-centered">
 					<div class="modal-content">
@@ -61,22 +60,26 @@
 			</div>
 
 			<style>
+				body {
+					background-color: #f0f0f0;
+				}
+
 				#playerList {
 					position: fixed;
 					top: 0;
 					right: 0;
-					width: 200px; /* Adjust as needed */
-					height: 100vh; /* Full height */
+					width: 200px;
+					height: 100vh;
 					padding: 20px;
-					background-color: #f8f9fa; /* Light gray */
-					overflow-y: auto; /* Add a scrollbar if the content is too long */
-					box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1); /* Add a shadow for a 3D effect */
+					background-color: #f8f9fa;
+					overflow-y: auto;
+					box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
 				}
 
 				#playerList li {
-					list-style-type: none; /* Remove bullet points */
-					font-size: 1.5em; /* Increase the font size */
-					margin-bottom: 10px; /* Add some space between the names */
+					list-style-type: none;
+					font-size: 1.5em;
+					margin-bottom: 10px;
 				}
 
 				#gameCanvas {
@@ -108,7 +111,7 @@
 				#chatMessages {
 					flex-grow: 1;
 					overflow-y: auto;
-					margin-bottom: 10px; /* Add some space between the messages and the input field */
+					margin-bottom: 10px;
 				}
 
 				#inputWrapper {
@@ -116,30 +119,28 @@
 				}
 
 				#chatInput {
-					padding-right: 30px; /* Adjust as needed */
+					padding-right: 30px;
 				}
 
 				#chatSend {
 					position: absolute;
-					right: 10px; /* Adjust as needed */
+					right: 10px;
 					top: 50%;
 					transform: translateY(-50%);
 					border-radius: 50%;
-					width: 30px; /* Adjust as needed */
-					height: 30px; /* Adjust as needed */
+					width: 30px;
+					height: 30px;
 					padding: 0;
-					text-indent: -9999px; /* Hide the text */
+					text-indent: -9999px;
 					background: #56a5e8 url('../../images/white-arrow.png') no-repeat 9px center;
-					background-size: 45%; /* Make the icon bigger */
-					border: none; /* Remove the border */
+					background-size: 45%;
+					border: none;
 				}
 
 				html, body {margin: 0; height: 100%; overflow: hidden}
 			</style>
 
 
-
-			<!-- Modal -->
 			<div class="container d-flex justify-content-center align-items-center vh-100">
 				<div class="text-center">
 					<h1 class="display-1">Game</h1>
@@ -151,6 +152,7 @@
 				</div>
 			</div>
 		</div>
+
 
 		<script
 			src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"

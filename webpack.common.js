@@ -5,6 +5,7 @@ module.exports = {
 		play: './src/client/js/pages/play.js',
 		registration: './src/client/js/pages/registration.js',
 		login: './src/client/js/pages/login.js',
+		account: './src/client/js/pages/account.js',
 	},
 	output: {
 		path: path.resolve(__dirname, 'dist'),

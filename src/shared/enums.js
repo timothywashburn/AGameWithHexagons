@@ -16,6 +16,20 @@ exports.RegistrationError = Object.freeze({
 	PASSWORD_INVALID: { id: 0x03, message: 'Invalid password' },
 });
 
+exports.NameChangeError = Object.freeze({
+	SUCCESS: { id: 0x00, message: 'Name changed successfully' },
+	USERNAME_EXISTS: { id: 0x01, message: 'Username already exists' },
+	USERNAME_INVALID: { id: 0x02, message: 'Invalid username' },
+	ERROR: { id: 0x03, message: 'Error changing name' },
+});
+
+exports.EmailChangeError = Object.freeze({
+	SUCCESS: { id: 0x00, message: 'Email changed successfully' },
+	EMAIL_EXISTS: { id: 0x01, message: 'Email is already linked to another account' },
+	EMAIL_INVALID: { id: 0x02, message: 'Invalid email' },
+	ERROR: { id: 0x03, message: 'Error changing email' },
+});
+
 exports.TeamColor = Object.freeze({
 	RED: "rgb(255, 0, 0)",
 	ORANGE: "rgb(255, 127, 0)",

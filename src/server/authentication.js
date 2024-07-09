@@ -1,10 +1,12 @@
 const mysql = require('mysql');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const validator = require("email-validator");
 
-const { RegistrationError } = require('../shared/enums.js');
+const { RegistrationError, NameChangeError, EmailChangeError } = require('../shared/enums.js');
 const config = require('../../config.json');
 const { UserProfile } = require('./objects/client');
+
 
 const saltRounds = 10;
 
@@ -56,6 +58,8 @@ async function verifyPassword(password, hashedPassword) {
 }
 
 async function createAccount(username, password) {
+    if (!await isUsernameValid(username)) return RegistrationError.USERNAME_INVALID.id;
+
     let userExists;
 
     try {
@@ -133,8 +137,7 @@ async function generateToken(username) {
     });
 
     const payload = {
-        userId: id,
-        username: username,
+        userId: id
     };
 
     const secret = config.secret;
@@ -144,13 +147,7 @@ async function generateToken(username) {
         expiresIn: '999y',
     };
 
-    const token = jwt.sign(payload, secret, options);
-
-    return token;
-}
-
-async function validate(token) {
-    await validateUser(token, null);
+    return jwt.sign(payload, secret, options);
 }
 
 async function validateUser(token, client) {
@@ -158,12 +155,12 @@ async function validateUser(token, client) {
         const decoded = jwt.verify(token, config.secret);
 
         let loggedIn = await new Promise((resolve, reject) => {
-            connection.query('SELECT last_logout FROM accounts WHERE id = ?', [decoded.userId], (err, result) => {
+            connection.query('SELECT last_logout, username FROM accounts WHERE id = ?', [decoded.userId], (err, result) => {
                 if(err) reject(err);
                 if(result.length === 0) reject('User not found');
 
                 if((result[0].last_logout / 1000) > decoded.iat) reject('Token expired');
-                resolve(true);
+                resolve(result[0]);
             });
         });
 
@@ -171,7 +168,7 @@ async function validateUser(token, client) {
         if(!client) return true;
 
         client.authenticated = true;
-        client.profile = new UserProfile(decoded.userId, decoded.username);
+        client.profile = new UserProfile(decoded.userId, loggedIn.username);
 
     } catch (error) {
         if (error.name === 'JsonWebTokenError') {
@@ -221,14 +218,126 @@ async function getUserID(username) {
     return true;
 }
 
+async function getAccountInfo(token) {
+
+    try {
+        const decoded = jwt.verify(token, config.secret);
+
+        return new Promise((resolve, reject) => {
+            connection.query('SELECT username, email FROM accounts WHERE id = ?', [decoded.userId], (err, result) => {
+                if(err) {
+                    console.error('Error getting account info:', err);
+                    reject(err);
+                }
+                resolve(result);
+            });
+        });
+    } catch (error) {
+        if (error.name === 'JsonWebTokenError') {
+            return false;
+        } else {
+            console.error('Error verifying JWT');
+            return false;
+        }
+    }
+}
+
+async function changeUsername(token, newUsername) {
+    if (!await isUsernameValid(newUsername)) return NameChangeError.USERNAME_INVALID.id;
+
+    if (await isUsernameTaken(newUsername)) return NameChangeError.USERNAME_EXISTS.id;
+
+    try {
+        const decoded = jwt.verify(token, config.secret);
+
+        let promise = new Promise((resolve, reject) => {
+            connection.query('UPDATE accounts SET username = ? WHERE id = ?', [newUsername, decoded.userId], (err, result) => {
+                if(err) {
+                    console.error('Error updating username:', err);
+                    reject(err);
+                }
+                resolve(result);
+            });
+        });
+
+        if (promise) return NameChangeError.SUCCESS.id;
+        else return NameChangeError.ERROR.id;
+
+    } catch (error) {
+        if (error.name === 'JsonWebTokenError') {
+            return NameChangeError.ERROR.id;
+        } else {
+            console.error('Error verifying JWT');
+            return NameChangeError.ERROR.id;
+        }
+    }
+}
+
+async function changeEmail(token, newEmail) {
+    if (!validator.validate(newEmail)) return EmailChangeError.EMAIL_INVALID.id;
+
+    if (await isEmailInUse(newEmail)) return EmailChangeError.EMAIL_EXISTS.id;
+
+    try {
+        const decoded = jwt.verify(token, config.secret);
+
+        let promise = new Promise((resolve, reject) => {
+            connection.query('UPDATE accounts SET email = ? WHERE id = ?', [newEmail, decoded.userId], (err, result) => {
+                if(err) {
+                    console.error('Error updating email:', err);
+                    reject(err);
+                }
+                resolve(result);
+            });
+        });
+
+        if (promise) return EmailChangeError.SUCCESS.id;
+        else return EmailChangeError.ERROR.id;
+
+    } catch (error) {
+        if (error.name === 'JsonWebTokenError') {
+            return EmailChangeError.ERROR.id;
+        } else {
+            console.error('Error verifying JWT');
+            return EmailChangeError.ERROR.id;
+        }
+    }
+}
+
+async function isUsernameTaken(username) {
+    return new Promise((resolve, reject) => {
+        connection.query('SELECT * FROM accounts WHERE username = ?', [username], (err, result) => {
+            if (err) reject(err);
+            resolve(result.length > 0);
+        });
+    });
+
+}
+
+async function isUsernameValid(username) {
+    //TODO: Implement this
+
+    return true;
+}
+
+async function isEmailInUse(email) {
+    return new Promise((resolve, reject) => {
+        connection.query('SELECT * FROM accounts WHERE email = ?', [email], (err, result) => {
+            if (err) reject(err);
+            resolve(result.length > 0);
+        });
+    });
+}
+
 module.exports = {
     init,
     createAccount,
     attemptLogin,
     generateToken,
-    validate,
     validateUser,
-    getUserID,
-    logout
+    logout,
+    getAccountInfo,
+    changeUsername,
+    changeEmail
 };
 
