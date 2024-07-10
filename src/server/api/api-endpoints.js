@@ -5,7 +5,7 @@ const { isDev } = require('../misc/utils');
 const { Client, globalClients } = require('../objects/client');
 const { games, getGame } = require('../controllers/game-manager');
 const { generateToken, validateUser, getAccountInfo, logout, changeUsername, changeEmail, changePassword,
-	requestPasswordReset
+	requestPasswordReset, requestUsername
 } = require("../authentication");
 const PacketClientGameInit = require("../../shared/packets/packet-client-game-init");
 const { AnnouncementType, NameChangeError, EmailChangeError, PasswordChangeError} = require("../../shared/enums");
@@ -301,6 +301,15 @@ module.exports = {
 	async forgotpassword(req, res) {
 		const email = req.query.email;
 		await requestPasswordReset(email);
+
+		res.json({
+			success: true
+		});
+	},
+
+	async forgotusername(req, res) {
+		const email = req.query.email;
+		await requestUsername(email);
 
 		res.json({
 			success: true

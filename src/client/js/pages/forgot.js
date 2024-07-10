@@ -13,7 +13,7 @@ passwordTab.addEventListener('click', function(e) {
 });
 
 usernameTab.addEventListener('click', function(e) {
-    endpoint = '/api/recoverusername';
+    endpoint = '/api/forgotusername';
     usernameTab.classList.add('active');
     passwordTab.classList.remove('active');
 });
@@ -31,7 +31,7 @@ forgotBtn.addEventListener('click', function(e) {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                error.textContent = `If an account with that email exists, an email has been sent to reset your password.`;
+                error.textContent = `If an account with that email exists, an email has been sent.`;
                 error.style.color = 'green';
                 error.style.visibility = 'visible';
             } else {
