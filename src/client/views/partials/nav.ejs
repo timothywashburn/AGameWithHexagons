@@ -22,6 +22,21 @@
 </nav>
 
 <style>
+	@keyframes slideInDown {
+		0% {
+			top: -100px;
+		}
+		100% {
+			top: 0;
+		}
+	}
+
+	@keyframes slideOutUp {
+		100% {
+			top: -100px;
+		}
+	}
+
 	.navbar-icon {
 		max-height: 25px;
 		width: auto;
@@ -38,7 +53,7 @@
 		position: fixed;
 		z-index: 1;
 		left: 0;
-		font-size: 17px;
+		font-size: 20px;
 		background-color: #333;
 		opacity: 0;
 		transition: opacity 0.5s, visibility 0.5s;

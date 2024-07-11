@@ -43,6 +43,10 @@ exports.ToastMessage = Object.freeze({
 	NAME_CHANGE_SUCCESS: { id: 2, message: "Name changed successfully", color: "green" },
 	EMAIL_CHANGE_SUCCESS: { id: 3, message: "Email changed successfully", color: "green" },
 	PASSWORD_CHANGE_SUCCESS: { id: 4, message: "Password changed successfully", color: "green" },
+	UNVERIFIED_EMAIL_WARN: { id: 5, message: "Your email is not verified. You will not be able to recover your account if you do not do so." +
+			" Make sure to check your spam folder for the email.", color: "orange" },
+	NO_EMAIL_WARN: { id: 6, message: "You have not set an email. You will not be able to recover your account if you do not do so. Go to your Account " +
+			"Page to add an email.", color: "orange" },
 });
 
 exports.TeamColor = Object.freeze({

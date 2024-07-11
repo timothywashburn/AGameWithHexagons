@@ -2,6 +2,31 @@ import '../objects/game';
 import '../controllers/connection';
 import '../misc/ui'
 import '../../../shared/packets/packet';
+import { ToastMessage } from '../../../shared/enums';
+import { showToast } from "../controllers/toast";
+
+window.onload = function() {
+	if (!localStorage.token) return;
+
+	fetch('/api/account', {
+		method: 'GET',
+		headers: {
+			'Authorization': 'Bearer ' + localStorage.token
+		}
+	})
+		.then(response => response.json())
+		.then(data => {
+			if (!data.success) return;
+
+			if (data.info.email === null) {
+				showToast(ToastMessage.NO_EMAIL_WARN.message, ToastMessage.NO_EMAIL_WARN.color);
+			} else if(data.info.email_verified.data[0] === 0) {
+				showToast(ToastMessage.UNVERIFIED_EMAIL_WARN.message, ToastMessage.UNVERIFIED_EMAIL_WARN.color);
+
+			}
+		})
+		.catch(error => console.error('Error:', error));
+}
 
 export let devConfig;
 

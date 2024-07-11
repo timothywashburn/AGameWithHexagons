@@ -21,7 +21,7 @@ window.onload = function() {
             if (data.info.email === null) changeEmailButton();
             else document.getElementById('email').value = data.info.email;
 
-            if(data.info.email_verified.data[0] === 0) {
+            if(data.info.email != null && data.info.email_verified.data[0] === 0) {
                 let div = document.getElementById('unverified-container');
                 div.style.visibility = 'visible';
             }
