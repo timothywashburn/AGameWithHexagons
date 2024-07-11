@@ -15,3 +15,7 @@ class ServerTroop {
 		}
 	}
 }
+
+module.exports = {
+	ServerTroop: ServerTroop
+}
