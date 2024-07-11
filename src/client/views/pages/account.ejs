@@ -60,6 +60,12 @@
                 <button class="btn btn-outline-secondary" type="button" id="change-email">Change</button>
             </div>
         </div>
+
+        <div id="unverified-container">
+            <img id="warn-icon" src="/images/warn.svg" alt="Account">
+            <span style="color: red;">Unverified Email</span>
+            <a style="margin-left: 150px;" id="resend-link" href="#">Resend Verification Email</a>
+        </div>
     </div>
 
     <div class="spacer"></div>
@@ -99,6 +105,21 @@
     body {
         background-color: #f0f0f0;
         margin: 0;
+    }
+
+    @keyframes slideInDown {
+        0% {
+            top: -100px;
+        }
+        100% {
+            top: 0;
+        }
+    }
+
+    @keyframes slideOutUp {
+        100% {
+            top: -100px;
+        }
     }
 
     .account-info {
@@ -144,7 +165,7 @@
     }
 
     .spacer {
-        margin-top: 100px;
+        margin-top: 90px;
     }
 
     .modal-title {
@@ -154,6 +175,21 @@
     #buttonContainer button {
         width: 45%;
         margin-top: 20px;
+    }
+
+    #unverified-container {
+        display: flex;
+        align-items: center;
+    }
+
+    #warn-icon {
+        width: 16px;
+        height: 16px;
+        margin-right: 5px;
+    }
+
+    #unverified-container {
+        visibility: hidden;
     }
 </style>
 <script

@@ -16,6 +16,8 @@
 				</li>
 			</ul>
 		</div>
+
+		<div id="toast" class="toast">This is a toast message.</div>
 	</div>
 </nav>
 
@@ -23,6 +25,33 @@
 	.navbar-icon {
 		max-height: 25px;
 		width: auto;
+	}
+
+	.toast {
+		visibility: hidden;
+		min-width: 100%;
+		margin-left: 0;
+		color: #fff;
+		text-align: center;
+		border-radius: 2px;
+		padding: 10px;
+		position: fixed;
+		z-index: 1;
+		left: 0;
+		font-size: 17px;
+		background-color: #333;
+		opacity: 0;
+		transition: opacity 0.5s, visibility 0.5s;
+		top: -100px;
+		animation: slideOutUp 0.5s;
+		height: 60px;
+	}
+
+	.toast.show {
+		visibility: visible;
+		opacity: 1;
+		top: 0;
+		animation: slideInDown 0.5s forwards;
 	}
 </style>
 

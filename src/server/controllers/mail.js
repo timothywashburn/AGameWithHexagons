@@ -75,9 +75,46 @@ async function sendUsernameEmail(username, email) {
         })
 }
 
+async function sendVerificationEmail(username, email, link) {
+    const request = mailjet
+        .post("send", {'version': 'v3.1'})
+        .request({
+            "Messages": [
+                {
+                    "From": {
+                        "Email": config.mail.senderAddress,
+                        "Name": "Hexagon Game"
+                    },
+                    "To": [
+                        {
+                            "Email": email,
+                            "Name": username
+                        }
+                    ],
+                    "Subject": "Verify Your Email",
+                    "TextPart": "Verify Your Email",
+                    "HTMLPart": `<h3>Hello ${username},</h3><br/>Please use the following link to verify your email. If you did not make an account with us,
+                       <br/>please ignore this email. This link will expire in 24 hours.<br/><br/>  
+                       <h1>${username}</h1> <br/><br/>
+                       <a href="${link}" style="background-color: #4CAF50; border: none; color: white; padding: 15px 32px; text-align: center;
+                       text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer;">Verify Email</a>`,
+                    "CustomID": "emailVerification"
+                }
+            ]
+        })
+    request
+        .then((result) => {
+            console.log(result.body)
+        })
+        .catch((err) => {
+            console.log(err.statusCode)
+        })
+}
+
 module.exports = {
     sendResetEmail,
-    sendUsernameEmail
+    sendUsernameEmail,
+    sendVerificationEmail
 }
 
 

@@ -37,6 +37,14 @@ exports.PasswordChangeError = Object.freeze({
 	ERROR: { id: 0x03, message: 'Error changing password'}
 })
 
+exports.ToastMessage = Object.freeze({
+	EMAIL_VERIFIED: { id: 0, message: "Your email has been successfully verified", color: "green" },
+	EMAIL_VERIFIED_ERROR: { id: 1, message: "Error verifying email. Link is likely expired.", color: "red" },
+	NAME_CHANGE_SUCCESS: { id: 2, message: "Name changed successfully", color: "green" },
+	EMAIL_CHANGE_SUCCESS: { id: 3, message: "Email changed successfully", color: "green" },
+	PASSWORD_CHANGE_SUCCESS: { id: 4, message: "Password changed successfully", color: "green" },
+});
+
 exports.TeamColor = Object.freeze({
 	RED: "rgb(255, 0, 0)",
 	ORANGE: "rgb(255, 127, 0)",

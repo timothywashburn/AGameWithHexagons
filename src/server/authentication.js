@@ -6,7 +6,7 @@ const validator = require("email-validator");
 const { RegistrationError, NameChangeError, EmailChangeError, PasswordChangeError } = require('../shared/enums.js');
 const config = require('../../config.json');
 const { UserProfile } = require('./objects/client');
-const { sendResetEmail, sendUsernameEmail} = require('./controllers/mail');
+const { sendResetEmail, sendUsernameEmail, sendVerificationEmail } = require('./controllers/mail');
 
 
 const saltRounds = 10;
@@ -224,7 +224,7 @@ async function getAccountInfo(token) {
         const decoded = jwt.verify(token, config.secret);
 
         return new Promise((resolve, reject) => {
-            connection.query('SELECT username, email FROM accounts WHERE id = ?', [decoded.userId], (err, result) => {
+            connection.query('SELECT username, email, email_verified FROM accounts WHERE id = ?', [decoded.userId], (err, result) => {
                 if(err) {
                     console.error('Error getting account info:', err);
                     reject(err);
@@ -275,7 +275,6 @@ async function changeUsername(token, newUsername) {
 
 async function changeEmail(token, newEmail) {
     if (!validator.validate(newEmail)) return EmailChangeError.EMAIL_INVALID.id;
-
     if (await isEmailInUse(newEmail)) return EmailChangeError.EMAIL_EXISTS.id;
 
     try {
@@ -291,7 +290,19 @@ async function changeEmail(token, newEmail) {
             });
         });
 
-        if (promise) return EmailChangeError.SUCCESS.id;
+        if (promise) {
+            connection.query('UPDATE accounts SET last_email_change = ? WHERE id = ?', [Date.now(), decoded.userId], (err) => {
+                if(err) {
+                    console.error('Error updating email change time:', err);
+                    return EmailChangeError.ERROR.id;
+                }
+            });
+
+            await sendEmailVerification(token);
+
+            return EmailChangeError.SUCCESS.id;
+        }
+
         else return EmailChangeError.ERROR.id;
 
     } catch (error) {
@@ -348,6 +359,7 @@ async function changePassword(token, oldPassword, newPassword, requireOld = true
 }
 
 async function requestPasswordReset(email) {
+    if (!await isEmailInUse(email)) return;
 
     try {
         let username = await getUsername(email);
@@ -364,6 +376,7 @@ async function requestPasswordReset(email) {
 }
 
 async function requestUsername(email) {
+    if (!await isEmailInUse(email)) return;
 
     try {
         let username = await getUsername(email);
@@ -376,16 +389,96 @@ async function requestUsername(email) {
     }
 }
 
+async function sendEmailVerification(token){
+    try {
+        const decoded = jwt.verify(token, config.secret);
+
+        let email = await new Promise((resolve, reject) => {
+            connection.query('SELECT email FROM accounts WHERE id = ?', [decoded.userId], (err, result) => {
+                if(err) reject(err);
+                resolve(result[0].email);
+            });
+        });
+
+        let reset = new Promise((resolve, reject) => {
+            connection.query('UPDATE accounts SET email_verified = ? WHERE id = ?', [false, decoded.userId], (err, result) => {
+                if(err) {
+                    console.error('Error updating email verification status:', err);
+                    reject(err);
+                }
+                resolve(result);
+            });
+        });
+
+        if (!email || !reset) return;
+
+        let username = await getUsername(email);
+
+        if (!username) return;
+
+        let verifyToken = await generateToken(username, '24h');
+        let link = config.host + `/api/verify?token=${verifyToken}`;
+
+        await sendVerificationEmail(username, email, link);
+    } catch (error) {
+        console.error('Error while sending email verification:', error);
+    }
+}
+
+async function verifyEmail(token) {
+    try {
+        const decoded = jwt.verify(token, config.secret);
+
+        let emailChange = await new Promise((resolve, reject) => {
+            connection.query('SELECT last_email_change FROM accounts WHERE id = ?', [decoded.userId], (err, result) => {
+                if(err) reject(err);
+                resolve(result[0].last_email_change);
+            });
+        });
+
+        if (Math.floor(emailChange / 1000) > decoded.iat) {
+            return false;
+        }
+
+        let promise = new Promise((resolve, reject) => {
+            connection.query('UPDATE accounts SET email_verified = ? WHERE id = ?', [true, decoded.userId], (err, result) => {
+                if(err) {
+                    console.error('Error updating email verification status:', err);
+                    reject(err);
+                }
+                resolve(result);
+            });
+        });
+
+        return !!promise;
+
+    } catch (error) {
+        if (error.name === 'JsonWebTokenError') {
+            return false;
+        } else {
+            console.error('Error verifying JWT');
+            return false;
+        }
+    }
+}
+
 async function getUsername(email) {
+
     return new Promise((resolve, reject) => {
         connection.query('SELECT username FROM accounts WHERE email = ?', [email], (err, result) => {
             if (err) reject(err);
+            if (result.length === 0) {
+                resolve(null);
+                return;
+            }
+
             resolve(result[0].username);
         });
     });
 }
 
 async function isUsernameTaken(username) {
+
     return new Promise((resolve, reject) => {
         connection.query('SELECT * FROM accounts WHERE username = ?', [username], (err, result) => {
             if (err) reject(err);
@@ -405,7 +498,15 @@ async function isEmailInUse(email) {
     return new Promise((resolve, reject) => {
         connection.query('SELECT * FROM accounts WHERE email = ?', [email], (err, result) => {
             if (err) reject(err);
-            resolve(result.length > 0);
+
+            if (result.length === 0) {
+                resolve(false);
+                return;
+            }
+
+            let verified = result[0].email_verified;
+            console.log(verified);
+            resolve(verified[0] === 1);
         });
     });
 }
@@ -422,6 +523,8 @@ module.exports = {
     changeEmail,
     changePassword,
     requestPasswordReset,
-    requestUsername
+    requestUsername,
+    sendEmailVerification,
+    verifyEmail
 };
 

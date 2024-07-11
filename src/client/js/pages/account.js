@@ -1,6 +1,8 @@
-import { NameChangeError, EmailChangeError, PasswordChangeError } from '../../../shared/enums.js';
+import { NameChangeError, EmailChangeError, PasswordChangeError, ToastMessage } from '../../../shared/enums.js';
+import { showToast } from "../controllers/toast";
 
 window.onload = function() {
+    showToasts();
 
     fetch('/api/account', {
         method: 'GET',
@@ -19,10 +21,22 @@ window.onload = function() {
             if (data.info.email === null) changeEmailButton();
             else document.getElementById('email').value = data.info.email;
 
+            if(data.info.email_verified.data[0] === 0) {
+                let div = document.getElementById('unverified-container');
+                div.style.visibility = 'visible';
+            }
+
         })
         .catch(error => console.error('Error:', error));
 };
 
+function showToasts() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const toastId = urlParams.get('toast');
+
+    let toast = Object.values(ToastMessage).find((toast) => toast.id === parseInt(toastId));
+    if (toast) showToast(toast.message, toast.color);
+}
 
 function setupButtons() {
     let changeEmailButton = document.getElementById('change-email');
@@ -139,6 +153,35 @@ function setupButtons() {
 
         changePassword(oldPassword, confirm);
     }
+
+    let resendLink = document.getElementById('resend-link');
+
+    resendLink.addEventListener('click', function(e) {
+        e.preventDefault();
+
+        fetch('/api/resendverification', {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.token
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                let link = document.getElementById('resend-link');
+                link.removeAttribute('href');
+
+                if (data.success) {
+                    link.textContent = 'Verification Email Sent!';
+                    link.style.color = 'green';
+                } else {
+                    link.textContent = 'Error Sending Verification Email';
+                    link.style.color = 'red';
+                }
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+    });
 }
 
 function changeUsername(newUsername) {
@@ -157,7 +200,9 @@ function changeUsername(newUsername) {
             let error = Object.values(NameChangeError).find((error) => error.id === data.result);
             console.log(error);
 
-            if (error.id === NameChangeError.SUCCESS.id) location.reload();
+            if (error.id === NameChangeError.SUCCESS.id) {
+                location.href = `/account?toast=${ToastMessage.NAME_CHANGE_SUCCESS.id}`;
+            }
             else showError(error.message);
         })
         .catch(error => console.error('Error:', error));
@@ -178,7 +223,9 @@ function changeEmail(newEmail) {
 
             let error = Object.values(EmailChangeError).find((error) => error.id === data.result);
 
-            if (error.id === EmailChangeError.SUCCESS.id) location.reload();
+            if (error.id === EmailChangeError.SUCCESS.id) {
+                location.href = `/account?toast=${ToastMessage.EMAIL_CHANGE_SUCCESS.id}`;
+            }
             else showError(error.message);
         })
         .catch(error => console.error('Error:', error));
@@ -202,7 +249,9 @@ function changePassword(oldPassword, newPassword) {
             let error = Object.values(PasswordChangeError).find((error) => error.id === data.result);
             console.log(error);
 
-            if (error.id === PasswordChangeError.SUCCESS.id) location.reload();
+            if (error.id === PasswordChangeError.SUCCESS.id) {
+                location.href = `/account?toast=${ToastMessage.PASSWORD_CHANGE_SUCCESS.id}`;
+            }
             else showPasswordError(error.message, true);
         })
         .catch(error => console.error('Error:', error));

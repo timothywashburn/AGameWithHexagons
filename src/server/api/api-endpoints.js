@@ -5,10 +5,10 @@ const { isDev } = require('../misc/utils');
 const { Client, globalClients } = require('../objects/client');
 const { games, getGame } = require('../controllers/game-manager');
 const { generateToken, validateUser, getAccountInfo, logout, changeUsername, changeEmail, changePassword,
-	requestPasswordReset, requestUsername
+	requestPasswordReset, requestUsername, sendEmailVerification, verifyEmail
 } = require("../authentication");
 const PacketClientGameInit = require("../../shared/packets/packet-client-game-init");
-const { AnnouncementType, NameChangeError, EmailChangeError, PasswordChangeError} = require("../../shared/enums");
+const { AnnouncementType, NameChangeError, EmailChangeError, PasswordChangeError, ToastMessage} = require("../../shared/enums");
 const config = require("../../../config.json");
 const server = require('../server');
 const { sendResetEmail } = require("../controllers/mail");
@@ -315,4 +315,39 @@ module.exports = {
 			success: true
 		});
 	},
+
+	async resendverification(req, res) {
+		const token = req.headers.authorization.split(' ')[1];
+		let valid = token && await validateUser(token, null);
+
+		if(valid) {
+			await sendEmailVerification(token);
+			res.json({
+				success: true
+			});
+		} else {
+			res.json({
+				success: false
+			});
+		}
+	},
+
+	async verify(req, res) {
+		const token = req.query.token;
+		let valid = token && await validateUser(token, null);
+
+		if(valid) {
+			await verifyEmail(token)
+				.then(async result => {
+					res.redirect('/account?toast=' + (result ? ToastMessage.EMAIL_VERIFIED.id : ToastMessage.EMAIL_VERIFIED_ERROR.id));
+				})
+				.catch(error => {
+					res.redirect('/account?toast=' + ToastMessage.EMAIL_VERIFIED_ERROR.id);
+					console.error('Error verifying account:', error);
+
+				});
+		} else {
+			res.redirect('/account?toast=' + ToastMessage.EMAIL_VERIFIED_ERROR.id);
+		}
+	}
 };

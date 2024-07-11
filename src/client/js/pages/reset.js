@@ -41,7 +41,7 @@ document.getElementById('resetForm').addEventListener('submit', function(e) {
 
                 if (error) error.style.visibility = 'hidden';
             } else {
-                error.textContent = 'An error has occurred. This link is likely expired.';
+                error.textContent = 'An error occurred. This link is likely expired.';
                 error.style.visibility = 'visible';
             }
             resetBtn.classList.remove('active');

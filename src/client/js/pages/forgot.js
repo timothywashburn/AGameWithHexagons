@@ -31,7 +31,7 @@ forgotBtn.addEventListener('click', function(e) {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                error.textContent = `If an account with that email exists, an email has been sent.`;
+                error.textContent = `If an account with that email exists, a link has been sent.`;
                 error.style.color = 'green';
                 error.style.visibility = 'visible';
             } else {
