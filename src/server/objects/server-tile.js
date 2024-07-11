@@ -10,6 +10,14 @@ class ServerTile {
         this.y = y;
         this.color = getRBGAround(134, 44, 54, 40);
     }
+
+    getClientTileData(client) {
+        return {
+            x: this.x,
+            y: this.y,
+            color: this.color
+        }
+    }
 }
 
 function getRBGAround(red, green, blue, random) {

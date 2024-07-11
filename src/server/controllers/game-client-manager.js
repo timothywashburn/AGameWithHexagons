@@ -14,17 +14,11 @@ class GameClientManager {
 		this.maxPlayers = 8;
 	}
 
-	getClientInitData() {
-		return {
-			tiles: this.game.tiles
-		}
-	}
-
 	async addClientToGame(client, initData) {
 		this.clients.push(client);
 		client.game = this.game;
 
-		let packet = new PacketClientGameInit({...initData, ...this.getClientInitData()});
+		let packet = new PacketClientGameInit({...initData, ...this.game.getClientInitData(client)});
 		packet.addClient(client);
 		await packet.send(server);
 

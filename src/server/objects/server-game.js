@@ -44,14 +44,22 @@ class ServerGame {
         // this.tiles.push(new ServerTile(-5, 0)); //This tile should Error
     }
 
-    sendSnapshot(client) {
-        let snapshot = {
-            tiles: this.tiles
+    getClientInitData(client) {
+        return {
+            tiles: this.tiles.map(tile => tile.getClientTileData(client))
         }
+    }
 
-        let packet = new PacketClientGameSnapshot(snapshot);
-        packet.addClient(client);
-        packet.send();
+    getSnapshotData(client) {
+        // return {
+        //     tiles: this.tiles
+        // }
+    }
+
+    sendSnapshot(client) {
+        // let packet = new PacketClientGameSnapshot(this.getClientInitData(client));
+        // packet.addClient(client);
+        // packet.send();
     }
 
     tileIsValid(tile) {
