@@ -1,5 +1,6 @@
 import { prepareFrame } from '../render';
 import Tile from './tile'
+import Troop from './troop';
 
 let game;
 
@@ -11,6 +12,10 @@ export class Game {
 		this.startTime = Date.now();
 
 		this.setupDebug();
+
+		this.tiles = [];
+		this.troops = [];
+		this.buildings = [];
 
 		this.loadGame(initData);
 
@@ -45,6 +50,7 @@ export class Game {
 		}
 
 		this.tiles = initData.tiles.map(tileData => new Tile(tileData));
+		this.troops = initData.troops.map(troopData => new Troop(troopData));
 	}
 
 	updateGame(snapshot) {

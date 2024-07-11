@@ -1,8 +1,8 @@
 let nextID = 0;
 
 class ServerTile {
-    troop;
-    building;
+    occupantTroop;
+    occupantBuilding;
 
     constructor(x, y) {
         this.id = nextID++;

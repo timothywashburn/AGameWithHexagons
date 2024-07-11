@@ -1,5 +1,6 @@
 const GameClientManager = require('../controllers/game-client-manager');
 const { ServerTile } = require('./server-tile');
+const { ServerTroop } = require('./server-troop');
 const PacketClientGameSnapshot = require('../../shared/packets/packet-client-game-snapshot');
 const { games } = require('../controllers/game-manager');
 const {AnnouncementType} = require('../../shared/enums');
@@ -12,7 +13,9 @@ class ServerGame {
         this.boardSize = boardSize;
         this.startTime = Date.now();
 
-        this.tiles = []
+        this.tiles = [];
+        this.troops = [];
+
         this.generateTiles();
 
         games.push(this);
@@ -37,7 +40,10 @@ class ServerGame {
         // 	}
         // }
 
-        this.tiles.push(new ServerTile(0, 0));
+        let testTile = new ServerTile(0, 0);
+        this.troops.push(new ServerTroop(11, testTile));
+        this.tiles.push(testTile);
+
         this.tiles.push(new ServerTile(-4, 0));
         this.tiles.push(new ServerTile(-6, 0));
         this.tiles.push(new ServerTile(-5, -1));
@@ -46,7 +52,8 @@ class ServerGame {
 
     getClientInitData(client) {
         return {
-            tiles: this.tiles.map(tile => tile.getClientTileData(client))
+            tiles: this.tiles.map(tile => tile.getClientTileData(client)),
+            troops: this.troops.map(troop => troop.getClientTroopData(client))
         }
     }
 
