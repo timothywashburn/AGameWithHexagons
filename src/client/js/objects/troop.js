@@ -6,6 +6,8 @@ const ctx = canvas.getContext('2d');
 const circle = new Image();
 circle.src = 'images/circle.svg';
 
+let radius = 20;
+
 export default class Troop {
 	constructor(troopData) {
 		this.id = troopData.id;
@@ -15,13 +17,11 @@ export default class Troop {
 
 	renderTroop() {
 		ctx.save();
-		ctx.drawImage(circle, this.parentTile.x, this.parentTile.y, 20, 20);
+		ctx.drawImage(circle, this.parentTile.literalX - radius, this.parentTile.literalY - radius, radius * 2, radius * 2);
 		ctx.restore();
 	}
 
 	getParentTile(parentTileID) {
-		let game = getGame();
-		let tiles = game.time;
-		return tiles.find(tile => tile.parentTileID === parentTileID);
+		return getGame().tiles.find(tile => tile.id === parentTileID);
 	}
 }

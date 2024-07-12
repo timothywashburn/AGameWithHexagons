@@ -78,6 +78,7 @@ export class Game {
 
 			// Render tiles
 			this.tiles.forEach(tile => tile.renderTile());
+			this.troops.forEach(troop => troop.renderTroop());
 
 			const finalRenderTime = window.performance.now() - renderStartTime;
 			this.renderTimes.push(finalRenderTime);
