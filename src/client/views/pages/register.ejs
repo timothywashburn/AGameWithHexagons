@@ -22,22 +22,22 @@
     <div class="login-container">
         <h2>Register</h2>
         <form id="registerForm">
-            <div class="input-group">
+            <div class="info-field form-group">
                 <label for="username">Username</label>
-                <input type="text" id="username" name="username" required>
+                <input type="text" id="username" class="form-control" name="username" required>
             </div>
-            <div class="input-group">
+            <div class="info-field form-group">
                 <label for="password">Password</label>
-                <input type="password" id="password" name="password" required>
+                <input type="password" id="password" class="form-control" name="password" required>
             </div>
-            <div class="input-group">
+            <div class="info-field form-group">
                 <label for="confirmPassword">Confirm Password</label>
-                <input type="password" id="confirmPassword" name="confirmPassword" required>
+                <input type="password" id="confirmPassword" class="form-control" name="confirmPassword" required>
             </div>
 
             <p id="registrationError"></p>
 
-            <button type="submit" class="login-btn", id="registerBtn">Register</button>
+            <button type="submit" class="login-btn" id="registerBtn">Register</button>
         </form>
 
         <div class="register">
@@ -68,16 +68,16 @@
         width: 300px;
     }
 
-    .input-group {
+    .form-group {
         margin-bottom: 10px;
     }
 
-    .input-group label {
+    .form-group label {
         display: block;
         margin-bottom: 5px;
     }
 
-    .input-group input {
+    .form-group input {
         width: 100%;
         max-width: 280px;
         padding: 10px;
@@ -107,7 +107,6 @@
     #registrationError {
         height: 20px;
         color: red;
-        visibility: hidden;
     }
 </style>
 

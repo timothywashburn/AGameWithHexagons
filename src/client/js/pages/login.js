@@ -14,17 +14,14 @@ document.getElementById('loginForm').addEventListener('submit', function(e) {
     })
         .then(response => response.json())
         .then(data => {
-            let error = document.getElementById('loginError');
             if (data.success) {
                 window.location.href = '/play';
 
                 let token = data.token;
                 localStorage.setItem('token', token);
-
-                if (error) error.style.visibility = 'hidden';
             } else {
-                error.textContent = 'Incorrect Login';
-                error.style.visibility = 'visible';
+                console.log(data)
+                showError("Incorrect Login");
             }
             loginBtn.classList.remove('active');
         })
@@ -33,3 +30,30 @@ document.getElementById('loginForm').addEventListener('submit', function(e) {
             loginBtn.classList.remove('active');
         });
 });
+
+let errorTimeout;
+
+function showError(message) {
+    let inputElements = document.querySelectorAll('.form-group input');
+
+    inputElements.forEach(input => {
+        input.style.borderColor = 'red';
+    });
+
+    let errorMessage = document.getElementById('loginError');
+    errorMessage.textContent = message;
+
+    clearTimeout(errorTimeout);
+    errorTimeout = setTimeout(resetErrors, 3000);
+}
+function resetErrors() {
+    let inputElements = document.querySelectorAll('.form-group input');
+
+    inputElements.forEach(input => {
+        input.style.borderColor = '';
+    });
+
+    let errorMessage = document.getElementById('loginError');
+    errorMessage.textContent = '';
+}
+

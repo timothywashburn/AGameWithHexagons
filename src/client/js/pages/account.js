@@ -55,6 +55,71 @@ function setupButtons() {
         updateModal('Username');
     }
 
+    let logoutButton = document.getElementById('logoutBtn');
+
+    logoutButton.addEventListener('click', function() {
+        fetch('/api/logout', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.href = '/login';
+                } else {
+                    console.error(data.error);
+                }
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+    });
+
+    let modal = document.getElementById('promptModal');
+
+    modal.addEventListener('hidden.bs.modal', function () {
+        updateModal("placeholder")
+        document.getElementById('placeholder').value = '';
+        document.getElementById('placeholder-confirm').value = '';
+
+        resetErrors();
+    });
+
+    let resendLink = document.getElementById('resend-link');
+
+    resendLink.addEventListener('click', function(e) {
+        e.preventDefault();
+
+        fetch('/api/resendverification', {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.token
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                let link = document.getElementById('resend-link');
+                link.removeAttribute('href');
+
+                if (data.success) {
+                    link.textContent = 'Verification Email Sent!';
+                    link.style.color = 'green';
+                } else {
+                    link.textContent = 'Error Sending Verification Email';
+                    link.style.color = 'red';
+                }
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+    });
+}
+
+document.getElementById('placeholderForm').addEventListener('submit', function(e) {
+    e.preventDefault();
 
     let confirmButton = document.getElementById('confirmBtn');
 
@@ -105,39 +170,11 @@ function setupButtons() {
             backdrops[i].parentNode.removeChild(backdrops[i]);
         }
     });
+});
 
-    let logoutButton = document.getElementById('logoutBtn');
+document.getElementById('changePasswordForm').addEventListener('submit', function(e) {
+    e.preventDefault();
 
-    logoutButton.addEventListener('click', function() {
-        fetch('/api/logout', {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('token')}`
-            }
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    window.location.href = '/login';
-                } else {
-                    console.error(data.error);
-                }
-            })
-            .catch((error) => {
-                console.error('Error:', error);
-            });
-    });
-
-    let modal = document.getElementById('promptModal');
-
-    modal.addEventListener('hidden.bs.modal', function () {
-        updateModal("placeholder")
-        document.getElementById('placeholder').value = '';
-        document.getElementById('placeholder-confirm').value = '';
-
-        resetErrors();
-    });
 
     let changePasswordButton = document.getElementById('change-password');
     changePasswordButton.onclick = function() {
@@ -153,36 +190,7 @@ function setupButtons() {
 
         changePassword(oldPassword, confirm);
     }
-
-    let resendLink = document.getElementById('resend-link');
-
-    resendLink.addEventListener('click', function(e) {
-        e.preventDefault();
-
-        fetch('/api/resendverification', {
-            method: 'GET',
-            headers: {
-                'Authorization': 'Bearer ' + localStorage.token
-            }
-        })
-            .then(response => response.json())
-            .then(data => {
-                let link = document.getElementById('resend-link');
-                link.removeAttribute('href');
-
-                if (data.success) {
-                    link.textContent = 'Verification Email Sent!';
-                    link.style.color = 'green';
-                } else {
-                    link.textContent = 'Error Sending Verification Email';
-                    link.style.color = 'red';
-                }
-            })
-            .catch((error) => {
-                console.error('Error:', error);
-            });
-    });
-}
+});
 
 function changeUsername(newUsername) {
     let params = new URLSearchParams({username: newUsername}).toString();

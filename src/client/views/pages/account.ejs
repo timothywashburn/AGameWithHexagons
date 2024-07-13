@@ -25,17 +25,19 @@
                 <h5 class="modal-title" id="promptModalLabel">Change Placeholder</h5>
             </div>
             <div class="modal-body">
-                <div class="d-grid gap-2">
-                    <label for="placeholder">Placeholder</label>
-                    <input type="text" class="form-control" id="placeholder">
-                    <label for="placeholder-confirm">Confirm Placeholder</label>
-                    <input type="text" class="form-control" id="placeholder-confirm">
-                    <p id="error-message" style="color: red; height: 1em;"></p> <!-- Reserve space for the error message -->
-                    <div class="d-flex justify-content-between" id="buttonContainer">
-                        <button type="button" class="btn btn-success" id="confirmBtn">Confirm</button>
-                        <button type="button" class="btn btn-danger" id="cancelBtn">Cancel</button>
+                <form id="placeholderForm">
+                    <div class="d-grid gap-2">
+                        <label for="placeholder">Placeholder</label>
+                        <input type="text" class="form-control" id="placeholder" required>
+                        <label for="placeholder-confirm">Confirm Placeholder</label>
+                        <input type="text" class="form-control" id="placeholder-confirm" required>
+                        <p id="error-message" style="color: red; height: 1em;"></p> <!-- Reserve space for the error message -->
+                        <div class="d-flex justify-content-between" id="buttonContainer">
+                            <button type="submit" class="btn btn-success" id="confirmBtn">Confirm</button>
+                            <button type="button" class="btn btn-danger" id="cancelBtn">Cancel</button>
+                        </div>
                     </div>
-                </div>
+                </form>
             </div>
         </div>
     </div>
@@ -70,23 +72,25 @@
 
     <div class="spacer"></div>
 
-    <div class="info-field form-group">
-        <label>Old Password</label>
-        <div class="input-group mb-3">
-            <input type="password" class="form-control" id="old-password">
-            <div class="input-group-append">
-                <button class="btn btn-outline-secondary" type="button" id="change-password">Change Password</button>
+    <form id="changePasswordForm">
+        <div class="info-field form-group">
+            <label>Old Password</label>
+            <div class="input-group mb-3">
+                <input type="password" class="form-control" id="old-password" required>
+                <div class="input-group-append">
+                    <button class="btn btn-outline-secondary" type="submit" id="change-password">Change Password</button>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="info-field form-group">
-        <label>New Password</label>
-        <input type="password" class="form-control" id="new-password">
-    </div>
-    <div class="info-field form-group">
-        <label>Confirm New Password</label>
-        <input type="password" class="form-control" id="confirm-new-password">
-    </div>
+        <div class="info-field form-group">
+            <label>New Password</label>
+            <input type="password" class="form-control" id="new-password" required>
+        </div>
+        <div class="info-field form-group">
+            <label>Confirm New Password</label>
+            <input type="password" class="form-control" id="confirm-new-password" required>
+        </div>
+    </form>
 
     <div id="main-error-message" style="color: red; height: 1em;"></div>
 

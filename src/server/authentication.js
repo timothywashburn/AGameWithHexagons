@@ -489,9 +489,7 @@ async function isUsernameTaken(username) {
 }
 
 async function isUsernameValid(username) {
-    //TODO: Implement this
-
-    return true;
+    if(username.match('^(?=.{3,39}$)[a-zA-Z\\d]+(?:-[a-zA-Z\\d]+)*$')) return true;
 }
 
 async function isEmailInUse(email) {
