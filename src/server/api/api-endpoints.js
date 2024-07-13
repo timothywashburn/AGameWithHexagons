@@ -27,7 +27,7 @@ module.exports = {
 					name: game.getName(),
 					joinable: game.isJoinable(),
 					players: game.clientManager.clients.length,
-					maxPlayers: game.maxPlayers,
+					maxPlayers: game.clientManager.maxPlayers,
 				};
 			}),
 		};
