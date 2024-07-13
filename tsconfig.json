@@ -14,5 +14,5 @@
     "sourceMap": true,
     "allowJs": true
   },
-  "include": ["src/server/**/*"]
+  "include": ["src/**/*"]
 }

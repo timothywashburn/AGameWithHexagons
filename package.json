@@ -49,6 +49,7 @@
 		"prettier": "^3.2.5",
 		"prettier-plugin-ejs": "^1.0.3",
 		"raw-loader": "^4.0.2",
+		"ts-loader": "^9.5.1",
 		"ts-node": "^10.9.2",
 		"typescript": "^5.5.3",
 		"webpack": "^5.91.0",
