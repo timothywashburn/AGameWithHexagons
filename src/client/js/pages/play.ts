@@ -67,7 +67,7 @@ function updateGames() {
 				modal.show();
 			}
 
-			if (devConfig.autoJoin && !document.getElementById('promptModal').style.display) joinGame(0, window.gameData.socketID);
+			if (devConfig.autoJoin && !document.getElementById('promptModal').style.display) joinGame(0, (window as any).gameData.socketID);
 		});
 }
 
