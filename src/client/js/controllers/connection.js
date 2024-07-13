@@ -1,7 +1,7 @@
 import { ClientPacket, PacketType, getPacket } from '../../../shared/packets/packet';
 import { AnnouncementType } from '../../../shared/enums';
 import { io } from 'socket.io-client';
-import { devConfig, joinGame } from '../pages/play';
+import { devConfig, joinGame } from '../pages/play.ts';
 import { getGame } from '../objects/game'
 import { Game } from '../objects/game';
 

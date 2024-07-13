@@ -1,3 +1,4 @@
+// @ts-nocheck
 import '../objects/game';
 import '../controllers/connection';
 import '../misc/ui'

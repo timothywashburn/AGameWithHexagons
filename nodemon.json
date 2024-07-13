@@ -3,5 +3,6 @@
 		"src/server",
 		"src/shared",
 		"config.json"
-	]
+	],
+	"exec": "npx ts-node"
 }
