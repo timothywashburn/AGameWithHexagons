@@ -4,11 +4,14 @@ const fs = require('fs');
 const { isDev } = require('../misc/utils');
 const { Client, globalClients } = require('../objects/client');
 const { games, getGame } = require('../controllers/game-manager');
-const {generateToken, validateUser} = require("../authentication");
+const { generateToken, validateUser, getAccountInfo, logout, changeUsername, changeEmail, changePassword,
+	requestPasswordReset, requestUsername, sendEmailVerification, verifyEmail
+} = require("../authentication");
 const PacketClientGameInit = require("../../shared/packets/packet-client-game-init");
-const {AnnouncementType} = require("../../shared/enums");
+const { AnnouncementType, NameChangeError, EmailChangeError, PasswordChangeError, ToastMessage} = require("../../shared/enums");
 const config = require("../../../config.json");
 const server = require('../server');
+const { sendResetEmail } = require("../controllers/mail");
 
 module.exports = {
 	async gamedata(req, res) {
@@ -24,7 +27,7 @@ module.exports = {
 					name: game.getName(),
 					joinable: game.isJoinable(),
 					players: game.clientManager.clients.length,
-					maxPlayers: game.maxPlayers,
+					maxPlayers: game.clientManager.maxPlayers,
 				};
 			}),
 		};
@@ -123,7 +126,7 @@ module.exports = {
 	},
 
 	login(req, res) {
-		//TODO: Implement rate limits and
+		//TODO: Implement rate limits and captcha?
 
 		const username = req.query.username;
 		const password = req.query.password;
@@ -153,13 +156,11 @@ module.exports = {
 			});
 	},
 
-	logout(req, res) {
-
-		console.log('Logging out');
+	async logout(req, res) {
+		console.error('Logging out:', req.headers.authorization.split(' ')[1]);
 
 		const token= req.headers.authorization.split(' ')[1];
-		const { validate, logout } = require('../authentication');
-		let valid = token && validate(token);
+		let valid = token && await validateUser(token, null);
 
 		if(valid) logout(token)
 			.then(async result => {
@@ -174,5 +175,179 @@ module.exports = {
 					success: false
 				});
 			});
+		else res.json({
+			success: false
+		});
+	},
+
+	async account(req, res) {
+
+		const token= req.headers.authorization.split(' ')[1];
+		let valid = token && await validateUser(token, null);
+
+		if(valid) getAccountInfo(token)
+			.then(async result => {
+				res.json({
+					success: true,
+					info: result[0]
+				});
+			})
+			.catch(error => {
+				console.error('Error fetching account info:', error);
+				res.json({
+					success: false
+				});
+			});
+		else res.json({
+			success: false
+		});
+	},
+
+	async changeusername(req, res) {
+
+		const token= req.headers.authorization.split(' ')[1];
+		let username = req.query.username;
+
+		let valid = token && username && await validateUser(token, null);
+
+		if(valid) changeUsername(token, username)
+			.then(async result => {
+				res.json({
+					result: result
+				});
+			})
+			.catch(error => {
+				console.error('Error changing username:', error);
+				res.json({
+					result: NameChangeError.ERROR.id
+				});
+			});
+		else res.json({
+			result: NameChangeError.ERROR.id
+		});
+	},
+
+	async changeemail(req, res) {
+		const token= req.headers.authorization.split(' ')[1];
+		let email = req.query.email;
+
+		let valid = token && email && await validateUser(token, null);
+
+		if(valid) changeEmail(token, email)
+			.then(async result => {
+				res.json({
+					result: result
+				});
+			})
+			.catch(error => {
+				console.error('Error changing email:', error);
+				res.json({
+					result: EmailChangeError.ERROR.id
+				});
+			});
+		else res.json({
+			result: EmailChangeError.ERROR.id
+		});
+	},
+
+	async changepassword(req, res) {
+
+		const token= req.headers.authorization.split(' ')[1];
+
+		let oldPassword = req.query.oldPassword;
+		let newPassword = req.query.newPassword;
+
+		let valid = token && oldPassword && newPassword && await validateUser(token, null);
+
+		if(valid) changePassword(token, oldPassword, newPassword)
+			.then(async result => {
+				res.json({
+					result: result
+				});
+			})
+			.catch(error => {
+				console.error('Error changing email:', error);
+				res.json({
+					result: PasswordChangeError.ERROR.id
+				});
+			});
+		else res.json({
+			result: PasswordChangeError.ERROR.id
+		});
+	},
+
+	async resetpassword(req, res) {
+		const token = req.query.token;
+		const password = req.query.password;
+
+		let valid = token && password && await validateUser(token);
+		if(valid) changePassword(token, null, password, false)
+			.then(async result => {
+				res.json({
+					result: result
+				});
+			})
+			.catch(error => {
+				console.error('Error changing email:', error);
+				res.json({
+					result: PasswordChangeError.ERROR.id
+				});
+			});
+		else res.json({
+			result: PasswordChangeError.ERROR.id
+		});
+	},
+
+	async forgotpassword(req, res) {
+		const email = req.query.email;
+		await requestPasswordReset(email);
+
+		res.json({
+			success: true
+		});
+	},
+
+	async forgotusername(req, res) {
+		const email = req.query.email;
+		await requestUsername(email);
+
+		res.json({
+			success: true
+		});
+	},
+
+	async resendverification(req, res) {
+		const token = req.headers.authorization.split(' ')[1];
+		let valid = token && await validateUser(token, null);
+
+		if(valid) {
+			await sendEmailVerification(token);
+			res.json({
+				success: true
+			});
+		} else {
+			res.json({
+				success: false
+			});
+		}
+	},
+
+	async verify(req, res) {
+		const token = req.query.token;
+		let valid = token && await validateUser(token, null);
+
+		if(valid) {
+			await verifyEmail(token)
+				.then(async result => {
+					res.redirect('/account?toast=' + (result ? ToastMessage.EMAIL_VERIFIED.id : ToastMessage.EMAIL_VERIFIED_ERROR.id));
+				})
+				.catch(error => {
+					res.redirect('/account?toast=' + ToastMessage.EMAIL_VERIFIED_ERROR.id);
+					console.error('Error verifying account:', error);
+
+				});
+		} else {
+			res.redirect('/account?toast=' + ToastMessage.EMAIL_VERIFIED_ERROR.id);
+		}
 	}
 };
