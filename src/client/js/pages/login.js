@@ -20,7 +20,6 @@ document.getElementById('loginForm').addEventListener('submit', function(e) {
                 let token = data.token;
                 localStorage.setItem('token', token);
             } else {
-                console.log(data)
                 showError("Incorrect Login");
             }
             loginBtn.classList.remove('active');

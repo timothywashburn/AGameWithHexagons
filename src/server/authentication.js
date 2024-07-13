@@ -503,7 +503,6 @@ async function isEmailInUse(email) {
             }
 
             let verified = result[0].email_verified;
-            console.log(verified);
             resolve(verified[0] === 1);
         });
     });
