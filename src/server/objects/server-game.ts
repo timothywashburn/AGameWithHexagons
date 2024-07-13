@@ -7,14 +7,19 @@ const {AnnouncementType} = require('../../shared/enums');
 let { globalClients } = require('./client');
 
 class ServerGame {
+    private clientManager: typeof GameClientManager;
+
+    private readonly startTime: number = Date.now();
+
+    private tiles: typeof ServerTile[] = [];
+    private troops: typeof ServerTroop[] = [];
+
+    private readonly boardSize: number;
+
     constructor(server, boardSize) {
         this.clientManager = new GameClientManager(this);
 
         this.boardSize = boardSize;
-        this.startTime = Date.now();
-
-        this.tiles = [];
-        this.troops = [];
 
         this.generateTiles();
 

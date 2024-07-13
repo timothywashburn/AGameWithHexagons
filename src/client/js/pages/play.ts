@@ -5,6 +5,9 @@ import '../misc/ui'
 import '../../../shared/packets/packet';
 import { ToastMessage } from '../../../shared/enums';
 import { showToast } from "../controllers/toast";
+import { Modal } from "bootstrap";
+
+(window as any).gameData = {}
 
 window.onload = function() {
 	if (!localStorage.token) return;
@@ -35,7 +38,7 @@ function updateGames() {
 	let headers = new Headers();
 	headers.append("Authorization", "Bearer " + localStorage.token);
 
-	let requestOptions = {
+	let requestOptions: RequestInit = {
 		method: 'GET',
 		headers: headers,
 		redirect: 'follow'
@@ -55,12 +58,12 @@ function updateGames() {
 					const gameID = card.id;
 					console.log('Clicked game ID:', gameID);
 
-					joinGame(gameID, window.gameData.socketID);
+					joinGame(gameID, (window as any).gameData.socketID);
 				});
 			});
 
 			if (!data.authenticated) {
-				let modal = new bootstrap.Modal(document.getElementById('promptModal'))
+				let modal = new Modal(document.getElementById('promptModal'))
 				modal.show();
 			}
 
@@ -72,7 +75,7 @@ export function joinGame(game, socket) {
 	let headers = new Headers();
 	headers.append("Authorization", "Bearer " + localStorage.token);
 
-	let requestOptions = {
+	let requestOptions: RequestInit = {
 		method: 'GET',
 		headers: headers,
 		redirect: 'follow'

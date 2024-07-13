@@ -154,7 +154,12 @@ async function validateUser(token, client) {
     try {
         const decoded = jwt.verify(token, config.secret);
 
-        let loggedIn = await new Promise((resolve, reject) => {
+        interface UserRecord {
+            last_logout: number,
+            username: string;
+        }
+
+        let loggedIn = await new Promise<UserRecord>((resolve, reject) => {
             connection.query('SELECT last_logout, username FROM accounts WHERE id = ?', [decoded.userId], (err, result) => {
                 if(err) reject(err);
                 if(result.length === 0) reject('User not found');
@@ -200,6 +205,7 @@ async function getUserID(username) {
         let loggedOut = await new Promise((resolve, reject) => {
             connection.query('UPDATE accounts SET last_logout = ? WHERE id = ?', [Date.now(), decoded.userId], (err, result) => {
                 if(err) reject(err);
+                // @ts-ignore
                 resolve();
             });
         });
@@ -429,7 +435,7 @@ async function verifyEmail(token) {
     try {
         const decoded = jwt.verify(token, config.secret);
 
-        let emailChange = await new Promise((resolve, reject) => {
+        let emailChange = await new Promise<number>((resolve, reject) => {
             connection.query('SELECT last_email_change FROM accounts WHERE id = ?', [decoded.userId], (err, result) => {
                 if(err) reject(err);
                 resolve(result[0].last_email_change);

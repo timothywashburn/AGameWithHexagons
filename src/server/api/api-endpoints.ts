@@ -4,6 +4,7 @@ const fs = require('fs');
 const { isDev } = require('../misc/utils');
 const { Client, globalClients } = require('../objects/client');
 const { games, getGame } = require('../controllers/game-manager');
+// TODO: Cleanup
 const { generateToken, validateUser, getAccountInfo, logout, changeUsername, changeEmail, changePassword,
 	requestPasswordReset, requestUsername, sendEmailVerification, verifyEmail
 } = require("../authentication");
@@ -30,6 +31,8 @@ module.exports = {
 					maxPlayers: game.clientManager.maxPlayers,
 				};
 			}),
+			dev: undefined,
+			html: undefined
 		};
 
 		if (isDev) responseData.dev = config.dev;

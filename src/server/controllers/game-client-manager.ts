@@ -5,8 +5,10 @@ const PacketClientGameInit = require('../../shared/packets/packet-client-game-in
 const server = require('../server');
 
 class GameClientManager {
-	clients = [];
-	teamColors = []
+	private clients = [];
+	private teamColors = []
+	private readonly game: any;
+	private maxPlayers: number;
 
 	constructor(game) {
 		this.game = game;
