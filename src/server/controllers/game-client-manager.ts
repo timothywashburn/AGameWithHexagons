@@ -1,23 +1,26 @@
 import PacketClientGameInit from '../../shared/packets/packet-client-game-init';
 import PacketClientPlayerListInfo from '../../shared/packets/packet-client-player-list-info';
 import PacketClientAnnouncement from '../../shared/packets/packet-client-announcement';
+import Client from '../objects/client';
+import {TeamColor} from '../../shared/enums';
+import ServerGame from '../objects/server-game';
 
 const { AnnouncementType } = require('../../shared/enums');
 const server = require('../server');
 
 class GameClientManager {
-	public clients = [];
-	public teamColors = []
-	public readonly game: any;
+	public clients: Client[] = [];
+	public teamColors: typeof TeamColor[] = []
+	public readonly game: ServerGame;
 	public maxPlayers: number;
 
-	constructor(game) {
+	constructor(game: ServerGame) {
 		this.game = game;
 
 		this.maxPlayers = 8;
 	}
 
-	async addClientToGame(client, initData) {
+	async addClientToGame(client: Client, initData) {
 		this.clients.push(client);
 		client.game = this.game;
 
@@ -43,7 +46,7 @@ class GameClientManager {
 		});
 	}
 
-	sendAlert(client, announcementType) {
+	sendAlert(client: Client, announcementType: typeof AnnouncementType) {
 		let packet = new PacketClientAnnouncement(client.profile.userID, announcementType.id);
 
 		this.clients.forEach((client) => {

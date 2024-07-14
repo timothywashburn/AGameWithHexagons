@@ -14,7 +14,7 @@ export interface RegistrationError {
 	message: string;
 }
 
-export const RegistrationError = Object.freeze({
+export const RegistrationError: Readonly<{ [key: string]: RegistrationError }> = Object.freeze({
 	SUCCESS: { id: 0x00, message: 'Account created successfully' },
 	USERNAME_EXISTS: { id: 0x01, message: 'Username already exists' },
 	USERNAME_INVALID: { id: 0x02, message: 'Invalid username' },
@@ -38,7 +38,7 @@ export interface EmailChangeError {
 	message: string;
 }
 
-export const EmailChangeError = Object.freeze({
+export const EmailChangeError: Readonly<{ [key: string]: EmailChangeError }> = Object.freeze({
 	SUCCESS: { id: 0x00, message: 'Email changed successfully' },
 	EMAIL_EXISTS: { id: 0x01, message: 'Email is already linked to another account' },
 	EMAIL_INVALID: { id: 0x02, message: 'Invalid email' },
@@ -50,7 +50,7 @@ export interface PasswordChangeError {
 	message: string;
 }
 
-export const PasswordChangeError = Object.freeze({
+export const PasswordChangeError: Readonly<{ [key: string]: PasswordChangeError }> = Object.freeze({
 	SUCCESS: { id: 0x00, message: 'Password changed successfully' },
 	PASSWORD_INCORRECT: { id: 0x01, message: 'Incorrect password' },
 	INSECURE_PASSWORD: { id: 0x02, message: 'Password is insecure' },

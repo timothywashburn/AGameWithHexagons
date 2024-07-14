@@ -1,9 +1,10 @@
+import {LibraryResponse} from 'node-mailjet/declarations/types/api';
+
 const config = require('../../../config');
 
-const mailjet = require ('node-mailjet')
-    .apiConnect(config.mail.publicKey, config.mail.privateKey);
+const mailjet = require('node-mailjet').apiConnect(config.mail.publicKey, config.mail.privateKey);
 
-async function sendResetEmail(username, email, link) {
+async function sendResetEmail(username: string, email: string, link: string) {
     const request = mailjet
         .post("send", {'version': 'v3.1'})
         .request({
@@ -30,15 +31,15 @@ async function sendResetEmail(username, email, link) {
             ]
         })
     request
-        .then((result) => {
-            console.log(result.body)
+        .then((result: LibraryResponse<Body>) => {
+            console.log(result.body);
         })
         .catch((err) => {
-            console.log(err.statusCode)
+            console.log(err.statusCode);
         })
 }
 
-async function sendUsernameEmail(username, email) {
+async function sendUsernameEmail(username: string, email: string) {
     const loginPageUrl = config.host + "/login";
     const request = mailjet
         .post("send", {'version': 'v3.1'})
@@ -67,15 +68,15 @@ async function sendUsernameEmail(username, email) {
             ]
         })
     request
-        .then((result) => {
-            console.log(result.body)
+        .then((result: LibraryResponse<Body>) => {
+            console.log(result.body);
         })
         .catch((err) => {
-            console.log(err.statusCode)
+            console.log(err.statusCode);
         })
 }
 
-async function sendVerificationEmail(username, email, link) {
+async function sendVerificationEmail(username: string, email: string, link: string) {
     const request = mailjet
         .post("send", {'version': 'v3.1'})
         .request({
@@ -103,11 +104,11 @@ async function sendVerificationEmail(username, email, link) {
             ]
         })
     request
-        .then((result) => {
-            console.log(result.body)
+        .then((result: LibraryResponse<Body>) => {
+            console.log(result.body);
         })
         .catch((err) => {
-            console.log(err.statusCode)
+            console.log(err.statusCode);
         })
 }
 
