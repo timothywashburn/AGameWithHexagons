@@ -1,6 +1,6 @@
 let nextID = 0;
 
-class ServerTile {
+export default class ServerTile {
     occupantTroop;
     occupantBuilding;
 
@@ -30,8 +30,4 @@ function getRBGAround(red, green, blue, random) {
     let randomMultiplier = Math.random();
     let getRandom = value => value + randomMultiplier * random - random / 2;
     return `rgb(${getRandom(red)}, ${getRandom(green)}, ${getRandom(blue)}`;
-}
-
-module.exports = {
-    ServerTile: ServerTile
 }

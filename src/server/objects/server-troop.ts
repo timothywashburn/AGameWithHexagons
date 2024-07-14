@@ -2,8 +2,7 @@ import Tile from "../../client/js/objects/tile";
 
 let nextID = 0;
 
-class ServerTroop {
-
+export default class ServerTroop {
 	public id: number;
 	public ownerID: number;
 	public parentTile: Tile;
@@ -21,8 +20,4 @@ class ServerTroop {
 			parentTileID: this.parentTile.id
 		}
 	}
-}
-
-module.exports = {
-	ServerTroop: ServerTroop
 }

@@ -1,3 +1,5 @@
+import {Socket} from "socket.io";
+
 const path = require('path');
 const express = require('express');
 const app = express();
@@ -14,6 +16,8 @@ const { isDev } = require('./misc/utils');
 
 const viewsDir = `${__dirname}/../client/views`;
 
+import { Request, Response } from 'express';
+
 app.set('view engine', 'ejs');
 app.set('views', viewsDir);
 
@@ -29,7 +33,7 @@ const validateConfig = () => {
 	const exampleConfig = require(exampleConfigPath);
 
 // Function to check for missing keys, including nested keys
-	const checkMissingKeys = (example, actual, prefix = '') => {
+	const checkMissingKeys = (example: any, actual: any, prefix = '') => {
 		Object.keys(example).forEach((key) => {
 			const fullKey = prefix ? `${prefix}.${key}` : key;
 			if (typeof example[key] === 'object' && !Array.isArray(example[key])) {
@@ -52,7 +56,7 @@ if (isDev) {
 	const compiler = webpack(webpackConfig);
 	app.use(
 		webpackDevMiddleware(compiler, {
-			headers: (req, res) => {
+			headers: (req: Request, res: Response) => {
 				res.set('Cache-Control', 'no-store');
 			},
 		}),
@@ -60,7 +64,7 @@ if (isDev) {
 } else {
 	app.use(
 		express.static('dist', {
-			setHeaders: (res) => {
+			setHeaders: (res: Response) => {
 				// TODO: Switch to a content hashing cache system before removing this
 				res.set('Cache-Control', 'no-store');
 			},
@@ -68,11 +72,11 @@ if (isDev) {
 	);
 }
 
-app.get('/', (req, res) => {
+app.get('/', (req: Request, res: Response) => {
 	res.render('pages/index');
 });
 
-app.get('/api/:endpoint', (req, res) => {
+app.get('/api/:endpoint', (req: Request, res: Response) => {
 	let endpoint = req.params.endpoint.toLowerCase();
 
 	if (typeof endpoints[endpoint] === 'function') {
@@ -87,7 +91,7 @@ app.get('/api/:endpoint', (req, res) => {
 
 app.use('/images', express.static(path.join(__dirname, '../client/images')));
 
-app.get('/:page', (req, res) => {
+app.get('/:page', (req: Request, res: Response) => {
 	console.log(`request incoming: ${Date.now()}, ${req.path}`);
 
 	let pageName = req.params.page;
@@ -111,7 +115,7 @@ let game2 = new Game(server, 5);
 
 const serverSocket = new Server(server);
 
-serverSocket.on('connection', (socket) => {
+serverSocket.on('connection', (socket: Socket) => {
 	globalClients.push(new Client(socket));
 });
 

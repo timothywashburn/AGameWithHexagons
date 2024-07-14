@@ -1,8 +1,12 @@
+import ServerGame from "../objects/server-game";
+import Client from "../objects/client";
+import { Request, Response } from 'express';
+
 const ejs = require('ejs');
 const fs = require('fs');
 
 const { isDev } = require('../misc/utils');
-const { Client, globalClients } = require('../objects/client');
+const { globalClients } = require('../objects/client');
 const { games, getGame } = require('../controllers/game-manager');
 // TODO: Cleanup
 const { generateToken, validateUser, getAccountInfo, logout, changeUsername, changeEmail, changePassword,
@@ -15,15 +19,15 @@ const server = require('../server');
 const { sendResetEmail } = require("../controllers/mail");
 
 module.exports = {
-	async gamedata(req, res) {
-		const token = req.headers.authorization.split(' ')[1];
+	async gamedata(req: Request, res: Response) {
+		const token = req.headers.authorization!.split(' ')[1];
 		let valid = token && await validateUser(token, null);
 
 		console.log('game data requested');
 		let responseData = {
 			success: true,
 			authenticated: valid,
-			games: games.map((game) => {
+			games: games.map((game: ServerGame) => {
 				return {
 					name: game.getName(),
 					joinable: game.isJoinable(),
@@ -37,7 +41,8 @@ module.exports = {
 
 		if (isDev) responseData.dev = config.dev;
 
-		fs.readFile(`${__dirname}/../../client/views/partials/game-info.ejs`, 'utf8', (err, file) => {
+		fs.readFile(`${__dirname}/../../client/views/partials/game-info.ejs`, 'utf8',
+			(err: NodeJS.ErrnoException, file: string) => {
 			if (err) {
 				console.error('Error reading file:', err);
 				return;
@@ -48,12 +53,12 @@ module.exports = {
 		});
 	},
 
-	async join(req, res) {
+	async join(req: Request, res: Response) {
 		const gameID = req.query.game;
 		const socketId = req.query.socketID;
-		const token = req.headers.authorization.split(' ')[1];
+		const token = req.headers.authorization!.split(' ')[1];
 
-		let client = globalClients.find((client) => client.socket.id === socketId);
+		let client = globalClients.find((client: Client) => client.socket.id === socketId);
 		if (!client) {
 			res.json({
 				success: false,
@@ -73,7 +78,7 @@ module.exports = {
 				message: "This is not a valid game"
 			});
 			return;
-		} else if (game.clientManager.clients.find(testClient => testClient.profile.id === client.profile.id)) {
+		} else if (game.clientManager.clients.find((testClient: Client) => testClient.getID() === client.profile.id)) {
 			res.json({
 				success: false,
 				alert: true,
@@ -95,7 +100,7 @@ module.exports = {
 		await game.clientManager.addClientToGame(client, initData);
 	},
 
-	register(req, res) {
+	register(req: Request, res: Response) {
 		//TODO: Implement name restrictions
 
 		const username = req.query.username;
@@ -128,7 +133,7 @@ module.exports = {
 			});
 	},
 
-	login(req, res) {
+	login(req: Request, res: Response) {
 		//TODO: Implement rate limits and captcha?
 
 		const username = req.query.username;
@@ -159,10 +164,10 @@ module.exports = {
 			});
 	},
 
-	async logout(req, res) {
-		console.error('Logging out:', req.headers.authorization.split(' ')[1]);
+	async logout(req: Request, res: Response) {
+		console.error('Logging out:', req.headers.authorization!.split(' ')[1]);
 
-		const token= req.headers.authorization.split(' ')[1];
+		const token= req.headers.authorization!.split(' ')[1];
 		let valid = token && await validateUser(token, null);
 
 		if(valid) logout(token)
@@ -183,9 +188,9 @@ module.exports = {
 		});
 	},
 
-	async account(req, res) {
+	async account(req: Request, res: Response) {
 
-		const token= req.headers.authorization.split(' ')[1];
+		const token= req.headers.authorization!.split(' ')[1];
 		let valid = token && await validateUser(token, null);
 
 		if(valid) getAccountInfo(token)
@@ -206,9 +211,9 @@ module.exports = {
 		});
 	},
 
-	async changeusername(req, res) {
+	async changeusername(req: Request, res: Response) {
 
-		const token= req.headers.authorization.split(' ')[1];
+		const token= req.headers.authorization!.split(' ')[1];
 		let username = req.query.username;
 
 		let valid = token && username && await validateUser(token, null);
@@ -230,8 +235,8 @@ module.exports = {
 		});
 	},
 
-	async changeemail(req, res) {
-		const token= req.headers.authorization.split(' ')[1];
+	async changeemail(req: Request, res: Response) {
+		const token= req.headers.authorization!.split(' ')[1];
 		let email = req.query.email;
 
 		let valid = token && email && await validateUser(token, null);
@@ -253,9 +258,9 @@ module.exports = {
 		});
 	},
 
-	async changepassword(req, res) {
+	async changepassword(req: Request, res: Response) {
 
-		const token= req.headers.authorization.split(' ')[1];
+		const token= req.headers.authorization!.split(' ')[1];
 
 		let oldPassword = req.query.oldPassword;
 		let newPassword = req.query.newPassword;
@@ -279,7 +284,7 @@ module.exports = {
 		});
 	},
 
-	async resetpassword(req, res) {
+	async resetpassword(req: Request, res: Response) {
 		const token = req.query.token;
 		const password = req.query.password;
 
@@ -301,7 +306,7 @@ module.exports = {
 		});
 	},
 
-	async forgotpassword(req, res) {
+	async forgotpassword(req: Request, res: Response) {
 		const email = req.query.email;
 		await requestPasswordReset(email);
 
@@ -310,7 +315,7 @@ module.exports = {
 		});
 	},
 
-	async forgotusername(req, res) {
+	async forgotusername(req: Request, res: Response) {
 		const email = req.query.email;
 		await requestUsername(email);
 
@@ -319,8 +324,8 @@ module.exports = {
 		});
 	},
 
-	async resendverification(req, res) {
-		const token = req.headers.authorization.split(' ')[1];
+	async resendverification(req: Request, res: Response) {
+		const token = req.headers.authorization!.split(' ')[1];
 		let valid = token && await validateUser(token, null);
 
 		if(valid) {
@@ -335,7 +340,7 @@ module.exports = {
 		}
 	},
 
-	async verify(req, res) {
+	async verify(req: Request, res: Response) {
 		const token = req.query.token;
 		let valid = token && await validateUser(token, null);
 
