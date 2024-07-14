@@ -49,7 +49,7 @@ class GameClientManager {
 			packet.addClient(client);
 		});
 
-		packet.send();
+		packet.send(client.socket);
 	}
 
 	sendPacket(packet) {

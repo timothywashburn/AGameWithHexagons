@@ -4,6 +4,11 @@ class ServerTile {
     occupantTroop;
     occupantBuilding;
 
+    public id: number;
+    public x: number;
+    public y: number;
+    public color: string;
+
     constructor(x, y) {
         this.id = nextID++;
         this.x = x;
