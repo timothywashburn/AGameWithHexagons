@@ -9,6 +9,11 @@ export const AnnouncementType = Object.freeze({
 	GAME_LEAVE: { id: 0x02, message: 'Left the game', color: 'red'},
 });
 
+export interface RegistrationError {
+	id: number;
+	message: string;
+}
+
 export const RegistrationError = Object.freeze({
 	SUCCESS: { id: 0x00, message: 'Account created successfully' },
 	USERNAME_EXISTS: { id: 0x01, message: 'Username already exists' },
@@ -16,12 +21,22 @@ export const RegistrationError = Object.freeze({
 	PASSWORD_INVALID: { id: 0x03, message: 'Invalid password' },
 });
 
-export const NameChangeError = Object.freeze({
+export interface NameChangeError {
+	id: number;
+	message: string;
+}
+
+export const NameChangeError: Readonly<{ [key: string]: NameChangeError }> = Object.freeze({
 	SUCCESS: { id: 0x00, message: 'Name changed successfully' },
 	USERNAME_EXISTS: { id: 0x01, message: 'Username already exists' },
 	USERNAME_INVALID: { id: 0x02, message: 'Invalid username' },
 	ERROR: { id: 0x03, message: 'Error changing name' },
 });
+
+export interface EmailChangeError {
+	id: number;
+	message: string;
+}
 
 export const EmailChangeError = Object.freeze({
 	SUCCESS: { id: 0x00, message: 'Email changed successfully' },
@@ -29,6 +44,11 @@ export const EmailChangeError = Object.freeze({
 	EMAIL_INVALID: { id: 0x02, message: 'Invalid email' },
 	ERROR: { id: 0x03, message: 'Error changing email' },
 });
+
+export interface PasswordChangeError {
+	id: number;
+	message: string;
+}
 
 export const PasswordChangeError = Object.freeze({
 	SUCCESS: { id: 0x00, message: 'Password changed successfully' },

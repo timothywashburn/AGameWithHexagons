@@ -6,12 +6,13 @@ const { generateUsername } = require("unique-username-generator");
 const { ServerPacket } = require('../../shared/packets/packet');
 const { TeamColor } = require('../../shared/enums');
 
-let globalClients: Client[] = [];
 let nextColor = 0;
 let nextID = -1;
 
 export default class Client {
-	game;
+	public static clientList: Client[] = [];
+
+	public game;
 
 	public color: typeof TeamColor;
 	public socket: Socket;
@@ -19,6 +20,8 @@ export default class Client {
 	public profile: UserProfile;
 
 	constructor(socket) {
+		Client.clientList.push(this);
+
 		this.color = Object.values(TeamColor)[nextColor++ % Object.keys(TeamColor).length];
 
 		this.socket = socket;
@@ -27,7 +30,7 @@ export default class Client {
 
 		socket.on('disconnect', () => {
 			if (this.game) this.game.removePlayer(this);
-			globalClients = globalClients.filter(client => client !== this);
+			Client.clientList = Client.clientList.filter(client => client !== this);
 		});
 
 		socket.on('packet', (packet) => {
@@ -53,7 +56,7 @@ export default class Client {
 	}
 }
 
-class UserProfile {
+export class UserProfile {
 	userID: number;
 	username: string;
 
@@ -62,5 +65,3 @@ class UserProfile {
 		this.username = username;
 	}
 }
-
-module.exports = { Client, UserProfile, globalClients };

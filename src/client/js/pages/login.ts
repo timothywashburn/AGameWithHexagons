@@ -1,7 +1,7 @@
-document.getElementById('loginForm').addEventListener('submit', function(e) {
+(document.getElementById('loginForm') as HTMLElement).addEventListener('submit', function(e) {
     e.preventDefault();
 
-    let loginBtn = document.getElementById('loginBtn');
+    let loginBtn = document.getElementById('loginBtn') as HTMLElement;
     loginBtn.classList.add('active');
 
     let username = (document.getElementById('username') as HTMLInputElement).value;
@@ -30,29 +30,27 @@ document.getElementById('loginForm').addEventListener('submit', function(e) {
         });
 });
 
-let errorTimeout;
+let errorTimeout: NodeJS.Timeout;
 
-function showError(message) {
-    let inputElements = document.querySelectorAll('.form-group input');
-
+function showError(message: string) {
+    let inputElements = document.querySelectorAll('.form-group input') as NodeListOf<HTMLInputElement>;
     inputElements.forEach((input: HTMLInputElement) => {
         input.style.borderColor = 'red';
     });
 
-    let errorMessage = document.getElementById('loginError');
+    let errorMessage = document.getElementById('loginError') as HTMLElement;
     errorMessage.textContent = message;
 
     clearTimeout(errorTimeout);
     errorTimeout = setTimeout(resetErrors, 3000);
 }
 function resetErrors() {
-    let inputElements = document.querySelectorAll('.form-group input');
-
+    let inputElements = document.querySelectorAll('.form-group input') as NodeListOf<HTMLInputElement>;
     inputElements.forEach((input: HTMLInputElement) => {
         input.style.borderColor = '';
     });
 
-    let errorMessage = document.getElementById('loginError');
+    let errorMessage = document.getElementById('loginError') as HTMLElement;
     errorMessage.textContent = '';
 }
 

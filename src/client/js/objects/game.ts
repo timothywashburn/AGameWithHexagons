@@ -2,7 +2,7 @@ import { prepareFrame } from '../render';
 import Tile from './tile'
 import Troop from './troop';
 
-let game;
+let game: Game;
 
 export const getGame = () => game;
 
@@ -14,8 +14,8 @@ export class Game {
 	public troops: Troop[];
 	public buildings: any[];
 
-	public frame: number;
-	public renderTimes: number[];
+	public frame: number = 1;
+	public renderTimes: number[] = [];
 
 	constructor(initData) {
 		game = this;
@@ -34,9 +34,6 @@ export class Game {
 	}
 
 	setupDebug() {
-		this.frame = 1;
-		this.renderTimes = []
-
 		setInterval(() => {
 			let secondsElapsed = (Date.now() - this.startTime) / 1000;
 			let frameRate = +(this.frame / secondsElapsed).toFixed(1);
@@ -67,17 +64,17 @@ export class Game {
 		// console.log("snapshot");
 		// console.log(snapshot);
 
-		this.tiles.forEach(tile => tile.updateTile(snapshot.tiles.find(testTile => testTile.x === tile.x && testTile.y === tile.y)));
+		this.tiles.forEach(tile => tile.updateTile(snapshot.tiles.find((testTile: Tile) => testTile.id === tile.id)));
 	}
 
 	startRender() {
-		const lobbyDiv = document.getElementById('gameLobby');
-		const gameDiv = document.getElementById('game');
+		const lobbyDiv = document.getElementById('gameLobby') as HTMLElement;
+		const gameDiv = document.getElementById('game') as HTMLElement;
 
 		lobbyDiv.style.display = 'none';
 		gameDiv.style.display = 'block';
 
-		this.tick()
+		this.tick();
 	}
 
 	async tick() {

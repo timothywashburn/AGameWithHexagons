@@ -1,4 +1,9 @@
-import { NameChangeError, EmailChangeError, PasswordChangeError, ToastMessage } from '../../../shared/enums';
+import {
+    NameChangeError,
+    EmailChangeError,
+    PasswordChangeError,
+    ToastMessage,
+} from '../../../shared/enums';
 import { showToast } from "../controllers/toast";
 import { Modal } from "bootstrap";
 
@@ -23,7 +28,7 @@ window.onload = function() {
             else (document.getElementById('email') as HTMLInputElement).value = data.info.email;
 
             if(data.info.email != null && data.info.email_verified.data[0] === 0) {
-                let div = document.getElementById('unverified-container');
+                let div = document.getElementById('unverified-container') as HTMLElement;
                 div.style.visibility = 'visible';
             }
 
@@ -33,31 +38,30 @@ window.onload = function() {
 
 function showToasts() {
     const urlParams = new URLSearchParams(window.location.search);
-    const toastId = urlParams.get('toast');
+    const toastId = urlParams.get('toast') as string;
 
     let toast = Object.values(ToastMessage).find((toast) => toast.id === parseInt(toastId));
     if (toast) showToast(toast.message, toast.color);
 }
 
 function setupButtons() {
-    let changeEmailButton = document.getElementById('change-email');
+    let changeEmailButton = document.getElementById('change-email') as HTMLElement;
     changeEmailButton.onclick = function () {
-        let modal = new Modal(document.getElementById('promptModal'))
+        let modal = new Modal(document.getElementById('promptModal') as HTMLElement);
         modal.show();
 
         updateModal('Email');
     }
 
-    let changeNameButton = document.getElementById('change-username');
+    let changeNameButton = document.getElementById('change-username') as HTMLElement;
     changeNameButton.onclick = function () {
-        let modal = new Modal(document.getElementById('promptModal'))
+        let modal = new Modal(document.getElementById('promptModal') as HTMLElement);
         modal.show();
 
         updateModal('Username');
     }
 
-    let logoutButton = document.getElementById('logoutBtn');
-
+    let logoutButton = document.getElementById('logoutBtn') as HTMLElement;
     logoutButton.addEventListener('click', function() {
         fetch('/api/logout', {
             method: 'GET',
@@ -79,8 +83,7 @@ function setupButtons() {
             });
     });
 
-    let modal = document.getElementById('promptModal');
-
+    let modal = document.getElementById('promptModal') as HTMLElement;
     modal.addEventListener('hidden.bs.modal', function () {
         updateModal('placeholder');
         (document.getElementById('placeholder') as HTMLInputElement).value = '';
@@ -89,8 +92,7 @@ function setupButtons() {
         resetErrors();
     });
 
-    let resendLink = document.getElementById('resend-link');
-
+    let resendLink = document.getElementById('resend-link') as HTMLElement;
     resendLink.addEventListener('click', function(e) {
         e.preventDefault();
 
@@ -102,7 +104,7 @@ function setupButtons() {
         })
             .then(response => response.json())
             .then(data => {
-                let link = document.getElementById('resend-link');
+                let link = document.getElementById('resend-link') as HTMLElement;
                 link.removeAttribute('href');
 
                 if (data.success) {
@@ -119,16 +121,14 @@ function setupButtons() {
     });
 }
 
-document.getElementById('placeholderForm').addEventListener('submit', function(e) {
+(document.getElementById('placeholderForm') as HTMLElement).addEventListener('submit', function(e) {
     e.preventDefault();
 
-    let confirmButton = document.getElementById('confirmBtn');
-
+    let confirmButton = document.getElementById('confirmBtn') as HTMLElement;
     confirmButton.addEventListener('click', function() {
-        let modalTitle = document.getElementById('promptModalLabel').textContent;
+        let modalTitle = (document.getElementById('promptModalLabel') as HTMLElement).textContent;
 
         if (modalTitle === 'Change Email') {
-
             let email = (document.getElementById('email') as HTMLInputElement).value;
             let confirm = (document.getElementById('email-confirm') as HTMLInputElement).value;
 
@@ -139,7 +139,6 @@ document.getElementById('placeholderForm').addEventListener('submit', function(e
 
             changeEmail(email);
         } else if (modalTitle === 'Change Username') {
-
             let username = (document.getElementById('username') as HTMLInputElement).value;
             let confirm = (document.getElementById('username-confirm') as HTMLInputElement).value;
 
@@ -152,10 +151,9 @@ document.getElementById('placeholderForm').addEventListener('submit', function(e
         }
     });
 
-    let cancelButton = document.getElementById('cancelBtn');
-
+    let cancelButton = document.getElementById('cancelBtn') as HTMLElement;
     cancelButton.addEventListener('click', function() {
-        let modal = document.getElementById('promptModal');
+        let modal = document.getElementById('promptModal') as HTMLElement;
 
         updateModal('placeholder');
         (document.getElementById('placeholder') as HTMLInputElement).value = '';
@@ -166,18 +164,17 @@ document.getElementById('placeholderForm').addEventListener('submit', function(e
         modal.classList.remove('show');
         modal.style.display = 'none';
 
-        let backdrops = document.getElementsByClassName('modal-backdrop');
+        let backdrops = document.getElementsByClassName('modal-backdrop') as HTMLCollectionOf<Element>;
         for (let i = 0; i < backdrops.length; i++) {
-            backdrops[i].parentNode.removeChild(backdrops[i]);
+            backdrops[i].parentNode!.removeChild(backdrops[i]);
         }
     });
 });
 
-document.getElementById('changePasswordForm').addEventListener('submit', function(e) {
+(document.getElementById('changePasswordForm') as Element).addEventListener('submit', function(e) {
     e.preventDefault();
 
-
-    let changePasswordButton = document.getElementById('change-password');
+    let changePasswordButton = document.getElementById('change-password') as HTMLInputElement;
     changePasswordButton.onclick = function() {
         let oldPassword = (document.getElementById('old-password') as HTMLInputElement).value;
         let newPassword = (document.getElementById('new-password') as HTMLInputElement).value;
@@ -193,7 +190,7 @@ document.getElementById('changePasswordForm').addEventListener('submit', functio
     }
 });
 
-function changeUsername(newUsername) {
+function changeUsername(newUsername: string) {
     let params = new URLSearchParams({username: newUsername}).toString();
 
     fetch(`/api/changeusername?${params}`, {
@@ -206,7 +203,7 @@ function changeUsername(newUsername) {
         .then(data => {
             resetErrors();
 
-            let error = Object.values(NameChangeError).find((error) => error.id === data.result);
+            let error = Object.values(NameChangeError).find((error) => error.id === data.result) as NameChangeError;
             console.log(error);
 
             if (error.id === NameChangeError.SUCCESS.id) {
@@ -217,7 +214,7 @@ function changeUsername(newUsername) {
         .catch(error => console.error('Error:', error));
 }
 
-function changeEmail(newEmail) {
+function changeEmail(newEmail: string) {
     let params = new URLSearchParams({email: newEmail}).toString();
 
     fetch(`/api/changeemail?${params}`, {
@@ -230,7 +227,7 @@ function changeEmail(newEmail) {
         .then(data => {
             resetErrors();
 
-            let error = Object.values(EmailChangeError).find((error) => error.id === data.result);
+            let error = Object.values(EmailChangeError).find((error) => error.id === data.result) as EmailChangeError;
 
             if (error.id === EmailChangeError.SUCCESS.id) {
                 location.href = `/account?toast=${ToastMessage.EMAIL_CHANGE_SUCCESS.id}`;
@@ -240,7 +237,7 @@ function changeEmail(newEmail) {
         .catch(error => console.error('Error:', error));
 }
 
-function changePassword(oldPassword, newPassword) {
+function changePassword(oldPassword: string, newPassword: string) {
     let params = new URLSearchParams({oldPassword: oldPassword, newPassword: newPassword}).toString();
 
     fetch(`/api/changepassword?${params}`, {
@@ -255,7 +252,7 @@ function changePassword(oldPassword, newPassword) {
 
             resetErrors();
 
-            let error = Object.values(PasswordChangeError).find((error) => error.id === data.result);
+            let error = Object.values(PasswordChangeError).find((error) => error.id === data.result) as PasswordChangeError;
             console.log(error);
 
             if (error.id === PasswordChangeError.SUCCESS.id) {
@@ -268,7 +265,7 @@ function changePassword(oldPassword, newPassword) {
 }
 
 function changeEmailButton() {
-    let changeEmailButton = document.getElementById('change-email');
+    let changeEmailButton = document.getElementById('change-email') as HTMLElement;
     changeEmailButton.textContent = 'Add Email';
     changeEmailButton.style.color = 'green';
     changeEmailButton.style.borderColor = 'green';
@@ -283,27 +280,27 @@ function changeEmailButton() {
     };
 }
 
-let errorTimeout;
+let errorTimeout: NodeJS.Timeout;
 
-function showError(message) {
-    let inputElements = document.querySelectorAll('.modal-body input');
+function showError(message: string) {
+    let inputElements = document.querySelectorAll('.modal-body input') as NodeListOf<HTMLInputElement>;
 
     inputElements.forEach((input: HTMLElement) => {
         input.style.borderColor = 'red';
     });
 
-    let errorMessage = document.getElementById('error-message');
+    let errorMessage = document.getElementById('error-message') as HTMLElement;
     errorMessage.textContent = message;
 
     clearTimeout(errorTimeout);
     errorTimeout = setTimeout(resetErrors, 3000);
 }
 
-function showPasswordError(message, highlightOld) {
-    let passwordInputElements = document.querySelectorAll('.info-field input[type="password"]');
-    let passwordErrorMessage = document.getElementById('main-error-message');
+function showPasswordError(message: string, highlightOld: boolean) {
+    let passwordInputElements = document.querySelectorAll('.info-field input[type="password"]') as NodeListOf<HTMLInputElement>;
+    let passwordErrorMessage = document.getElementById('main-error-message') as HTMLElement;
 
-    passwordInputElements.forEach((input: HTMLElement, index) => {
+    passwordInputElements.forEach((input: HTMLElement, index: number) => {
         if (!highlightOld && index === 0) input.style.borderColor = '';
         else input.style.borderColor = 'red';
     });
@@ -315,29 +312,29 @@ function showPasswordError(message, highlightOld) {
 }
 
 function resetErrors() {
-    let inputElements = document.querySelectorAll('.modal-body input');
-
+    let inputElements = document.querySelectorAll('.modal-body input') as NodeListOf<HTMLInputElement>;
     inputElements.forEach((input: HTMLElement) => {
         input.style.borderColor = '';
     });
 
-    let errorMessage = document.getElementById('error-message');
+    let errorMessage = document.getElementById('error-message') as HTMLElement;
     errorMessage.textContent = '';
 
-    let passwordInputElements = document.querySelectorAll('.info-field input[type="password"]');
-
+    let passwordInputElements = document.querySelectorAll('.info-field input[type="password"]') as NodeListOf<HTMLInputElement>;
     passwordInputElements.forEach((input: HTMLElement) => {
         input.style.borderColor = '';
     });
 
-    let passwordErrorMessage = document.getElementById('main-error-message');
+    let passwordErrorMessage = document.getElementById('main-error-message') as HTMLElement;
     passwordErrorMessage.textContent = '';
 }
 
 function updateModal(type: string) {
-    document.getElementById('promptModalLabel').textContent = `Change ${type}`;
+    let promptModalLabel = document.getElementById('promptModalLabel') as HTMLElement;
+    promptModalLabel.textContent = `Change ${type}`;
 
-    document.querySelectorAll('.modal-body label').forEach((label: HTMLLabelElement, index) => {
+    let modalBodyLabels = document.querySelectorAll('.modal-body label') as NodeListOf<HTMLLabelElement>;
+    modalBodyLabels.forEach((label: HTMLLabelElement, index) => {
         label.textContent = `${type}${index === 0 ? '' : ' Confirmation'}`;
         label.htmlFor = `${type.toLowerCase()}${index === 0 ? '' : '-confirm'}`;
     });

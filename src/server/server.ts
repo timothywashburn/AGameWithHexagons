@@ -17,6 +17,8 @@ const { isDev } = require('./misc/utils');
 const viewsDir = `${__dirname}/../client/views`;
 
 import { Request, Response } from 'express';
+import Client from './objects/client';
+import ServerGame from './objects/server-game';
 
 app.set('view engine', 'ejs');
 app.set('views', viewsDir);
@@ -105,18 +107,15 @@ app.get('/:page', (req: Request, res: Response) => {
 
 const http = require('http');
 const { Server } = require('socket.io');
-const { globalClients, Client } = require('./objects/client');
-const { Game } = require('./objects/server-game');
-
 const server = http.createServer(app);
 
-let game = new Game(server, 5);
-let game2 = new Game(server, 5);
+let game = new ServerGame(server, 5);
+let game2 = new ServerGame(server, 5);
 
 const serverSocket = new Server(server);
 
 serverSocket.on('connection', (socket: Socket) => {
-	globalClients.push(new Client(socket));
+	new Client(socket);
 });
 
 server.listen(config.port, () => {

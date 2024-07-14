@@ -7,16 +7,17 @@ if (!token) {
     window.location.href = '/login';
 }
 
-document.getElementById('resetForm').addEventListener('submit', function(e) {
+(document.getElementById('resetForm') as HTMLElement).addEventListener('submit', function(e) {
     e.preventDefault();
+    if (!token) return;
 
-    let resetBtn = document.getElementById('resetBtn');
+    let resetBtn = document.getElementById('resetBtn') as HTMLElement;
     resetBtn.classList.add('active');
 
     let password = (document.getElementById('password') as HTMLInputElement).value;
     let confirmPassword = (document.getElementById('confirm-password') as HTMLInputElement).value;
 
-    let error = document.getElementById('resetError');
+    let error = document.getElementById('resetError') as HTMLElement;
 
     if (password !== confirmPassword) {
         error.textContent = 'Passwords do not match.';
@@ -25,16 +26,15 @@ document.getElementById('resetForm').addEventListener('submit', function(e) {
         return;
     }
 
-    let params = new URLSearchParams({ token: token, password: password }).toString();
+    let params = new URLSearchParams({ token: token.toString(), password: password.toString() }).toString();
 
     fetch(`/api/resetpassword?${params}`, {
         method: 'GET',
     })
         .then(response => response.json())
         .then(data => {
-            let error = document.getElementById('resetError');
-
-            let errorMessage = Object.values(PasswordChangeError).find((error) => error.id === data.result);
+            let error = document.getElementById('resetError') as HTMLElement;
+            let errorMessage = Object.values(PasswordChangeError).find((error) => error.id === data.result) as PasswordChangeError;
 
             if (errorMessage.id === PasswordChangeError.SUCCESS.id) {
                 window.location.href = '/login';

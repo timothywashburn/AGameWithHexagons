@@ -1,5 +1,5 @@
-function showToast(message, color) {
-    let toast = document.getElementById("toast");
+function showToast(message: string, color: string) {
+    let toast = document.getElementById("toast") as HTMLElement;
 
     toast.innerHTML = message;
     toast.style.backgroundColor = color;

@@ -8,7 +8,6 @@ const GameClientManager = require('../controllers/game-client-manager');
 const PacketClientGameSnapshot = require('../../shared/packets/packet-client-game-snapshot');
 const { games } = require('../controllers/game-manager');
 const {AnnouncementType} = require('../../shared/enums');
-let { globalClients } = require('./client');
 
 export default class ServerGame {
     public static gameList: ServerGame[] = [];
@@ -96,7 +95,3 @@ export default class ServerGame {
         this.clientManager.updatePlayerList();
     }
 }
-
-module.exports = {
-    Game: ServerGame
-};

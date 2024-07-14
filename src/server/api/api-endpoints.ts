@@ -6,7 +6,6 @@ const ejs = require('ejs');
 const fs = require('fs');
 
 const { isDev } = require('../misc/utils');
-const { globalClients } = require('../objects/client');
 const { games, getGame } = require('../controllers/game-manager');
 // TODO: Cleanup
 const { generateToken, validateUser, getAccountInfo, logout, changeUsername, changeEmail, changePassword,
@@ -54,11 +53,11 @@ module.exports = {
 	},
 
 	async join(req: Request, res: Response) {
-		const gameID = req.query.game;
-		const socketId = req.query.socketID;
+		const gameID = req.query.gameID;
+		const socketID = req.query.socketID;
 		const token = req.headers.authorization!.split(' ')[1];
 
-		let client = globalClients.find((client: Client) => client.socket.id === socketId);
+		let client = Client.clientList.find((client: Client) => client.socket.id === socketID);
 		if (!client) {
 			res.json({
 				success: false,
@@ -78,7 +77,7 @@ module.exports = {
 				message: "This is not a valid game"
 			});
 			return;
-		} else if (game.clientManager.clients.find((testClient: Client) => testClient.getID() === client.profile.id)) {
+		} else if (game.clientManager.clients.find((testClient: Client) => testClient.getID() === client.getID())) {
 			res.json({
 				success: false,
 				alert: true,

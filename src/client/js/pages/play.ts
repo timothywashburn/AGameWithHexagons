@@ -5,6 +5,8 @@ import '../../../shared/packets/packet';
 import { ToastMessage } from '../../../shared/enums';
 import { showToast } from "../controllers/toast";
 import { Modal } from "bootstrap";
+import {Game} from "../objects/game";
+import {Socket} from "socket.io";
 
 (window as any).gameData = {}
 
@@ -31,7 +33,13 @@ window.onload = function() {
 		.catch(error => console.error('Error:', error));
 }
 
-export let devConfig;
+export interface DevConfig {
+	autoJoin: boolean;
+	hideChat: boolean;
+	hidePlayerList: boolean;
+}
+
+export let devConfig: DevConfig;
 
 function updateGames() {
 	let headers = new Headers();
@@ -48,29 +56,30 @@ function updateGames() {
 		.then((data) => {
 			devConfig = data.dev;
 
-			let lobbyContainer = document.getElementById('lobbyContainer');
+			let lobbyContainer = document.getElementById('lobbyContainer') as HTMLElement;
 			lobbyContainer.innerHTML = data.html;
 
 			const gameCards = document.querySelectorAll('.gameLobby');
 			gameCards.forEach((card) => {
 				card.addEventListener('click', () => {
-					const gameID = card.id;
+					const gameID = parseInt(card.id);
 					console.log('Clicked game ID:', gameID);
 
 					joinGame(gameID, (window as any).gameData.socketID);
 				});
 			});
 
+			let modalElement = document.getElementById('promptModal') as HTMLElement;
 			if (!data.authenticated) {
-				let modal = new Modal(document.getElementById('promptModal'))
+				let modal = new Modal(modalElement);
 				modal.show();
 			}
 
-			if (devConfig.autoJoin && !document.getElementById('promptModal').style.display) joinGame(0, (window as any).gameData.socketID);
+			if (devConfig.autoJoin && !modalElement.style.display) joinGame(0, (window as any).gameData.socketID);
 		});
 }
 
-export function joinGame(game, socket) {
+export function joinGame(gameID: number, socketID: number) {
 	let headers = new Headers();
 	headers.append("Authorization", "Bearer " + localStorage.token);
 
@@ -81,7 +90,7 @@ export function joinGame(game, socket) {
 	};
 
 	let url = '/api/join';
-	let params = { game: game, socketID: socket };
+	let params = { gameID: gameID.toString(), socketID: socketID.toString() };
 	url += '?' + new URLSearchParams(params).toString();
 
 	fetch(url, requestOptions)
@@ -99,21 +108,21 @@ export function joinGame(game, socket) {
 
 updateGames();
 
-document.getElementById('guestBtn').addEventListener('click', function() {
-	let modal = document.getElementById('promptModal');
+(document.getElementById('guestBtn') as HTMLElement).addEventListener('click', function() {
+	let modal = document.getElementById('promptModal') as HTMLElement;
 	modal.classList.remove('show');
 	modal.style.display = 'none';
 
-	let backdrops = document.getElementsByClassName('modal-backdrop');
+	let backdrops = document.getElementsByClassName('modal-backdrop') as HTMLCollectionOf<HTMLElement>;
 	for (let i = 0; i < backdrops.length; i++) {
-		backdrops[i].parentNode.removeChild(backdrops[i]);
+		backdrops[i].parentNode!.removeChild(backdrops[i]);
 	}
 });
 
-document.getElementById('registerBtn').addEventListener('click', function() {
+(document.getElementById('registerBtn') as HTMLElement).addEventListener('click', function() {
 	window.location.href = '/register';
 });
 
-document.getElementById('loginBtn').addEventListener('click', function() {
+(document.getElementById('loginBtn') as HTMLElement).addEventListener('click', function() {
 	window.location.href = '/login';
 });

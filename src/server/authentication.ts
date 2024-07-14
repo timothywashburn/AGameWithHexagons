@@ -1,3 +1,5 @@
+import {UserProfile} from './objects/client';
+
 const mysql = require('mysql');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
@@ -5,7 +7,6 @@ const validator = require("email-validator");
 
 const { RegistrationError, NameChangeError, EmailChangeError, PasswordChangeError } = require('../shared/enums');
 const config = require('../../config.json');
-const { UserProfile } = require('./objects/client');
 const { sendResetEmail, sendUsernameEmail, sendVerificationEmail } = require('./controllers/mail');
 
 
@@ -177,9 +178,10 @@ async function validateUser(token, client) {
 
     } catch (error) {
         if (error.name === 'JsonWebTokenError') {
-            console.error('Error with token: ' + error);
+            console.error('Error with token');
         } else {
-            console.error('Error verifying JWT: ' + error);
+            console.error('Error verifying JWT');
+            console.error(error);
         }
         return false;
     }
@@ -217,6 +219,7 @@ async function getUserID(username: string) {
             return false;
         } else {
             console.error('Error verifying JWT');
+            console.error(error);
             return false;
         }
     }
@@ -243,6 +246,7 @@ async function getAccountInfo(token) {
             return false;
         } else {
             console.error('Error verifying JWT');
+            console.error(error);
             return false;
         }
     }
@@ -274,6 +278,7 @@ async function changeUsername(token, newUsername) {
             return NameChangeError.ERROR.id;
         } else {
             console.error('Error verifying JWT');
+            console.error(error);
             return NameChangeError.ERROR.id;
         }
     }
@@ -316,6 +321,7 @@ async function changeEmail(token: string, newEmail: string) {
             return EmailChangeError.ERROR.id;
         } else {
             console.error('Error verifying JWT');
+            console.error(error);
             return EmailChangeError.ERROR.id;
         }
     }
@@ -357,8 +363,8 @@ async function changePassword(token, oldPassword, newPassword, requireOld = true
         if (error.name === 'JsonWebTokenError') {
             return PasswordChangeError.ERROR.id;
         } else {
-            console.error(error);
             console.error('Error verifying JWT');
+            console.error(error);
             return PasswordChangeError.ERROR.id;
         }
     }
@@ -463,6 +469,7 @@ async function verifyEmail(token) {
             return false;
         } else {
             console.error('Error verifying JWT');
+            console.error(error);
             return false;
         }
     }
