@@ -15,7 +15,3 @@ export default class ServerTroop {
 		}
 	}
 }
-
-module.exports = {
-	ServerTroop: ServerTroop
-}
