@@ -6,11 +6,11 @@ const { generateUsername } = require("unique-username-generator");
 const { ServerPacket } = require('../../shared/packets/packet');
 const { TeamColor } = require('../../shared/enums');
 
-let globalClients = [];
+let globalClients: Client[] = [];
 let nextColor = 0;
 let nextID = -1;
 
-class Client {
+export default class Client {
 	game;
 
 	public color: typeof TeamColor;
@@ -57,7 +57,7 @@ class UserProfile {
 	userID: number;
 	username: string;
 
-	constructor(userID, username) {
+	constructor(userID: number, username: string) {
 		this.userID = userID;
 		this.username = username;
 	}

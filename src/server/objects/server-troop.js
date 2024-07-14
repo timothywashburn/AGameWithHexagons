@@ -1,6 +1,6 @@
 let nextID = 0;
 
-class ServerTroop {
+export default class ServerTroop {
 	constructor(ownerID, parentTile) {
 		this.id = nextID++;
 		this.ownerID = ownerID;

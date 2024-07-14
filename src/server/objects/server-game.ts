@@ -1,22 +1,30 @@
+import {Http2Server} from "http2";
+import {Server} from "http";
+import Client from "./client";
+import ServerTile from "./server-tile";
+import ServerTroop from "./server-troop";
+
 const GameClientManager = require('../controllers/game-client-manager');
-const { ServerTile } = require('./server-tile');
-const { ServerTroop } = require('./server-troop');
 const PacketClientGameSnapshot = require('../../shared/packets/packet-client-game-snapshot');
 const { games } = require('../controllers/game-manager');
 const {AnnouncementType} = require('../../shared/enums');
 let { globalClients } = require('./client');
 
-class ServerGame {
-    private clientManager: typeof GameClientManager;
+export default class ServerGame {
+    public static gameList: ServerGame[] = [];
 
-    private readonly startTime: number = Date.now();
+    public clientManager: typeof GameClientManager;
 
-    private tiles: typeof ServerTile[] = [];
-    private troops: typeof ServerTroop[] = [];
+    public readonly startTime: number = Date.now();
 
-    private readonly boardSize: number;
+    public tiles: ServerTile[] = [];
+    public troops: ServerTroop[] = [];
 
-    constructor(server, boardSize) {
+    public readonly boardSize: number;
+
+    constructor(httpServer: Server, boardSize: number) {
+        ServerGame.gameList.push(this);
+
         this.clientManager = new GameClientManager(this);
 
         this.boardSize = boardSize;
@@ -55,26 +63,26 @@ class ServerGame {
         // this.tiles.push(new ServerTile(-5, 0)); //This tile should Error
     }
 
-    getClientInitData(client) {
+    getClientInitData(client: Client) {
         return {
             tiles: this.tiles.map(tile => tile.getClientTileData(client)),
             troops: this.troops.map(troop => troop.getClientTroopData(client))
         }
     }
 
-    getSnapshotData(client) {
+    getSnapshotData(client: Client) {
         // return {
         //     tiles: this.tiles
         // }
     }
 
-    sendSnapshot(client) {
+    sendSnapshot(client: Client) {
         // let packet = new PacketClientGameSnapshot(this.getClientInitData(client));
         // packet.addClient(client);
         // packet.send();
     }
 
-    tileIsValid(tile) {
+    tileIsValid(tile: ServerTile) {
         return (tile.x + tile.y) % 2 === 0;
     }
 

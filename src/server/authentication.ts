@@ -42,7 +42,7 @@ function init() {
     });
 }
 
-async function hashPassword(password) {
+async function hashPassword(password: string) {
     try {
         return await bcrypt.hash(password, saltRounds);
     } catch (error) {
@@ -50,7 +50,7 @@ async function hashPassword(password) {
     }
 }
 
-async function verifyPassword(password, hashedPassword) {
+async function verifyPassword(password: string, hashedPassword: string) {
     try {
         return await bcrypt.compare(password, hashedPassword);
     } catch (error) {
@@ -58,7 +58,7 @@ async function verifyPassword(password, hashedPassword) {
     }
 }
 
-async function createAccount(username, password) {
+async function createAccount(username: string, password: string) {
     if (!await isUsernameValid(username)) return RegistrationError.USERNAME_INVALID.id;
 
     let userExists;
@@ -186,7 +186,7 @@ async function validateUser(token, client) {
     return true;
 }
 
-async function getUserID(username) {
+async function getUserID(username: string) {
     return new Promise((resolve, reject) => {
         connection.query('SELECT id FROM accounts WHERE username = ?', [username], (err, result) => {
             if (err) reject(err);
@@ -196,7 +196,7 @@ async function getUserID(username) {
 
 }
 
- async function logout(token) {
+ async function logout(token: string) {
     const jwt = require('jsonwebtoken');
 
     try {
@@ -279,7 +279,7 @@ async function changeUsername(token, newUsername) {
     }
 }
 
-async function changeEmail(token, newEmail) {
+async function changeEmail(token: string, newEmail: string) {
     if (!validator.validate(newEmail)) return EmailChangeError.EMAIL_INVALID.id;
     if (await isEmailInUse(newEmail)) return EmailChangeError.EMAIL_EXISTS.id;
 
