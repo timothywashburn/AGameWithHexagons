@@ -1,5 +1,6 @@
 import { NameChangeError, EmailChangeError, PasswordChangeError, ToastMessage } from '../../../shared/enums.js';
 import { showToast } from "../controllers/toast";
+import { Modal } from "bootstrap";
 
 window.onload = function() {
     showToasts();
@@ -16,10 +17,10 @@ window.onload = function() {
 
             setupButtons();
 
-            document.getElementById('username').value = data.info.username;
+            (document.getElementById('username') as HTMLInputElement).value = data.info.username;
 
             if (data.info.email === null) changeEmailButton();
-            else document.getElementById('email').value = data.info.email;
+            else (document.getElementById('email') as HTMLInputElement).value = data.info.email;
 
             if(data.info.email != null && data.info.email_verified.data[0] === 0) {
                 let div = document.getElementById('unverified-container');
@@ -41,7 +42,7 @@ function showToasts() {
 function setupButtons() {
     let changeEmailButton = document.getElementById('change-email');
     changeEmailButton.onclick = function () {
-        let modal = new bootstrap.Modal(document.getElementById('promptModal'))
+        let modal = new Modal(document.getElementById('promptModal'))
         modal.show();
 
         updateModal('Email');
@@ -49,7 +50,7 @@ function setupButtons() {
 
     let changeNameButton = document.getElementById('change-username');
     changeNameButton.onclick = function () {
-        let modal = new bootstrap.Modal(document.getElementById('promptModal'))
+        let modal = new Modal(document.getElementById('promptModal'))
         modal.show();
 
         updateModal('Username');
@@ -81,9 +82,9 @@ function setupButtons() {
     let modal = document.getElementById('promptModal');
 
     modal.addEventListener('hidden.bs.modal', function () {
-        updateModal("placeholder")
-        document.getElementById('placeholder').value = '';
-        document.getElementById('placeholder-confirm').value = '';
+        updateModal('placeholder');
+        (document.getElementById('placeholder') as HTMLInputElement).value = '';
+        (document.getElementById('placeholder-confirm') as HTMLInputElement).value = '';
 
         resetErrors();
     });
@@ -128,8 +129,8 @@ document.getElementById('placeholderForm').addEventListener('submit', function(e
 
         if (modalTitle === 'Change Email') {
 
-            let email = document.getElementById('email').value;
-            let confirm = document.getElementById('email-confirm').value;
+            let email = (document.getElementById('email') as HTMLInputElement).value;
+            let confirm = (document.getElementById('email-confirm') as HTMLInputElement).value;
 
             if (email !== confirm) {
                 showError('Emails do not match');
@@ -139,8 +140,8 @@ document.getElementById('placeholderForm').addEventListener('submit', function(e
             changeEmail(email);
         } else if (modalTitle === 'Change Username') {
 
-            let username = document.getElementById('username').value;
-            let confirm = document.getElementById('username-confirm').value;
+            let username = (document.getElementById('username') as HTMLInputElement).value;
+            let confirm = (document.getElementById('username-confirm') as HTMLInputElement).value;
 
             if (username !== confirm) {
                 showError('Usernames do not match');
@@ -156,9 +157,9 @@ document.getElementById('placeholderForm').addEventListener('submit', function(e
     cancelButton.addEventListener('click', function() {
         let modal = document.getElementById('promptModal');
 
-        updateModal("placeholder")
-        document.getElementById('placeholder').value = '';
-        document.getElementById('placeholder-confirm').value = '';
+        updateModal('placeholder');
+        (document.getElementById('placeholder') as HTMLInputElement).value = '';
+        (document.getElementById('placeholder-confirm') as HTMLInputElement).value = '';
 
         resetErrors();
 
@@ -178,9 +179,9 @@ document.getElementById('changePasswordForm').addEventListener('submit', functio
 
     let changePasswordButton = document.getElementById('change-password');
     changePasswordButton.onclick = function() {
-        let oldPassword = document.getElementById('old-password').value;
-        let newPassword = document.getElementById('new-password').value;
-        let confirm = document.getElementById('confirm-new-password').value;
+        let oldPassword = (document.getElementById('old-password') as HTMLInputElement).value;
+        let newPassword = (document.getElementById('new-password') as HTMLInputElement).value;
+        let confirm = (document.getElementById('confirm-new-password') as HTMLInputElement).value;
 
         if (newPassword !== confirm) {
             resetErrors();
@@ -273,12 +274,12 @@ function changeEmailButton() {
     changeEmailButton.style.borderColor = 'green';
 
     changeEmailButton.onmouseover = function() {
-        this.style.color = 'white';
-        this.style.border = '1px solid gray';
+        (this as HTMLElement).style.color = 'white';
+        (this as HTMLElement).style.border = '1px solid gray';
     };
     changeEmailButton.onmouseout = function() {
-        this.style.color = 'green';
-        this.style.border = '1px solid green';
+        (this as HTMLElement).style.color = 'green';
+        (this as HTMLElement).style.border = '1px solid green';
     };
 }
 
@@ -287,7 +288,7 @@ let errorTimeout;
 function showError(message) {
     let inputElements = document.querySelectorAll('.modal-body input');
 
-    inputElements.forEach(input => {
+    inputElements.forEach((input: HTMLElement) => {
         input.style.borderColor = 'red';
     });
 
@@ -302,8 +303,8 @@ function showPasswordError(message, highlightOld) {
     let passwordInputElements = document.querySelectorAll('.info-field input[type="password"]');
     let passwordErrorMessage = document.getElementById('main-error-message');
 
-    passwordInputElements.forEach((input, index) => {
-        if (!highlightOld && index === 0) input.borderColor = '';
+    passwordInputElements.forEach((input: HTMLElement, index) => {
+        if (!highlightOld && index === 0) input.style.borderColor = '';
         else input.style.borderColor = 'red';
     });
 
@@ -316,7 +317,7 @@ function showPasswordError(message, highlightOld) {
 function resetErrors() {
     let inputElements = document.querySelectorAll('.modal-body input');
 
-    inputElements.forEach(input => {
+    inputElements.forEach((input: HTMLElement) => {
         input.style.borderColor = '';
     });
 
@@ -325,7 +326,7 @@ function resetErrors() {
 
     let passwordInputElements = document.querySelectorAll('.info-field input[type="password"]');
 
-    passwordInputElements.forEach(input => {
+    passwordInputElements.forEach((input: HTMLElement) => {
         input.style.borderColor = '';
     });
 
@@ -333,10 +334,10 @@ function resetErrors() {
     passwordErrorMessage.textContent = '';
 }
 
-function updateModal(type) {
+function updateModal(type: string) {
     document.getElementById('promptModalLabel').textContent = `Change ${type}`;
 
-    document.querySelectorAll('.modal-body label').forEach((label, index) => {
+    document.querySelectorAll('.modal-body label').forEach((label: HTMLLabelElement, index) => {
         label.textContent = `${type}${index === 0 ? '' : ' Confirmation'}`;
         label.htmlFor = `${type.toLowerCase()}${index === 0 ? '' : '-confirm'}`;
     });

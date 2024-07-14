@@ -1,4 +1,4 @@
-const canvas = document.getElementById('gameCanvas');
+const canvas = document.getElementById('gameCanvas') as HTMLCanvasElement;
 const ctx = canvas.getContext('2d');
 
 let apothem = 30
@@ -12,6 +12,24 @@ hexagonSelected.src = 'images/hexagon-selected.svg';
 hexagonHover.src = 'images/hexagon-hover.svg';
 
 export default class Tile {
+
+	public id: number;
+	public x: number;
+	public y: number;
+
+	public color: string;
+	// public occupant: Troop;
+	// public terrainType: string;
+	// public resourceType: string;
+	// public isObscured: boolean;
+
+	public isSelected: boolean;
+	public isHovered: boolean;
+
+	public literalX: number;
+	public literalY: number;
+	public path: Path2D;
+
 	constructor(tileData) {
 		this.id = tileData.id;
 		this.x = tileData.x;
@@ -31,7 +49,7 @@ export default class Tile {
 		this.isHovered = false;
 	}
 
-	updateTile() {
+	updateTile(find: any) {
 		//
 	}
 

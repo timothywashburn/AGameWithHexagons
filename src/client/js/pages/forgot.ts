@@ -1,8 +1,8 @@
-let email = document.getElementById('email');
-let forgotBtn = document.getElementById('forgotBtn');
-let error = document.getElementById('forgotError');
-let passwordTab = document.getElementById('password-tab');
-let usernameTab = document.getElementById('username-tab');
+let email = document.getElementById('email') as HTMLInputElement;
+let forgotBtn = document.getElementById('forgotBtn') as HTMLInputElement;
+let error = document.getElementById('forgotError') as HTMLInputElement;
+let passwordTab = document.getElementById('password-tab') as HTMLInputElement;
+let usernameTab = document.getElementById('username-tab') as HTMLInputElement;
 
 let endpoint = '/api/forgotpassword';
 

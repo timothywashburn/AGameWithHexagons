@@ -1,4 +1,4 @@
-import { PasswordChangeError } from '../../../shared/enums.js';
+import { PasswordChangeError } from '../../../shared/enums';
 
 const urlParams = new URLSearchParams(window.location.search);
 const token = urlParams.get('token');
@@ -13,8 +13,8 @@ document.getElementById('resetForm').addEventListener('submit', function(e) {
     let resetBtn = document.getElementById('resetBtn');
     resetBtn.classList.add('active');
 
-    let password = document.getElementById('password').value;
-    let confirmPassword = document.getElementById('confirm-password').value;
+    let password = (document.getElementById('password') as HTMLInputElement).value;
+    let confirmPassword = (document.getElementById('confirm-password') as HTMLInputElement).value;
 
     let error = document.getElementById('resetError');
 

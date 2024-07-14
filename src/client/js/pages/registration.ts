@@ -1,4 +1,4 @@
-import { RegistrationError } from '../../../shared/enums.js';
+import { RegistrationError } from '../../../shared/enums';
 
 document.getElementById('registerForm').addEventListener('submit', function(e) {
     e.preventDefault();
@@ -6,9 +6,9 @@ document.getElementById('registerForm').addEventListener('submit', function(e) {
     let registerBtn = document.getElementById('registerBtn');
     registerBtn.classList.add('active');
 
-    let username = document.getElementById('username').value;
-    let password = document.getElementById('password').value;
-    let confirmPassword = document.getElementById('confirmPassword').value;
+    let username = (document.getElementById('username') as HTMLInputElement).value;
+    let password = (document.getElementById('password') as HTMLInputElement).value;
+    let confirmPassword = (document.getElementById('confirmPassword') as HTMLInputElement).value;
 
     if (password !== confirmPassword) {
         showError('Passwords do not match');
@@ -47,7 +47,7 @@ function showError(message, nameOnly = false) {
     let inputElements = document.querySelectorAll('.form-group input');
 
     for (let i = 0; i < inputElements.length; i++) {
-        inputElements[i].style.borderColor = 'red';
+        (inputElements[i] as HTMLInputElement).style.borderColor = 'red';
         if (nameOnly && i === 0) break;
     }
 
@@ -60,7 +60,7 @@ function showError(message, nameOnly = false) {
 function resetErrors() {
     let inputElements = document.querySelectorAll('.form-group input');
 
-    inputElements.forEach(input => {
+    inputElements.forEach((input: HTMLInputElement) => {
         input.style.borderColor = '';
     });
 

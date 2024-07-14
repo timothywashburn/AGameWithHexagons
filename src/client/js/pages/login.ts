@@ -4,8 +4,8 @@ document.getElementById('loginForm').addEventListener('submit', function(e) {
     let loginBtn = document.getElementById('loginBtn');
     loginBtn.classList.add('active');
 
-    let username = document.getElementById('username').value;
-    let password = document.getElementById('password').value;
+    let username = (document.getElementById('username') as HTMLInputElement).value;
+    let password = (document.getElementById('password') as HTMLInputElement).value;
 
     let params = new URLSearchParams({username: username, password: password}).toString();
 
@@ -35,7 +35,7 @@ let errorTimeout;
 function showError(message) {
     let inputElements = document.querySelectorAll('.form-group input');
 
-    inputElements.forEach(input => {
+    inputElements.forEach((input: HTMLInputElement) => {
         input.style.borderColor = 'red';
     });
 
@@ -48,7 +48,7 @@ function showError(message) {
 function resetErrors() {
     let inputElements = document.querySelectorAll('.form-group input');
 
-    inputElements.forEach(input => {
+    inputElements.forEach((input: HTMLInputElement) => {
         input.style.borderColor = '';
     });
 

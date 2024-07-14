@@ -1,6 +1,7 @@
 import { getGame } from './game'
+import Tile from "./tile";
 
-const canvas = document.getElementById('gameCanvas');
+const canvas = document.getElementById('gameCanvas') as HTMLCanvasElement;
 const ctx = canvas.getContext('2d');
 
 const circle = new Image();
@@ -9,6 +10,10 @@ circle.src = 'images/circle.svg';
 let radius = 20;
 
 export default class Troop {
+	id: number;
+	ownerID: number;
+	parentTile: Tile;
+
 	constructor(troopData) {
 		this.id = troopData.id;
 		this.ownerID = troopData.ownerID;

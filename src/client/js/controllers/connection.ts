@@ -1,14 +1,14 @@
 import { ClientPacket, PacketType, getPacket } from '../../../shared/packets/packet';
 import { AnnouncementType } from '../../../shared/enums';
 import { io } from 'socket.io-client';
-import { devConfig, joinGame } from '../pages/play.ts';
+import { devConfig } from '../pages/play';
 import { getGame } from '../objects/game'
 import { Game } from '../objects/game';
 
-export const clientSocket = io.connect();
+export const clientSocket = (io as any).connect();
 
 clientSocket.on('connect', () => {
-	window.gameData.socketID = clientSocket.id;
+	(window as any).gameData.socketID = clientSocket.id;
 });
 
 clientSocket.on('packet', function (packet) {
@@ -16,7 +16,7 @@ clientSocket.on('packet', function (packet) {
 	console.log(`receiving packet: ` + getPacket(packet.id));
 
 	if(packet.id === ClientPacket.GAME_INIT.id) {
-		window.gameData.initData = packet.initData;
+		(window as any).gameData.initData = packet.initData;
 		new Game(packet.initData);
 
 		if (devConfig.hideChat) document.getElementById('chatBox').style.display = "none"
@@ -25,12 +25,12 @@ clientSocket.on('packet', function (packet) {
 		getGame().updateGame(packet.snapshot);
 
 	} else if(packet.id === ClientPacket.PLAYER_LIST_INFO.id) {
-		window.gameData.playerListInfo = packet.playerListInfo;
+		(window as any).gameData.playerListInfo = packet.playerListInfo;
 
 		const playerList = document.getElementById('playerList');
 		playerList.innerHTML = '';
 
-		window.gameData.playerListInfo.forEach((client) => {
+		(window as any).gameData.playerListInfo.forEach((client) => {
 			const listItem = document.createElement('li');
 
 			const name = document.createTextNode(client.username);
@@ -43,7 +43,7 @@ clientSocket.on('packet', function (packet) {
 		const chatMessages = document.getElementById('chatMessages');
 		const message = document.createElement('div');
 
-		let client = window.gameData.playerListInfo.find((client) => client.userID === packet.clientID);
+		let client = (window as any).gameData.playerListInfo.find((client) => client.userID === packet.clientID);
 		message.innerHTML = client.username + ': ' + packet.message;
 
 		chatMessages.appendChild(message);
@@ -53,7 +53,7 @@ clientSocket.on('packet', function (packet) {
 		const chatMessages = document.getElementById('chatMessages');
 		const message = document.createElement('div');
 
-		let client = window.gameData.playerListInfo.find((client) => client.userID === packet.clientID);
+		let client = (window as any).gameData.playerListInfo.find((client) => client.userID === packet.clientID);
 
 		let announcement = Object.values(AnnouncementType).find((announcement) => announcement.id === packet.announcementID);
 

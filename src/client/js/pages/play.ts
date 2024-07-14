@@ -1,4 +1,3 @@
-// @ts-nocheck
 import '../objects/game';
 import '../controllers/connection';
 import '../misc/ui'
@@ -40,7 +39,7 @@ function updateGames() {
 
 	let requestOptions: RequestInit = {
 		method: 'GET',
-		headers: headers,
+		headers: headers as HeadersInit,
 		redirect: 'follow'
 	};
 
@@ -77,7 +76,7 @@ export function joinGame(game, socket) {
 
 	let requestOptions: RequestInit = {
 		method: 'GET',
-		headers: headers,
+		headers: headers as HeadersInit,
 		redirect: 'follow'
 	};
 

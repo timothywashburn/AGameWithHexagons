@@ -1,6 +1,6 @@
 import { getGame } from './objects/game';
 
-const canvas = document.getElementById('gameCanvas');
+const canvas = document.getElementById('gameCanvas') as HTMLCanvasElement;
 const ctx = canvas.getContext('2d');
 
 let cameraX = 0;

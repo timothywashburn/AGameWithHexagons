@@ -7,6 +7,16 @@ let game;
 export const getGame = () => game;
 
 export class Game {
+
+	public startTime: number;
+	public resources: any;
+	public tiles: Tile[];
+	public troops: Troop[];
+	public buildings: any[];
+
+	public frame: number;
+	public renderTimes: number[];
+
 	constructor(initData) {
 		game = this;
 		this.startTime = Date.now();
@@ -29,9 +39,9 @@ export class Game {
 
 		setInterval(() => {
 			let secondsElapsed = (Date.now() - this.startTime) / 1000;
-			let frameRate = (this.frame / secondsElapsed).toFixed(1);
+			let frameRate = +(this.frame / secondsElapsed).toFixed(1);
 			this.renderTimes.splice(0, this.renderTimes.length - frameRate * 10);
-			let MSPT = (this.renderTimes.reduce((a, b) => a + b) / this.renderTimes.length).toFixed(2);
+			let MSPT = +(this.renderTimes.reduce((a, b) => a + b) / this.renderTimes.length).toFixed(2);
 			let maxLoad = 1000 / frameRate;
 			let currentLoad = MSPT / maxLoad * 100;
 			console.log(`${MSPT} ms (${currentLoad.toFixed(1)}% load) per tick (${frameRate} fps)`);
