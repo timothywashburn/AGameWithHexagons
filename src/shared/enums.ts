@@ -35,7 +35,7 @@ exports.PasswordChangeError = Object.freeze({
 	PASSWORD_INCORRECT: { id: 0x01, message: 'Incorrect password' },
 	INSECURE_PASSWORD: { id: 0x02, message: 'Password is insecure' },
 	ERROR: { id: 0x03, message: 'Error changing password'}
-})
+});
 
 exports.ToastMessage = Object.freeze({
 	EMAIL_VERIFIED: { id: 0, message: "Your email has been successfully verified", color: "green" },

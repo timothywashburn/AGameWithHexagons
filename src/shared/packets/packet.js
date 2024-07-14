@@ -63,7 +63,7 @@ const ClientPacket = Object.freeze({
 });
 
 const ServerPacket = Object.freeze({
-	CHAT: { code: 0x05 },
+	CHAT: { id: 0x05 },
 });
 
 module.exports = {

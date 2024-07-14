@@ -1,3 +1,5 @@
+import {Socket} from "socket.io";
+
 const { PacketType } = require('../../shared/packets/packet');
 const PacketClientChat = require('../../shared/packets/packet-client-chat');
 const { generateUsername } = require("unique-username-generator");
@@ -10,6 +12,11 @@ let nextID = -1;
 
 class Client {
 	game;
+
+	public color: typeof TeamColor;
+	public socket: Socket;
+	public authenticated: boolean;
+	public profile: UserProfile;
 
 	constructor(socket) {
 		this.color = Object.values(TeamColor)[nextColor++ % Object.keys(TeamColor).length];
@@ -27,7 +34,7 @@ class Client {
 			if (!packet.type === PacketType.SERVER_BOUND) return;
 
 			if(packet.id === ServerPacket.CHAT.id) {
-				console.log(`Receiving chat message from client ${this.id}: ${packet.message}`);
+				console.log(`Receiving chat message from client ${this.getID()}: ${packet.message}`);
 				let message = packet.message;
 				let response = new PacketClientChat(this.profile.userID, message);
 
@@ -47,6 +54,9 @@ class Client {
 }
 
 class UserProfile {
+	userID: number;
+	username: string;
+
 	constructor(userID, username) {
 		this.userID = userID;
 		this.username = username;

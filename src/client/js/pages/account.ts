@@ -1,4 +1,4 @@
-import { NameChangeError, EmailChangeError, PasswordChangeError, ToastMessage } from '../../../shared/enums.js';
+import { NameChangeError, EmailChangeError, PasswordChangeError, ToastMessage } from '../../../shared/enums';
 import { showToast } from "../controllers/toast";
 import { Modal } from "bootstrap";
 

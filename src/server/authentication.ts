@@ -3,7 +3,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const validator = require("email-validator");
 
-const { RegistrationError, NameChangeError, EmailChangeError, PasswordChangeError } = require('../shared/enums.js');
+const { RegistrationError, NameChangeError, EmailChangeError, PasswordChangeError } = require('../shared/enums');
 const config = require('../../config.json');
 const { UserProfile } = require('./objects/client');
 const { sendResetEmail, sendUsernameEmail, sendVerificationEmail } = require('./controllers/mail');

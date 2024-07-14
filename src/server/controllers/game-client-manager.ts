@@ -1,14 +1,14 @@
 const PacketClientServerListInfo = require('../../shared/packets/packet-client-player-list-info.js');
 const PacketClientAnnouncement = require('../../shared/packets/packet-client-announcement.js');
-const { AnnouncementType } = require('../../shared/enums.js');
+const { AnnouncementType } = require('../../shared/enums');
 const PacketClientGameInit = require('../../shared/packets/packet-client-game-init');
 const server = require('../server');
 
 class GameClientManager {
-	private clients = [];
-	private teamColors = []
-	private readonly game: any;
-	private maxPlayers: number;
+	public clients = [];
+	public teamColors = []
+	public readonly game: any;
+	public maxPlayers: number;
 
 	constructor(game) {
 		this.game = game;
