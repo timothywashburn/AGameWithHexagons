@@ -1,7 +1,7 @@
-import { getGame } from './objects/game';
+import { getGame } from './objects/client-game';
 
 const canvas = document.getElementById('gameCanvas') as HTMLCanvasElement;
-const ctx = canvas.getContext('2d');
+const ctx = canvas.getContext('2d')!;
 
 let cameraX = 0;
 let cameraY = 0;
@@ -14,9 +14,9 @@ const SCROLL_SENSITIVITY = 0.1;
 
 let isMouseDown = false;
 let isDragging = false;
-let mouseDownTime;
-let startPreDragX, startPreDragY;
-let currentDragX, currentDragY;
+let mouseDownTime: number;
+let startPreDragX: number, startPreDragY: number;
+let currentDragX: number, currentDragY: number;
 
 let mouseX;
 let mouseY;
@@ -64,7 +64,7 @@ canvas.addEventListener('mouseup', event => {
 	}
 });
 
-const stationaryClick = event => {
+const stationaryClick = (event: MouseEvent) => {
 	let clickedTile = getTile(event.clientX, event.clientY);
 	if (clickedTile != null && clickedTile.isSelected) {
 		clickedTile.isSelected = false;
@@ -106,9 +106,9 @@ canvas.addEventListener('mousemove', event => {
 	}
 });
 
-const getTile = (mouseX, mouseY) => {
+const getTile = (mouseX: number, mouseY: number) => {
 	for (let tile of getGame().tiles) {
-		if (ctx.isPointInPath(tile.path, mouseX, mouseY)) {
+		if (ctx.isPointInPath(tile.path!, mouseX, mouseY)) {
 			return tile;
 		}
 	}

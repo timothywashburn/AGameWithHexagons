@@ -1,10 +1,10 @@
 let nextID = 0;
 
-class ServerBuilding {
+export default class ServerBuilding {
 	public id: number;
 	public ownerID: number;
 
-	constructor(ownerID) {
+	constructor(ownerID: number) {
 		this.id = nextID++;
 		this.ownerID = ownerID;
 	}

@@ -1,15 +1,16 @@
 import { ClientPacket, PacketType, getPacket } from '../../../shared/packets/packet';
-import { AnnouncementType } from '../../../shared/enums';
+import {AnnouncementType, AnnouncementTypeData} from '../../../shared/enums';
 import { io } from 'socket.io-client';
 import {devConfig, joinGame} from '../pages/play';
-import { getGame } from '../objects/game'
-import { Game } from '../objects/game';
+import { getGame } from '../objects/client-game'
+import { ClientGame } from '../objects/client-game';
 import Packet from '../../../shared/packets/packet'
 import PacketClientAnnouncement from '../../../shared/packets/packet-client-announcement';
 import PacketClientGameInit from '../../../shared/packets/packet-client-game-init';
 import PacketClientGameSnapshot from '../../../shared/packets/packet-client-game-snapshot';
 import PacketClientPlayerListInfo from '../../../shared/packets/packet-client-player-list-info';
 import PacketClientChat from '../../../shared/packets/packet-client-chat';
+import {UserProfile} from '../../../server/objects/server-client';
 
 export const clientSocket = (io as any).connect();
 
@@ -26,10 +27,10 @@ clientSocket.on('packet', function (packet: Packet) {
 		let packetClientGameInit = packet as PacketClientGameInit;
 
 		(window as any).gameData.initData = packetClientGameInit.initData;
-		new Game(packetClientGameInit.initData);
+		new ClientGame(packetClientGameInit.initData);
 
-		if (devConfig.hideChat) document.getElementById('chatBox').style.display = "none"
-		if (devConfig.hidePlayerList) document.getElementById('playerList').style.display = "none"
+		if (devConfig.hideChat) document.getElementById('chatBox')!.style.display = "none"
+		if (devConfig.hidePlayerList) document.getElementById('playerList')!.style.display = "none"
 	} else if(packet.id === ClientPacket.GAME_SNAPSHOT.id) {
 		let packetClientGameSnapshot = packet as PacketClientGameSnapshot;
 		getGame().updateGame(packetClientGameSnapshot.snapshot);
@@ -39,13 +40,13 @@ clientSocket.on('packet', function (packet: Packet) {
 
 		(window as any).gameData.playerListInfo = packetClientPlayerListInfo.playerListInfo;
 
-		const playerList = document.getElementById('playerList');
+		const playerList = document.getElementById('playerList')!;
 		playerList.innerHTML = '';
 
-		(window as any).gameData.playerListInfo.forEach((client) => {
+		(window as any).gameData.playerListInfo.forEach((playerListEntry: UserProfile) => {
 			const listItem = document.createElement('li');
 
-			const name = document.createTextNode(client.username);
+			const name = document.createTextNode(playerListEntry.username);
 			listItem.appendChild(name);
 
 			playerList.appendChild(listItem);
@@ -54,10 +55,10 @@ clientSocket.on('packet', function (packet: Packet) {
 	} else if(packet.id === ClientPacket.CHAT.id) {
 		let packetClientChat = packet as PacketClientChat;
 
-		const chatMessages = document.getElementById('chatMessages');
-		const message = document.createElement('div');
+		const chatMessages = document.getElementById('chatMessages')!;
+		const message = document.createElement('div')!;
 
-		let client = (window as any).gameData.playerListInfo.find((client) => client.userID === packetClientChat.clientID);
+		let client = (window as any).gameData.playerListInfo.find((playerListEntry: UserProfile) => playerListEntry.userID === packetClientChat.clientID);
 		message.innerHTML = client.username + ': ' + packetClientChat.message;
 
 		chatMessages.appendChild(message);
@@ -66,12 +67,13 @@ clientSocket.on('packet', function (packet: Packet) {
 	} else if(packet.id === ClientPacket.ANNOUNCEMENT.id) {
 		let packetClientAnnouncement = packet as PacketClientAnnouncement;
 
-		const chatMessages = document.getElementById('chatMessages');
+		const chatMessages = document.getElementById('chatMessages')!;
 		const message = document.createElement('div');
 
-		let client = (window as any).gameData.playerListInfo.find((client) => client.userID === packetClientAnnouncement.clientID);
+		let client = (window as any).gameData.playerListInfo.find((playerListEntry: UserProfile) => playerListEntry.userID === packetClientAnnouncement.clientID);
 
-		let announcement = Object.values(AnnouncementType).find((announcement) => announcement.id === packetClientAnnouncement.announcementID);
+		let announcement: AnnouncementTypeData = Object.values(AnnouncementType)
+			.find((announcement) => announcement.id === packetClientAnnouncement.announcementID)!;
 
 		message.innerHTML = client.username + " " + announcement.message;
 		message.style.color = announcement.color;

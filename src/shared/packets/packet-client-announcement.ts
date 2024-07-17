@@ -1,5 +1,4 @@
 import Packet, { PacketType, ClientPacket } from './packet';
-import { AnnouncementType } from "../enums";
 
 export default class PacketClientAnnouncement extends Packet {
 	public clientID: number;

@@ -42,7 +42,7 @@ forgotBtn.addEventListener('click', function(e) {
             forgotBtn.classList.remove('active');
         })
         .catch((error) => {
-            console.error('Error:', error);
+            console.error(error);
             forgotBtn.classList.remove('active');
         });
 });

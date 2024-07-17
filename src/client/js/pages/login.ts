@@ -1,7 +1,7 @@
-(document.getElementById('loginForm') as HTMLElement).addEventListener('submit', function(e) {
+document.getElementById('loginForm')!.addEventListener('submit', function(e) {
     e.preventDefault();
 
-    let loginBtn = document.getElementById('loginBtn') as HTMLElement;
+    let loginBtn = document.getElementById('loginBtn')!;
     loginBtn.classList.add('active');
 
     let username = (document.getElementById('username') as HTMLInputElement).value;
@@ -25,7 +25,7 @@
             loginBtn.classList.remove('active');
         })
         .catch((error) => {
-            console.error('Error:', error);
+            console.error(error);
             loginBtn.classList.remove('active');
         });
 });
@@ -38,7 +38,7 @@ function showError(message: string) {
         input.style.borderColor = 'red';
     });
 
-    let errorMessage = document.getElementById('loginError') as HTMLElement;
+    let errorMessage = document.getElementById('loginError')!;
     errorMessage.textContent = message;
 
     clearTimeout(errorTimeout);
@@ -50,7 +50,7 @@ function resetErrors() {
         input.style.borderColor = '';
     });
 
-    let errorMessage = document.getElementById('loginError') as HTMLElement;
+    let errorMessage = document.getElementById('loginError')!;
     errorMessage.textContent = '';
 }
 

@@ -1,16 +1,18 @@
-import {Http2Server} from "http2";
 import {Server} from "http";
-import Client from "./client";
+import ServerClient from "./server-client";
 import ServerTile from "./server-tile";
 import ServerTroop from "./server-troop";
+import GameInitData from '../../shared/interfaces/init-data';
 
 const GameClientManager = require('../controllers/game-client-manager');
-const PacketClientGameSnapshot = require('../../shared/packets/packet-client-game-snapshot');
-const { games } = require('../controllers/game-manager');
 const {AnnouncementType} = require('../../shared/enums');
+
+let nextID = 0;
 
 export default class ServerGame {
     public static gameList: ServerGame[] = [];
+
+    public id: number;
 
     public clientManager: typeof GameClientManager;
 
@@ -22,7 +24,7 @@ export default class ServerGame {
     public readonly boardSize: number;
 
     constructor(httpServer: Server, boardSize: number) {
-        ServerGame.gameList.push(this);
+        this.id = nextID++;
 
         this.clientManager = new GameClientManager(this);
 
@@ -30,11 +32,11 @@ export default class ServerGame {
 
         this.generateTiles();
 
-        games.push(this);
+        ServerGame.gameList.push(this);
     }
 
     getName() {
-        return `Game ${games.indexOf(this) + 1}`;
+        return `Game ${ServerGame.gameList.indexOf(this) + 1}`;
     }
 
     isJoinable() {
@@ -62,20 +64,21 @@ export default class ServerGame {
         // this.tiles.push(new ServerTile(-5, 0)); //This tile should Error
     }
 
-    getClientInitData(client: Client) {
+    getClientInitData(client: ServerClient): GameInitData {
         return {
+            isAuthenticated: client.isAuthenticated,
             tiles: this.tiles.map(tile => tile.getClientTileData(client)),
             troops: this.troops.map(troop => troop.getClientTroopData(client))
         }
     }
 
-    getSnapshotData(client: Client) {
+    getSnapshotData(client: ServerClient) {
         // return {
         //     tiles: this.tiles
         // }
     }
 
-    sendSnapshot(client: Client) {
+    sendSnapshot(client: ServerClient) {
         // let packet = new PacketClientGameSnapshot(this.getClientInitData(client));
         // packet.addClient(client);
         // packet.send();
@@ -88,10 +91,15 @@ export default class ServerGame {
     addPlayer() {
     }
 
-    removePlayer(client) {
-        this.clientManager.clients = this.clientManager.clients.filter(testClient => testClient !== client);
+    removePlayer(client: ServerClient) {
+        this.clientManager.clients = this.clientManager.clients.filter((testClient: ServerClient) => testClient !== client);
 
         this.clientManager.sendAlert(client, AnnouncementType.GAME_LEAVE);
         this.clientManager.updatePlayerList();
+    }
+
+    static getGame(id: number): ServerGame {
+        for (let game of ServerGame.gameList) if (game.id === id) return game;
+        throw new Error("Game not found");
     }
 }

@@ -1,9 +1,9 @@
-import { RegistrationError } from '../../../shared/enums';
+import {RegistrationResponse, RegistrationResponseData} from '../../../shared/enums';
 
-(document.getElementById('registerForm') as HTMLElement).addEventListener('submit', function(e) {
+document.getElementById('registerForm')!.addEventListener('submit', function(e) {
     e.preventDefault();
 
-    let registerBtn = document.getElementById('registerBtn') as HTMLElement;
+    let registerBtn = document.getElementById('registerBtn')!;
     registerBtn.classList.add('active');
 
     let username = (document.getElementById('username') as HTMLInputElement).value;
@@ -28,14 +28,14 @@ import { RegistrationError } from '../../../shared/enums';
                 if(token) localStorage.setItem('token', token);
 
             } else {
-                let errorMessage = Object.values(RegistrationError).find((error) => error.id === data.result) as RegistrationError;
-                let userOnly = errorMessage.id === RegistrationError.USERNAME_EXISTS.id || errorMessage.id === RegistrationError.USERNAME_INVALID.id;
+                let errorMessage = Object.values(RegistrationResponse).find((error) => error.id === data.result) as RegistrationResponseData;
+                let userOnly = errorMessage.id === RegistrationResponse.USERNAME_EXISTS.id || errorMessage.id === RegistrationResponse.USERNAME_INVALID.id;
                 showError(errorMessage.message, userOnly);
             }
             registerBtn.classList.remove('active');
         })
         .catch((error) => {
-            console.error('Error:', error);
+            console.error(error);
             registerBtn.classList.remove('active');
         });
 });
@@ -51,7 +51,7 @@ function showError(message: string, nameOnly = false) {
         if (nameOnly && i === 0) break;
     }
 
-    let errorMessage = document.getElementById('registrationError') as HTMLElement;
+    let errorMessage = document.getElementById('registrationError')!;
     errorMessage.textContent = message;
 
     clearTimeout(errorTimeout);
@@ -63,6 +63,6 @@ function resetErrors() {
         input.style.borderColor = '';
     });
 
-    let errorMessage = document.getElementById('registrationError') as HTMLElement;
+    let errorMessage = document.getElementById('registrationError')!;
     errorMessage.textContent = '';
 }

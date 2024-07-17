@@ -1,8 +1,9 @@
 import { Socket } from 'socket.io';
-import Client from '../../server/objects/client';
+import ServerClient from '../../server/objects/server-client';
+import {NameChangeResponseData} from '../enums';
 
 export default class Packet {
-	public clients: Client[] = [];
+	public clients: ServerClient[] = [];
 
 	public id: number;
 	public type: PacketType;
@@ -12,7 +13,7 @@ export default class Packet {
 		this.type = type;
 	}
 
-	addClient(client: Client) {
+	addClient(client: ServerClient) {
 		this.clients.push(client);
 	}
 
@@ -39,16 +40,16 @@ export default class Packet {
 	}
 }
 
-export function getPacket(id: number) {
+export function getPacket(id: number): PacketData | null {
 	for (let packetName in ClientPacket) {
 		if (ClientPacket[packetName].id === id) {
-			return packetName;
+			return ClientPacket[packetName];
 		}
 	}
 
 	for (let packetName in ServerPacket) {
 		if (ServerPacket[packetName].id === id) {
-			return packetName;
+			return ServerPacket[packetName];
 		}
 	}
 
@@ -60,7 +61,11 @@ export enum PacketType {
 	CLIENT_BOUND = 'CLIENT_BOUND',
 }
 
-export const ClientPacket = Object.freeze({
+interface PacketData {
+	id: number
+}
+
+export const ClientPacket: Readonly<{ [key: string]: PacketData }> = Object.freeze({
 	GAME_INIT: { id: 0x01 },
 	GAME_SNAPSHOT: { id: 0x02 },
 	PLAYER_LIST_INFO: { id: 0x04 },
@@ -68,6 +73,6 @@ export const ClientPacket = Object.freeze({
 	ANNOUNCEMENT: { id: 0x07 },
 });
 
-export const ServerPacket = Object.freeze({
+export const ServerPacket: Readonly<{ [key: string]: PacketData }> = Object.freeze({
 	CHAT: { id: 0x05 },
 });

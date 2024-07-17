@@ -1,18 +1,26 @@
 import ServerGame from "../objects/server-game";
-import Client from "../objects/client";
+import ServerClient from "../objects/server-client";
 import { Request, Response } from 'express';
+import {
+	EmailChangeResponseData,
+	NameChangeResponseData,
+	PasswordChangeResponseData,
+	RegistrationResponseData
+} from '../../shared/enums';
+import {Query} from 'mysql';
+import {Server} from 'http';
 
 const ejs = require('ejs');
 const fs = require('fs');
 
 const { isDev } = require('../misc/utils');
-const { games, getGame } = require('../controllers/game-manager');
+const { getGame } = require('../controllers/game-client-manager');
 // TODO: Cleanup
 const { generateToken, validateUser, getAccountInfo, logout, changeUsername, changeEmail, changePassword,
 	requestPasswordReset, requestUsername, sendEmailVerification, verifyEmail
 } = require("../authentication");
 const PacketClientGameInit = require("../../shared/packets/packet-client-game-init");
-const { AnnouncementType, NameChangeError, EmailChangeError, PasswordChangeError, ToastMessage} = require("../../shared/enums");
+const { AnnouncementType, NameChangeResponseData, EmailChangeResponseData, PasswordChangeResponseData, ToastMessage} = require("../../shared/enums");
 const config = require("../../../config.json");
 const server = require('../server');
 const { sendResetEmail } = require("../controllers/mail");
@@ -26,8 +34,9 @@ module.exports = {
 		let responseData = {
 			success: true,
 			authenticated: valid,
-			games: games.map((game: ServerGame) => {
+			games: ServerGame.gameList.map((game: ServerGame) => {
 				return {
+					id: game.id,
 					name: game.getName(),
 					joinable: game.isJoinable(),
 					players: game.clientManager.clients.length,
@@ -53,11 +62,11 @@ module.exports = {
 	},
 
 	async join(req: Request, res: Response) {
-		const gameID = req.query.gameID;
+		const gameID = parseInt(req.query.gameID as string);
 		const socketID = req.query.socketID;
 		const token = req.headers.authorization!.split(' ')[1];
 
-		let client = Client.clientList.find((client: Client) => client.socket.id === socketID);
+		let client = ServerClient.clientList.find((client: ServerClient) => client.socket.id === socketID);
 		if (!client) {
 			res.json({
 				success: false,
@@ -69,7 +78,7 @@ module.exports = {
 
 		let isAuthenticated = token && await validateUser(token, client);
 
-		let game = getGame(gameID);
+		let game = ServerGame.getGame(gameID);
 		if (!game) {
 			res.json({
 				success: false,
@@ -77,14 +86,14 @@ module.exports = {
 				message: "This is not a valid game"
 			});
 			return;
-		} else if (game.clientManager.clients.find((testClient: Client) => testClient.getID() === client.getID())) {
+		} else if (game.clientManager.clients.find((testClient: ServerClient) => testClient.getID() === client.getID())) {
 			res.json({
 				success: false,
 				alert: true,
 				message: "You are already in this game"
 			});
 			return;
-		} else if (game.clientManager.clients.length >= game.maxPlayers) {
+		} else if (game.clientManager.clients.length >= game.clientManager.maxPlayers) {
 			res.json({
 				success: false,
 				alert: true,
@@ -93,10 +102,7 @@ module.exports = {
 			return;
 		}
 
-		let initData = {
-			isAuthenticated
-		}
-		await game.clientManager.addClientToGame(client, initData);
+		await game.clientManager.addClientToGame(client);
 	},
 
 	register(req: Request, res: Response) {
@@ -116,15 +122,16 @@ module.exports = {
 		const { createAccount, generateToken } = require('../authentication');
 
 		createAccount(username, password)
-			.then(async result => {
+			.then(async (result: RegistrationResponseData) => {
 				res.json({
-					success: result === 0x00,
-					result: result,
-					token: result === 0x00 ? await generateToken(username) : null,
+					success: result.id === 0x00,
+					result: result.id,
+					token: result.id === 0x00 ? await generateToken(username) : null,
 				});
 			})
-			.catch(error => {
-				console.error('Error creating account:', error);
+			.catch((error: unknown) => {
+				console.error('Error creating account:');
+				console.error(error);
 				res.json({
 					success: false,
 					result: error,
@@ -149,14 +156,15 @@ module.exports = {
 		const { attemptLogin, generateToken } = require('../authentication');
 
 		attemptLogin(username, password)
-			.then(async result => {
+			.then(async (result: boolean) => {
 				res.json({
 					success: result,
-					token: result === true ? await generateToken(username) : null,
+					token: result ? await generateToken(username) : null,
 				});
 			})
-			.catch(error => {
-				console.error('Error logging in:', error);
+			.catch((error: unknown) => {
+				console.error('Error logging in:');
+				console.error(error);
 				res.json({
 					success: false
 				});
@@ -170,14 +178,15 @@ module.exports = {
 		let valid = token && await validateUser(token, null);
 
 		if(valid) logout(token)
-			.then(async result => {
+			.then(async (result: boolean) => {
 
 				res.json({
 					success: result,
 				});
 			})
-			.catch(error => {
-				console.error('Error logging out:', error);
+			.catch((error: unknown) => {
+				console.error('Error logging out:');
+				console.error(error);
 				res.json({
 					success: false
 				});
@@ -188,19 +197,19 @@ module.exports = {
 	},
 
 	async account(req: Request, res: Response) {
-
 		const token= req.headers.authorization!.split(' ')[1];
 		let valid = token && await validateUser(token, null);
 
 		if(valid) getAccountInfo(token)
-			.then(async result => {
+			.then(async (result: object) => {
 				res.json({
 					success: true,
-					info: result[0]
+					info: result
 				});
 			})
-			.catch(error => {
-				console.error('Error fetching account info:', error);
+			.catch((error: unknown) => {
+				console.error('Error fetching account info:');
+				console.error(error);
 				res.json({
 					success: false
 				});
@@ -218,19 +227,20 @@ module.exports = {
 		let valid = token && username && await validateUser(token, null);
 
 		if(valid) changeUsername(token, username)
-			.then(async result => {
+			.then(async (result: NameChangeResponseData) => {
 				res.json({
-					result: result
+					result: result.id
 				});
 			})
-			.catch(error => {
-				console.error('Error changing username:', error);
+			.catch((error: unknown) => {
+				console.error('Error changing username');
+				console.error(error);
 				res.json({
-					result: NameChangeError.ERROR.id
+					result: NameChangeResponseData.ERROR.id
 				});
 			});
 		else res.json({
-			result: NameChangeError.ERROR.id
+			result: NameChangeResponseData.ERROR.id
 		});
 	},
 
@@ -241,19 +251,20 @@ module.exports = {
 		let valid = token && email && await validateUser(token, null);
 
 		if(valid) changeEmail(token, email)
-			.then(async result => {
+			.then(async (result: EmailChangeResponseData) => {
 				res.json({
-					result: result
+					result: result.id
 				});
 			})
-			.catch(error => {
-				console.error('Error changing email:', error);
+			.catch((error: unknown) => {
+				console.error('Error changing email:');
+				console.error(error);
 				res.json({
-					result: EmailChangeError.ERROR.id
+					result: EmailChangeResponseData.ERROR.id
 				});
 			});
 		else res.json({
-			result: EmailChangeError.ERROR.id
+			result: EmailChangeResponseData.ERROR.id
 		});
 	},
 
@@ -267,19 +278,20 @@ module.exports = {
 		let valid = token && oldPassword && newPassword && await validateUser(token, null);
 
 		if(valid) changePassword(token, oldPassword, newPassword)
-			.then(async result => {
+			.then(async (result: PasswordChangeResponseData) => {
 				res.json({
-					result: result
+					result: result.id
 				});
 			})
-			.catch(error => {
-				console.error('Error changing email:', error);
+			.catch((error: unknown) => {
+				console.error('Error changing email:');
+				console.error(error);
 				res.json({
-					result: PasswordChangeError.ERROR.id
+					result: PasswordChangeResponseData.ERROR.id
 				});
 			});
 		else res.json({
-			result: PasswordChangeError.ERROR.id
+			result: PasswordChangeResponseData.ERROR.id
 		});
 	},
 
@@ -289,19 +301,20 @@ module.exports = {
 
 		let valid = token && password && await validateUser(token);
 		if(valid) changePassword(token, null, password, false)
-			.then(async result => {
+			.then(async (result: PasswordChangeResponseData) => {
 				res.json({
-					result: result
+					result: result.id
 				});
 			})
-			.catch(error => {
-				console.error('Error changing email:', error);
+			.catch((error: unknown) => {
+				console.error('Error changing email:');
+				console.error(error);
 				res.json({
-					result: PasswordChangeError.ERROR.id
+					result: PasswordChangeResponseData.ERROR.id
 				});
 			});
 		else res.json({
-			result: PasswordChangeError.ERROR.id
+			result: PasswordChangeResponseData.ERROR.id
 		});
 	},
 
@@ -345,13 +358,13 @@ module.exports = {
 
 		if(valid) {
 			await verifyEmail(token)
-				.then(async result => {
+				.then(async (result: boolean) => {
 					res.redirect('/account?toast=' + (result ? ToastMessage.EMAIL_VERIFIED.id : ToastMessage.EMAIL_VERIFIED_ERROR.id));
 				})
-				.catch(error => {
+				.catch((error: unknown) => {
 					res.redirect('/account?toast=' + ToastMessage.EMAIL_VERIFIED_ERROR.id);
-					console.error('Error verifying account:', error);
-
+					console.error('Error verifying account:');
+					console.error(error);
 				});
 		} else {
 			res.redirect('/account?toast=' + ToastMessage.EMAIL_VERIFIED_ERROR.id);

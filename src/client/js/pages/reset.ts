@@ -1,4 +1,4 @@
-import { PasswordChangeError } from '../../../shared/enums';
+import {PasswordChangeResponse, PasswordChangeResponseData} from '../../../shared/enums';
 
 const urlParams = new URLSearchParams(window.location.search);
 const token = urlParams.get('token');
@@ -7,17 +7,17 @@ if (!token) {
     window.location.href = '/login';
 }
 
-(document.getElementById('resetForm') as HTMLElement).addEventListener('submit', function(e) {
+document.getElementById('resetForm')!.addEventListener('submit', function(e) {
     e.preventDefault();
     if (!token) return;
 
-    let resetBtn = document.getElementById('resetBtn') as HTMLElement;
+    let resetBtn = document.getElementById('resetBtn')!;
     resetBtn.classList.add('active');
 
     let password = (document.getElementById('password') as HTMLInputElement).value;
     let confirmPassword = (document.getElementById('confirm-password') as HTMLInputElement).value;
 
-    let error = document.getElementById('resetError') as HTMLElement;
+    let error = document.getElementById('resetError')!;
 
     if (password !== confirmPassword) {
         error.textContent = 'Passwords do not match.';
@@ -33,10 +33,10 @@ if (!token) {
     })
         .then(response => response.json())
         .then(data => {
-            let error = document.getElementById('resetError') as HTMLElement;
-            let errorMessage = Object.values(PasswordChangeError).find((error) => error.id === data.result) as PasswordChangeError;
+            let error = document.getElementById('resetError')!;
+            let errorMessage = Object.values(PasswordChangeResponse).find((error) => error.id === data.result) as PasswordChangeResponseData;
 
-            if (errorMessage.id === PasswordChangeError.SUCCESS.id) {
+            if (errorMessage.id === PasswordChangeResponse.SUCCESS.id) {
                 window.location.href = '/login';
 
                 if (error) error.style.visibility = 'hidden';
@@ -47,7 +47,7 @@ if (!token) {
             resetBtn.classList.remove('active');
         })
         .catch((error) => {
-            console.error('Error:', error);
+            console.error(error);
             resetBtn.classList.remove('active');
         });
 });

@@ -1,18 +1,24 @@
-import {UserProfile} from './objects/client';
+import ServerClient, {UserProfile} from './objects/server-client';
+import {Connection} from 'mysql';
+import {JsonWebTokenError} from 'jsonwebtoken';
+import {
+    EmailChangeResponseData,
+    NameChangeResponseData,
+    PasswordChangeResponseData,
+    RegistrationResponseData
+} from '../shared/enums';
 
 const mysql = require('mysql');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const validator = require("email-validator");
 
-const { RegistrationError, NameChangeError, EmailChangeError, PasswordChangeError } = require('../shared/enums');
+const { RegistrationResponseData, NameChangeResponseData, EmailChangeResponseData, PasswordChangeResponseData } = require('../shared/enums');
 const config = require('../../config.json');
 const { sendResetEmail, sendUsernameEmail, sendVerificationEmail } = require('./controllers/mail');
 
-
 const saltRounds = 10;
-
-let connection;
+let connection: Connection;
 
 function init() {
     connection = mysql.createConnection({
@@ -51,7 +57,7 @@ async function hashPassword(password: string) {
     }
 }
 
-async function verifyPassword(password: string, hashedPassword: string) {
+async function verifyPassword(password: string, hashedPassword: string): Promise<boolean> {
     try {
         return await bcrypt.compare(password, hashedPassword);
     } catch (error) {
@@ -59,50 +65,37 @@ async function verifyPassword(password: string, hashedPassword: string) {
     }
 }
 
-async function createAccount(username: string, password: string) {
-    if (!await isUsernameValid(username)) return RegistrationError.USERNAME_INVALID.id;
+async function createAccount(username: string, password: string): Promise<RegistrationResponseData> {
+    if (!await isUsernameValid(username)) return RegistrationResponseData.USERNAME_INVALID.id;
 
     let userExists;
 
-    try {
-        userExists = await new Promise((resolve, reject) => {
-            connection.query('SELECT * FROM accounts WHERE username = ?', [username], (err, result) => {
-                if (err) reject(RegistrationError.USERNAME_INVALID.id);
-                if (result.length > 0) resolve(RegistrationError.USERNAME_EXISTS.id);
-                resolve(null);
-            });
+    userExists = await new Promise<RegistrationResponseData | null>((resolve, reject) => {
+        connection.query('SELECT * FROM accounts WHERE username = ?', [username], (err, result) => {
+            if (err) reject(RegistrationResponseData.USERNAME_INVALID);
+            if (result.length > 0) resolve(RegistrationResponseData.USERNAME_EXISTS);
+            resolve(null);
         });
-    } catch (error) {
-        return error;
-    }
-
+    });
     if (userExists) return userExists;
 
     let hash;
     try {
         hash = await hashPassword(password);
     } catch (error) {
-        return RegistrationError.PASSWORD_INVALID.id; // Error hashing password
+        return RegistrationResponseData.PASSWORD_INVALID;
     }
 
-    let accountCreated;
-
-    try {
-        accountCreated = await new Promise((resolve, reject) => {
-            connection.query('INSERT INTO accounts (username, password) VALUES (?, ?)', [username, hash], (err, result) => {
-                if (err) reject(); // Error creating account
-                resolve(RegistrationError.SUCCESS.id);
-            });
+    return await new Promise((resolve, reject) => {
+        connection.query('INSERT INTO accounts (username, password) VALUES (?, ?)', [username, hash], (err, result) => {
+            if (err) reject();
+            console.log('Account created:', username);
+            resolve(RegistrationResponseData.SUCCESS);
         });
-    } catch (error) {
-        return error;
-    }
-
-    console.log('Account created:', username);
-    return accountCreated;
+    });
 }
 
-async function attemptLogin(username, password) {
+async function attemptLogin(username: string, password: string): Promise<boolean> {
     let exists = await accountExists(username);
     if (!username || !password || !exists) return false;
 
@@ -116,7 +109,7 @@ async function attemptLogin(username, password) {
     });
 }
 
-async function accountExists(username) {
+async function accountExists(username: string) {
     try {
         return await new Promise((resolve, reject) => {
             connection.query('SELECT * FROM accounts WHERE username = ?', [username], (err, result) => {
@@ -130,7 +123,7 @@ async function accountExists(username) {
     }
 }
 
-async function generateToken(username, expires = '1w') {
+async function generateToken(username: string, expires = '1w') {
     let id = await new Promise((resolve, reject) => {
         connection.query('SELECT id FROM accounts WHERE username = ?', [username], (err, result) => {
             if (err) reject(err);
@@ -151,7 +144,7 @@ async function generateToken(username, expires = '1w') {
     return jwt.sign(payload, secret, options);
 }
 
-async function validateUser(token, client) {
+async function validateUser(token: string, client: ServerClient) {
     try {
         const decoded = jwt.verify(token, config.secret);
 
@@ -173,11 +166,11 @@ async function validateUser(token, client) {
         if(!loggedIn) return false;
         if(!client) return true;
 
-        client.authenticated = true;
+        client.isAuthenticated = true;
         client.profile = new UserProfile(decoded.userId, loggedIn.username);
 
     } catch (error) {
-        if (error.name === 'JsonWebTokenError') {
+        if (error instanceof JsonWebTokenError) {
             console.error('Error with token');
         } else {
             console.error('Error verifying JWT');
@@ -215,7 +208,7 @@ async function getUserID(username: string) {
         if(!loggedOut) return true;
 
     } catch (error) {
-        if (error.name === 'JsonWebTokenError') {
+        if (error instanceof JsonWebTokenError) {
             return false;
         } else {
             console.error('Error verifying JWT');
@@ -227,8 +220,7 @@ async function getUserID(username: string) {
     return true;
 }
 
-async function getAccountInfo(token) {
-
+async function getAccountInfo(token: string): Promise<object> {
     try {
         const decoded = jwt.verify(token, config.secret);
 
@@ -238,30 +230,27 @@ async function getAccountInfo(token) {
                     console.error('Error getting account info:', err);
                     reject(err);
                 }
-                resolve(result);
+                resolve(result[0]);
             });
         });
     } catch (error) {
-        if (error.name === 'JsonWebTokenError') {
-            return false;
-        } else {
-            console.error('Error verifying JWT');
-            console.error(error);
-            return false;
+        if (error instanceof JsonWebTokenError) {
+            return {};
         }
+        throw error;
     }
 }
 
-async function changeUsername(token, newUsername) {
-    if (!await isUsernameValid(newUsername)) return NameChangeError.USERNAME_INVALID.id;
-
-    if (await isUsernameTaken(newUsername)) return NameChangeError.USERNAME_EXISTS.id;
+async function changeUsername(token: string, newUsername: string): Promise<NameChangeResponseData> {
+    if (!await isUsernameValid(newUsername)) return NameChangeResponseData.USERNAME_INVALID;
+    if (await isUsernameTaken(newUsername)) return NameChangeResponseData.USERNAME_EXISTS;
 
     try {
         const decoded = jwt.verify(token, config.secret);
 
-        let promise = new Promise((resolve, reject) => {
+        await new Promise((resolve, reject) => {
             connection.query('UPDATE accounts SET username = ? WHERE id = ?', [newUsername, decoded.userId], (err, result) => {
+                console.log("test")
                 if(err) {
                     console.error('Error updating username:', err);
                     reject(err);
@@ -269,29 +258,22 @@ async function changeUsername(token, newUsername) {
                 resolve(result);
             });
         });
-
-        if (promise) return NameChangeError.SUCCESS.id;
-        else return NameChangeError.ERROR.id;
+        return NameChangeResponseData.SUCCESS;
 
     } catch (error) {
-        if (error.name === 'JsonWebTokenError') {
-            return NameChangeError.ERROR.id;
-        } else {
-            console.error('Error verifying JWT');
-            console.error(error);
-            return NameChangeError.ERROR.id;
-        }
+        if (error instanceof JsonWebTokenError) return NameChangeResponseData.ERROR;
+        throw error;
     }
 }
 
-async function changeEmail(token: string, newEmail: string) {
-    if (!validator.validate(newEmail)) return EmailChangeError.EMAIL_INVALID.id;
-    if (await isEmailInUse(newEmail)) return EmailChangeError.EMAIL_EXISTS.id;
+async function changeEmail(token: string, newEmail: string): Promise<EmailChangeResponseData> {
+    if (!validator.validate(newEmail)) return EmailChangeResponseData.EMAIL_INVALID;
+    if (await isEmailInUse(newEmail)) return EmailChangeResponseData.EMAIL_EXISTS;
 
     try {
         const decoded = jwt.verify(token, config.secret);
 
-        let promise = new Promise((resolve, reject) => {
+        await new Promise((resolve, reject) => {
             connection.query('UPDATE accounts SET email = ? WHERE id = ?', [newEmail, decoded.userId], (err, result) => {
                 if(err) {
                     console.error('Error updating email:', err);
@@ -301,33 +283,23 @@ async function changeEmail(token: string, newEmail: string) {
             });
         });
 
-        if (promise) {
-            connection.query('UPDATE accounts SET last_email_change = ? WHERE id = ?', [Date.now(), decoded.userId], (err) => {
-                if(err) {
-                    console.error('Error updating email change time:', err);
-                    return EmailChangeError.ERROR.id;
-                }
-            });
+        connection.query('UPDATE accounts SET last_email_change = ? WHERE id = ?', [Date.now(), decoded.userId], (err) => {
+            if(err) {
+                console.error('Error updating email change time:', err);
+                return EmailChangeResponseData.ERROR;
+            }
+        });
 
-            await sendEmailVerification(token);
-
-            return EmailChangeError.SUCCESS.id;
-        }
-
-        else return EmailChangeError.ERROR.id;
+        await sendEmailVerification(token);
+        return EmailChangeResponseData.SUCCESS;
 
     } catch (error) {
-        if (error.name === 'JsonWebTokenError') {
-            return EmailChangeError.ERROR.id;
-        } else {
-            console.error('Error verifying JWT');
-            console.error(error);
-            return EmailChangeError.ERROR.id;
-        }
+        if (error instanceof JsonWebTokenError) return EmailChangeResponseData.ERROR;
+        throw error;
     }
 }
 
-async function changePassword(token, oldPassword, newPassword, requireOld = true) {
+async function changePassword(token: string, oldPassword: string, newPassword: string, requireOld = true): Promise<PasswordChangeResponseData> {
     //TODO: Add password restrictions
 
     try {
@@ -341,12 +313,11 @@ async function changePassword(token, oldPassword, newPassword, requireOld = true
                 });
             });
 
-            if (!passwordValid) return PasswordChangeError.PASSWORD_INCORRECT.id;
+            if (!passwordValid) return PasswordChangeResponseData.PASSWORD_INCORRECT;
         }
 
         let hash = await hashPassword(newPassword);
-        let promise = new Promise((resolve, reject) => {
-
+        await new Promise((resolve, reject) => {
             connection.query('UPDATE accounts SET password = ? WHERE id = ?', [hash, decoded.userId], (err, result) => {
                 if(err) {
                     console.error('Error updating password:', err);
@@ -356,26 +327,18 @@ async function changePassword(token, oldPassword, newPassword, requireOld = true
             });
         });
 
-        if (promise) return PasswordChangeError.SUCCESS.id;
-        else return PasswordChangeError.ERROR.id;
-
+        return PasswordChangeResponseData.SUCCESS;
     } catch (error) {
-        if (error.name === 'JsonWebTokenError') {
-            return PasswordChangeError.ERROR.id;
-        } else {
-            console.error('Error verifying JWT');
-            console.error(error);
-            return PasswordChangeError.ERROR.id;
-        }
+        if (error instanceof JsonWebTokenError) return PasswordChangeResponseData.ERROR;
+        throw error;
     }
 }
 
-async function requestPasswordReset(email) {
+async function requestPasswordReset(email: string) {
     if (!await isEmailInUse(email)) return;
 
     try {
         let username = await getUsername(email);
-
         if (!username) return;
 
         let token = await generateToken(username, '15m');
@@ -383,29 +346,30 @@ async function requestPasswordReset(email) {
 
         await sendResetEmail(username, email, link);
     } catch (error) {
-        console.error('Error while requesting password reset:', error);
+        console.error('Error while requesting password reset:');
+        console.error(error);
     }
 }
 
-async function requestUsername(email) {
+async function requestUsername(email: string) {
     if (!await isEmailInUse(email)) return;
 
     try {
         let username = await getUsername(email);
-
         if (!username) return;
 
         await sendUsernameEmail(username, email);
     } catch (error) {
-        console.error('Error while requesting username:', error);
+        console.error('Error while requesting username:');
+        console.error(error);
     }
 }
 
-async function sendEmailVerification(token){
+async function sendEmailVerification(token: string){
     try {
         const decoded = jwt.verify(token, config.secret);
 
-        let email = await new Promise((resolve, reject) => {
+        let email: string = await new Promise((resolve, reject) => {
             connection.query('SELECT email FROM accounts WHERE id = ?', [decoded.userId], (err, result) => {
                 if(err) reject(err);
                 resolve(result[0].email);
@@ -433,11 +397,12 @@ async function sendEmailVerification(token){
 
         await sendVerificationEmail(username, email, link);
     } catch (error) {
-        console.error('Error while sending email verification:', error);
+        console.error('Error while sending email verification:');
+        console.error(error);
     }
 }
 
-async function verifyEmail(token) {
+async function verifyEmail(token: string): Promise<boolean> {
     try {
         const decoded = jwt.verify(token, config.secret);
 
@@ -452,9 +417,9 @@ async function verifyEmail(token) {
             return false;
         }
 
-        let promise = new Promise((resolve, reject) => {
+        return new Promise((resolve, reject) => {
             connection.query('UPDATE accounts SET email_verified = ? WHERE id = ?', [true, decoded.userId], (err, result) => {
-                if(err) {
+                if (err) {
                     console.error('Error updating email verification status:', err);
                     reject(err);
                 }
@@ -462,22 +427,14 @@ async function verifyEmail(token) {
             });
         });
 
-        return !!promise;
-
     } catch (error) {
-        if (error.name === 'JsonWebTokenError') {
-            return false;
-        } else {
-            console.error('Error verifying JWT');
-            console.error(error);
-            return false;
-        }
+        if (error instanceof JsonWebTokenError) return false;
+        throw error;
     }
 }
 
-async function getUsername(email) {
-
-    return new Promise((resolve, reject) => {
+async function getUsername(email: string) {
+    return await new Promise<string | null>((resolve, reject) => {
         connection.query('SELECT username FROM accounts WHERE email = ?', [email], (err, result) => {
             if (err) reject(err);
             if (result.length === 0) {
@@ -490,9 +447,8 @@ async function getUsername(email) {
     });
 }
 
-async function isUsernameTaken(username) {
-
-    return new Promise((resolve, reject) => {
+async function isUsernameTaken(username: string) {
+    return await new Promise<boolean>((resolve, reject) => {
         connection.query('SELECT * FROM accounts WHERE username = ?', [username], (err, result) => {
             if (err) reject(err);
             resolve(result.length > 0);
@@ -501,11 +457,11 @@ async function isUsernameTaken(username) {
 
 }
 
-async function isUsernameValid(username) {
+async function isUsernameValid(username: string) {
     if(username.match('^(?=.{3,39}$)[a-zA-Z\\d]+(?:-[a-zA-Z\\d]+)*$')) return true;
 }
 
-async function isEmailInUse(email) {
+async function isEmailInUse(email: string) {
     return new Promise((resolve, reject) => {
         connection.query('SELECT * FROM accounts WHERE email = ?', [email], (err, result) => {
             if (err) reject(err);

@@ -1,12 +1,10 @@
-import '../objects/game';
+import '../objects/client-game';
 import '../controllers/connection';
 import '../misc/ui'
 import '../../../shared/packets/packet';
 import { ToastMessage } from '../../../shared/enums';
 import { showToast } from "../controllers/toast";
 import { Modal } from "bootstrap";
-import {Game} from "../objects/game";
-import {Socket} from "socket.io";
 
 (window as any).gameData = {}
 
@@ -30,7 +28,7 @@ window.onload = function() {
 
 			}
 		})
-		.catch(error => console.error('Error:', error));
+		.catch(error => console.error(error));
 }
 
 export interface DevConfig {
@@ -56,20 +54,20 @@ function updateGames() {
 		.then((data) => {
 			devConfig = data.dev;
 
-			let lobbyContainer = document.getElementById('lobbyContainer') as HTMLElement;
+			let lobbyContainer = document.getElementById('lobbyContainer')!;
 			lobbyContainer.innerHTML = data.html;
 
 			const gameCards = document.querySelectorAll('.gameLobby');
 			gameCards.forEach((card) => {
 				card.addEventListener('click', () => {
-					const gameID = parseInt(card.id);
+					const gameID = parseInt(data.id);
 					console.log('Clicked game ID:', gameID);
 
 					joinGame(gameID, (window as any).gameData.socketID);
 				});
 			});
 
-			let modalElement = document.getElementById('promptModal') as HTMLElement;
+			let modalElement = document.getElementById('promptModal')!;
 			if (!data.authenticated) {
 				let modal = new Modal(modalElement);
 				modal.show();
@@ -106,8 +104,8 @@ export function joinGame(gameID: number, socketID: number) {
 
 updateGames();
 
-(document.getElementById('guestBtn') as HTMLElement).addEventListener('click', function() {
-	let modal = document.getElementById('promptModal') as HTMLElement;
+document.getElementById('guestBtn')!.addEventListener('click', function() {
+	let modal = document.getElementById('promptModal')!;
 	modal.classList.remove('show');
 	modal.style.display = 'none';
 
@@ -117,10 +115,10 @@ updateGames();
 	}
 });
 
-(document.getElementById('registerBtn') as HTMLElement).addEventListener('click', function() {
+document.getElementById('registerBtn')!.addEventListener('click', function() {
 	window.location.href = '/register';
 });
 
-(document.getElementById('loginBtn') as HTMLElement).addEventListener('click', function() {
+document.getElementById('loginBtn')!.addEventListener('click', function() {
 	window.location.href = '/login';
 });

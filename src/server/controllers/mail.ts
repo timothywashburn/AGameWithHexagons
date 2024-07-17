@@ -34,8 +34,8 @@ async function sendResetEmail(username: string, email: string, link: string) {
         .then((result: LibraryResponse<Body>) => {
             console.log(result.body);
         })
-        .catch((err) => {
-            console.log(err.statusCode);
+        .catch((error: unknown) => {
+            console.error(error);
         })
 }
 
@@ -71,8 +71,8 @@ async function sendUsernameEmail(username: string, email: string) {
         .then((result: LibraryResponse<Body>) => {
             console.log(result.body);
         })
-        .catch((err) => {
-            console.log(err.statusCode);
+        .catch((error: unknown) => {
+            console.error(error);
         })
 }
 
@@ -107,8 +107,8 @@ async function sendVerificationEmail(username: string, email: string, link: stri
         .then((result: LibraryResponse<Body>) => {
             console.log(result.body);
         })
-        .catch((err) => {
-            console.log(err.statusCode);
+        .catch((error: unknown) => {
+            console.error(error);
         })
 }
 

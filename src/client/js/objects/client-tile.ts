@@ -1,5 +1,7 @@
+import {TileInitData} from '../../../shared/interfaces/init-data';
+
 const canvas = document.getElementById('gameCanvas') as HTMLCanvasElement;
-const ctx = canvas.getContext('2d');
+const ctx = canvas.getContext('2d')!;
 
 let apothem = 30
 let radius = apothem / Math.cos(Math.PI / 6);
@@ -11,7 +13,7 @@ hexagon.src = 'images/hexagon.svg';
 hexagonSelected.src = 'images/hexagon-selected.svg';
 hexagonHover.src = 'images/hexagon-hover.svg';
 
-export default class Tile {
+export default class ClientTile {
 
 	public id: number;
 	public x: number;
@@ -26,11 +28,11 @@ export default class Tile {
 	public isSelected: boolean;
 	public isHovered: boolean;
 
-	public literalX: number;
-	public literalY: number;
-	public path: Path2D;
+	public literalX: number | undefined;
+	public literalY: number | undefined;
+	public path: Path2D | undefined;
 
-	constructor(tileData) {
+	constructor(tileData: TileInitData) {
 		this.id = tileData.id;
 		this.x = tileData.x;
 		this.y = tileData.y;

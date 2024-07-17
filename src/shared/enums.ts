@@ -4,53 +4,59 @@ export const NameErrorType = Object.freeze({
 	TOO_LONG: { id: 0x03, message: 'Name Too Long (30 Characters Maximum)' },
 });
 
-export const AnnouncementType = Object.freeze({
+export interface AnnouncementTypeData {
+	id: number,
+	message: string,
+	color: string
+}
+
+export const AnnouncementType: Readonly<{ [key: string]: AnnouncementTypeData }> = Object.freeze({
 	GAME_JOIN: { id: 0x01, message: 'Joined the game', color: 'green'},
 	GAME_LEAVE: { id: 0x02, message: 'Left the game', color: 'red'},
 });
 
-export interface RegistrationError {
+export interface RegistrationResponseData {
 	id: number;
 	message: string;
 }
 
-export const RegistrationError: Readonly<{ [key: string]: RegistrationError }> = Object.freeze({
+export const RegistrationResponse: Readonly<{ [key: string]: RegistrationResponseData }> = Object.freeze({
 	SUCCESS: { id: 0x00, message: 'Account created successfully' },
 	USERNAME_EXISTS: { id: 0x01, message: 'Username already exists' },
 	USERNAME_INVALID: { id: 0x02, message: 'Invalid username' },
 	PASSWORD_INVALID: { id: 0x03, message: 'Invalid password' },
 });
 
-export interface NameChangeError {
+export interface NameChangeResponseData {
 	id: number;
 	message: string;
 }
 
-export const NameChangeError: Readonly<{ [key: string]: NameChangeError }> = Object.freeze({
+export const NameChangeResponse: Readonly<{ [key: string]: NameChangeResponseData }> = Object.freeze({
 	SUCCESS: { id: 0x00, message: 'Name changed successfully' },
 	USERNAME_EXISTS: { id: 0x01, message: 'Username already exists' },
 	USERNAME_INVALID: { id: 0x02, message: 'Invalid username' },
 	ERROR: { id: 0x03, message: 'Error changing name' },
 });
 
-export interface EmailChangeError {
+export interface EmailChangeResponseData {
 	id: number;
 	message: string;
 }
 
-export const EmailChangeError: Readonly<{ [key: string]: EmailChangeError }> = Object.freeze({
+export const EmailChangeResponse: Readonly<{ [key: string]: EmailChangeResponseData }> = Object.freeze({
 	SUCCESS: { id: 0x00, message: 'Email changed successfully' },
 	EMAIL_EXISTS: { id: 0x01, message: 'Email is already linked to another account' },
 	EMAIL_INVALID: { id: 0x02, message: 'Invalid email' },
 	ERROR: { id: 0x03, message: 'Error changing email' },
 });
 
-export interface PasswordChangeError {
+export interface PasswordChangeResponseData {
 	id: number;
 	message: string;
 }
 
-export const PasswordChangeError: Readonly<{ [key: string]: PasswordChangeError }> = Object.freeze({
+export const PasswordChangeResponse: Readonly<{ [key: string]: PasswordChangeResponseData }> = Object.freeze({
 	SUCCESS: { id: 0x00, message: 'Password changed successfully' },
 	PASSWORD_INCORRECT: { id: 0x01, message: 'Incorrect password' },
 	INSECURE_PASSWORD: { id: 0x02, message: 'Password is insecure' },

@@ -17,7 +17,7 @@ const { isDev } = require('./misc/utils');
 const viewsDir = `${__dirname}/../client/views`;
 
 import { Request, Response } from 'express';
-import Client from './objects/client';
+import ServerClient from './objects/server-client';
 import ServerGame from './objects/server-game';
 
 app.set('view engine', 'ejs');
@@ -115,7 +115,7 @@ let game2 = new ServerGame(server, 5);
 const serverSocket = new Server(server);
 
 serverSocket.on('connection', (socket: Socket) => {
-	new Client(socket);
+	new ServerClient(socket);
 });
 
 server.listen(config.port, () => {

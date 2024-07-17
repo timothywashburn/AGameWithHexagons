@@ -1,23 +1,24 @@
 import { prepareFrame } from '../render';
-import Tile from './tile'
-import Troop from './troop';
+import ClientTile from './client-tile'
+import ClientTroop from './client-troop';
+import GameInitData, {TileInitData, TroopInitData} from '../../../shared/interfaces/init-data';
+import GameSnapshot from '../../../shared/interfaces/snapshot';
 
-let game: Game;
+let game: ClientGame;
 
 export const getGame = () => game;
 
-export class Game {
-
+export class ClientGame {
 	public startTime: number;
 	public resources: any;
-	public tiles: Tile[];
-	public troops: Troop[];
+	public tiles: ClientTile[];
+	public troops: ClientTroop[];
 	public buildings: any[];
 
 	public frame: number = 1;
 	public renderTimes: number[] = [];
 
-	constructor(initData) {
+	constructor(initData: GameInitData) {
 		game = this;
 		this.startTime = Date.now();
 
@@ -47,7 +48,7 @@ export class Game {
 		console.log("debugging enabled");
 	}
 
-	loadGame(initData) {
+	loadGame(initData: GameInitData) {
 		// console.log("initData");
 		// console.log(initData);
 
@@ -56,20 +57,20 @@ export class Game {
 			"goo": 0,
 		}
 
-		this.tiles = initData.tiles.map(tileData => new Tile(tileData));
-		this.troops = initData.troops.map(troopData => new Troop(troopData));
+		this.tiles = initData.tiles.map((tileInitData: TileInitData) => new ClientTile(tileInitData));
+		this.troops = initData.troops.map((troopInitData: TroopInitData) => new ClientTroop(troopInitData));
 	}
 
-	updateGame(snapshot) {
+	updateGame(snapshot: GameSnapshot) {
 		// console.log("snapshot");
 		// console.log(snapshot);
 
-		this.tiles.forEach(tile => tile.updateTile(snapshot.tiles.find((testTile: Tile) => testTile.id === tile.id)));
+		// this.tiles.forEach(tile => tile.updateTile(snapshot.tiles.find((testTile: ClientTile) => testTile.id === tile.id)));
 	}
 
 	startRender() {
-		const lobbyDiv = document.getElementById('gameLobby') as HTMLElement;
-		const gameDiv = document.getElementById('game') as HTMLElement;
+		const lobbyDiv = document.getElementById('gameLobby')!;
+		const gameDiv = document.getElementById('game')!;
 
 		lobbyDiv.style.display = 'none';
 		gameDiv.style.display = 'block';
