@@ -1,7 +1,7 @@
 import { ClientPacket, PacketType, getPacket } from '../../../shared/packets/packet';
 import { AnnouncementType } from '../../../shared/enums';
 import { io } from 'socket.io-client';
-import { devConfig } from '../pages/play';
+import {devConfig, joinGame} from '../pages/play';
 import { getGame } from '../objects/game'
 import { Game } from '../objects/game';
 import Packet from '../../../shared/packets/packet'
@@ -15,6 +15,7 @@ export const clientSocket = (io as any).connect();
 
 clientSocket.on('connect', () => {
 	(window as any).gameData.socketID = clientSocket.id;
+	if (devConfig.autoJoin) joinGame(0, (window as any).gameData.socketID);
 });
 
 clientSocket.on('packet', function (packet: Packet) {

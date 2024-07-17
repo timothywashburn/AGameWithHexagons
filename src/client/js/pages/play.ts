@@ -74,8 +74,6 @@ function updateGames() {
 				let modal = new Modal(modalElement);
 				modal.show();
 			}
-
-			if (devConfig.autoJoin && !modalElement.style.display) joinGame(0, (window as any).gameData.socketID);
 		});
 }
 
