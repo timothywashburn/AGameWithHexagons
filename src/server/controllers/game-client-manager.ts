@@ -1,15 +1,12 @@
-import PacketClientGameInit from '../../shared/packets/packet-client-game-init';
-import PacketClientPlayerListInfo from '../../shared/packets/packet-client-player-list-info';
-import PacketClientAnnouncement from '../../shared/packets/packet-client-announcement';
+import PacketClientGameInit from '../../shared/packets/client/packet-client-game-init';
+import PacketClientPlayerListInfo from '../../shared/packets/client/packet-client-player-list-info';
+import PacketClientAnnouncement from '../../shared/packets/client/packet-client-announcement';
 import ServerClient from '../objects/server-client';
-import {TeamColor} from '../../shared/enums';
+import {AnnouncementTypeData, TeamColor} from '../../shared/enums';
 import ServerGame from '../objects/server-game';
-import Packet from '../../shared/packets/packet';
+import { AnnouncementType } from '../../shared/enums';
 
-const { AnnouncementType } = require('../../shared/enums');
-const server = require('../server');
-
-class GameClientManager {
+export default class GameClientManager {
 	public clients: ServerClient[] = [];
 	public teamColors: typeof TeamColor[] = []
 	public readonly game: ServerGame;
@@ -27,7 +24,7 @@ class GameClientManager {
 
 		let packet = new PacketClientGameInit(this.game.getClientInitData(client));
 		packet.addClient(client);
-		await packet.send(server);
+		await packet.sendToClients();
 
 		this.game.sendSnapshot(client);
 
@@ -41,28 +38,17 @@ class GameClientManager {
 
 		let packet = new PacketClientPlayerListInfo(playerListInfo);
 
-		this.clients.forEach((client) => {
-			packet.addClient(client);
-			packet.send(client.socket);
-		});
+		this.clients.forEach((client) => packet.addClient(client));
+		packet.sendToClients();
 	}
 
-	sendAlert(client: ServerClient, announcementType: typeof AnnouncementType) {
+	sendAlert(client: ServerClient, announcementType: AnnouncementTypeData) {
 		let packet = new PacketClientAnnouncement(client.profile.userID, announcementType.id);
 
 		this.clients.forEach((client) => {
 			packet.addClient(client);
 		});
 
-		packet.send(client.socket);
-	}
-
-	sendPacket(packet: Packet) {
-		this.clients.forEach((client) => {
-			packet.addClient(client);
-			packet.send(client.socket);
-		});
+		packet.sendToClients();
 	}
 }
-
-module.exports = GameClientManager

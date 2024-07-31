@@ -1,13 +1,13 @@
 import {Socket} from "socket.io";
-import Packet from '../../shared/packets/packet';
-import PacketServerChat from '../../shared/packets/packet-server-chat';
+import Packet from '../../shared/packets/base/packet';
+import PacketServerChat from '../../shared/packets/server/packet-server-chat';
 import ServerGame from './server-game';
 
-const { PacketType } = require('../../shared/packets/packet');
-const PacketClientChat = require('../../shared/packets/packet-client-chat');
-const { generateUsername } = require("unique-username-generator");
-const { ServerPacket } = require('../../shared/packets/packet');
-const { TeamColor } = require('../../shared/enums');
+import { PacketType } from '../../shared/packets/base/packet';
+import PacketClientChat from '../../shared/packets/client/packet-client-chat';
+import { generateUsername } from 'unique-username-generator';
+import { ServerPacketType } from '../../shared/packets/base/packet';
+import { TeamColor } from '../../shared/enums';
 
 let nextColor = 0;
 let nextID = -1;
@@ -17,7 +17,7 @@ export default class ServerClient {
 
 	public game: ServerGame | null = null;
 
-	public color: typeof TeamColor;
+	public color: string;
 	public socket: Socket;
 	public isAuthenticated: boolean;
 	public profile: UserProfile;
@@ -37,20 +37,20 @@ export default class ServerClient {
 		});
 
 		socket.on('packet', (packet: Packet) => {
-			if (!packet.type === PacketType.SERVER_BOUND) return;
+			if (packet.type !== PacketType.SERVER_BOUND) return;
 
-			if(packet.id === ServerPacket.CHAT.id) {
+			if(packet.id === ServerPacketType.CHAT.id) {
 				let packetServerChat = packet as PacketServerChat;
 
 				console.log(`Receiving chat message from client ${this.getID()}: ${packetServerChat.message}`);
 				let message = packetServerChat.message;
-				let response = new PacketClientChat(this.profile.userID, message);
+				let responsePacket = new PacketClientChat(this.profile.userID, message);
 
 				this.game!.clientManager.clients.forEach((client: ServerClient) => {
-					response.addClient(client);
+					responsePacket.addClient(client);
 				});
 
-				response.send(socket);
+				responsePacket.sendToClients();
 			}
 		});
 	}

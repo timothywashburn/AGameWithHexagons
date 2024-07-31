@@ -1,15 +1,15 @@
-import { ClientPacket, PacketType, getPacket } from '../../../shared/packets/packet';
+import { ClientPacketType, PacketType, getPacket } from '../../../shared/packets/base/packet';
 import {AnnouncementType, AnnouncementTypeData} from '../../../shared/enums';
 import { io } from 'socket.io-client';
 import {devConfig, joinGame} from '../pages/play';
 import { getGame } from '../objects/client-game'
 import { ClientGame } from '../objects/client-game';
-import Packet from '../../../shared/packets/packet'
-import PacketClientAnnouncement from '../../../shared/packets/packet-client-announcement';
-import PacketClientGameInit from '../../../shared/packets/packet-client-game-init';
-import PacketClientGameSnapshot from '../../../shared/packets/packet-client-game-snapshot';
-import PacketClientPlayerListInfo from '../../../shared/packets/packet-client-player-list-info';
-import PacketClientChat from '../../../shared/packets/packet-client-chat';
+import Packet from '../../../shared/packets/base/packet'
+import PacketClientAnnouncement from '../../../shared/packets/client/packet-client-announcement';
+import PacketClientGameInit from '../../../shared/packets/client/packet-client-game-init';
+import PacketClientGameSnapshot from '../../../shared/packets/client/packet-client-game-snapshot';
+import PacketClientPlayerListInfo from '../../../shared/packets/client/packet-client-player-list-info';
+import PacketClientChat from '../../../shared/packets/client/packet-client-chat';
 import {UserProfile} from '../../../server/objects/server-client';
 
 export const clientSocket = (io as any).connect();
@@ -23,7 +23,7 @@ clientSocket.on('packet', function (packet: Packet) {
 	if(packet.type !== PacketType.CLIENT_BOUND) return;
 	console.log(`receiving packet: ` + getPacket(packet.id));
 
-	if(packet.id === ClientPacket.GAME_INIT.id) {
+	if(packet.id === ClientPacketType.GAME_INIT.id) {
 		let packetClientGameInit = packet as PacketClientGameInit;
 
 		(window as any).gameData.initData = packetClientGameInit.initData;
@@ -31,11 +31,11 @@ clientSocket.on('packet', function (packet: Packet) {
 
 		if (devConfig.hideChat) document.getElementById('chatBox')!.style.display = "none"
 		if (devConfig.hidePlayerList) document.getElementById('playerList')!.style.display = "none"
-	} else if(packet.id === ClientPacket.GAME_SNAPSHOT.id) {
+	} else if(packet.id === ClientPacketType.GAME_SNAPSHOT.id) {
 		let packetClientGameSnapshot = packet as PacketClientGameSnapshot;
 		getGame().updateGame(packetClientGameSnapshot.snapshot);
 
-	} else if(packet.id === ClientPacket.PLAYER_LIST_INFO.id) {
+	} else if(packet.id === ClientPacketType.PLAYER_LIST_INFO.id) {
 		let packetClientPlayerListInfo = packet as PacketClientPlayerListInfo;
 
 		(window as any).gameData.playerListInfo = packetClientPlayerListInfo.playerListInfo;
@@ -52,7 +52,7 @@ clientSocket.on('packet', function (packet: Packet) {
 			playerList.appendChild(listItem);
 		});
 
-	} else if(packet.id === ClientPacket.CHAT.id) {
+	} else if(packet.id === ClientPacketType.CHAT.id) {
 		let packetClientChat = packet as PacketClientChat;
 
 		const chatMessages = document.getElementById('chatMessages')!;
@@ -64,7 +64,7 @@ clientSocket.on('packet', function (packet: Packet) {
 		chatMessages.appendChild(message);
 		chatMessages.scrollTop = chatMessages.scrollHeight;
 
-	} else if(packet.id === ClientPacket.ANNOUNCEMENT.id) {
+	} else if(packet.id === ClientPacketType.ANNOUNCEMENT.id) {
 		let packetClientAnnouncement = packet as PacketClientAnnouncement;
 
 		const chatMessages = document.getElementById('chatMessages')!;

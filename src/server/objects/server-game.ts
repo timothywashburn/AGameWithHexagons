@@ -3,9 +3,8 @@ import ServerClient from "./server-client";
 import ServerTile from "./server-tile";
 import ServerTroop from "./server-troop";
 import GameInitData from '../../shared/interfaces/init-data';
-
-const GameClientManager = require('../controllers/game-client-manager');
-const {AnnouncementType} = require('../../shared/enums');
+import GameClientManager from '../controllers/game-client-manager';
+import {AnnouncementType} from '../../shared/enums';
 
 let nextID = 0;
 
@@ -14,7 +13,7 @@ export default class ServerGame {
 
     public id: number;
 
-    public clientManager: typeof GameClientManager;
+    public clientManager: GameClientManager;
 
     public readonly startTime: number = Date.now();
 

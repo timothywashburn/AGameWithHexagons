@@ -1,7 +1,7 @@
 import '../objects/client-game';
 import '../controllers/connection';
 import '../misc/ui'
-import '../../../shared/packets/packet';
+import '../../../shared/packets/base/packet';
 import { ToastMessage } from '../../../shared/enums';
 import { showToast } from "../controllers/toast";
 import { Modal } from "bootstrap";
@@ -58,9 +58,9 @@ function updateGames() {
 			lobbyContainer.innerHTML = data.html;
 
 			const gameCards = document.querySelectorAll('.gameLobby');
-			gameCards.forEach((card) => {
-				card.addEventListener('click', () => {
-					const gameID = parseInt(data.id);
+			gameCards.forEach((game) => {
+				game.addEventListener('click', () => {
+					const gameID = parseInt(game.id);
 					console.log('Clicked game ID:', gameID);
 
 					joinGame(gameID, (window as any).gameData.socketID);

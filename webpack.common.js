@@ -1,6 +1,6 @@
-const path = require('path');
+import path from 'path';
 
-module.exports = {
+export default {
 	entry: {
 		play: './src/client/js/pages/play.ts',
 		registration: './src/client/js/pages/registration.ts',

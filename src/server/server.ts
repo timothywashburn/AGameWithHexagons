@@ -1,18 +1,20 @@
-import {Socket} from "socket.io";
+import {Socket, Server} from "socket.io";
+import * as http from 'http';
 
-const path = require('path');
-const express = require('express');
+import path from 'path';
+import express from 'express';
+import fs from 'fs';
+import chalk from 'chalk';
+import webpack from 'webpack';
+import webpackDevMiddleware from 'webpack-dev-middleware';
+
 const app = express();
-const fs = require('fs');
-const chalk = require('chalk');
-const webpack = require('webpack');
-const webpackDevMiddleware = require('webpack-dev-middleware');
 
-const endpoints = require('./api/api-endpoints');
-const webpackConfig = require('../../webpack.dev');
-const authentication = require('./authentication');
-const config = require('../../config.json');
-const { isDev } = require('./misc/utils');
+import * as endpoints from './api/api-endpoints';
+import webpackConfig from '../../webpack.dev';
+import * as authentication from './authentication';
+import config from '../../config.json';
+import { isDev } from './misc/utils';
 
 const viewsDir = `${__dirname}/../client/views`;
 
@@ -81,8 +83,8 @@ app.get('/', (req: Request, res: Response) => {
 app.get('/api/:endpoint', (req: Request, res: Response) => {
 	let endpoint = req.params.endpoint.toLowerCase();
 
-	if (typeof endpoints[endpoint] === 'function') {
-		endpoints[endpoint](req, res);
+	if (typeof (endpoints as any)[endpoint] === 'function') {
+		(endpoints as any)[endpoint](req, res);
 	} else {
 		res.status(404).json({
 			success: false,
@@ -105,14 +107,12 @@ app.get('/:page', (req: Request, res: Response) => {
 	}
 });
 
-const http = require('http');
-const { Server } = require('socket.io');
 const server = http.createServer(app);
 
 let game = new ServerGame(server, 5);
 let game2 = new ServerGame(server, 5);
 
-const serverSocket = new Server(server);
+export const serverSocket = new Server(server);
 
 serverSocket.on('connection', (socket: Socket) => {
 	new ServerClient(socket);
@@ -121,10 +121,6 @@ serverSocket.on('connection', (socket: Socket) => {
 server.listen(config.port, () => {
 	let envColor = isDev ? chalk.blue : chalk.green;
 	console.log(`Listening on port ${chalk.red(config.port)} in ${envColor(process.env.NODE_ENV)} mode`);
-});
-
-Object.assign(module.exports, {
-	io: serverSocket
 });
 
 authentication.init();

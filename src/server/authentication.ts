@@ -1,26 +1,27 @@
 import ServerClient, {UserProfile} from './objects/server-client';
 import {Connection} from 'mysql';
-import {JsonWebTokenError} from 'jsonwebtoken';
+import {JsonWebTokenError, Jwt, JwtPayload} from 'jsonwebtoken';
 import {
-    EmailChangeResponseData,
-    NameChangeResponseData,
-    PasswordChangeResponseData,
+    EmailChangeResponse,
+    EmailChangeResponseData, NameChangeResponse,
+    NameChangeResponseData, PasswordChangeResponse,
+    PasswordChangeResponseData, RegistrationResponse,
     RegistrationResponseData
 } from '../shared/enums';
 
-const mysql = require('mysql');
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const validator = require("email-validator");
+import mysql from 'mysql';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import validator from 'email-validator';
 
-const { RegistrationResponseData, NameChangeResponseData, EmailChangeResponseData, PasswordChangeResponseData } = require('../shared/enums');
-const config = require('../../config.json');
-const { sendResetEmail, sendUsernameEmail, sendVerificationEmail } = require('./controllers/mail');
+import config from '../../config.json';
+import { sendResetEmail, sendUsernameEmail, sendVerificationEmail } from './controllers/mail';
+import {strict} from 'assert';
 
 const saltRounds = 10;
 let connection: Connection;
 
-function init() {
+export function init() {
     connection = mysql.createConnection({
         host: config.mysql.host,
         user: config.mysql.user,
@@ -49,7 +50,7 @@ function init() {
     });
 }
 
-async function hashPassword(password: string) {
+export async function hashPassword(password: string) {
     try {
         return await bcrypt.hash(password, saltRounds);
     } catch (error) {
@@ -57,7 +58,7 @@ async function hashPassword(password: string) {
     }
 }
 
-async function verifyPassword(password: string, hashedPassword: string): Promise<boolean> {
+export async function verifyPassword(password: string, hashedPassword: string): Promise<boolean> {
     try {
         return await bcrypt.compare(password, hashedPassword);
     } catch (error) {
@@ -65,15 +66,15 @@ async function verifyPassword(password: string, hashedPassword: string): Promise
     }
 }
 
-async function createAccount(username: string, password: string): Promise<RegistrationResponseData> {
-    if (!await isUsernameValid(username)) return RegistrationResponseData.USERNAME_INVALID.id;
+export async function createAccount(username: string, password: string): Promise<RegistrationResponseData> {
+    if (!await isUsernameValid(username)) return RegistrationResponse.USERNAME_INVALID;
 
     let userExists;
 
     userExists = await new Promise<RegistrationResponseData | null>((resolve, reject) => {
         connection.query('SELECT * FROM accounts WHERE username = ?', [username], (err, result) => {
-            if (err) reject(RegistrationResponseData.USERNAME_INVALID);
-            if (result.length > 0) resolve(RegistrationResponseData.USERNAME_EXISTS);
+            if (err) reject(RegistrationResponse.USERNAME_INVALID);
+            if (result.length > 0) resolve(RegistrationResponse.USERNAME_EXISTS);
             resolve(null);
         });
     });
@@ -83,19 +84,19 @@ async function createAccount(username: string, password: string): Promise<Regist
     try {
         hash = await hashPassword(password);
     } catch (error) {
-        return RegistrationResponseData.PASSWORD_INVALID;
+        return RegistrationResponse.PASSWORD_INVALID;
     }
 
     return await new Promise((resolve, reject) => {
         connection.query('INSERT INTO accounts (username, password) VALUES (?, ?)', [username, hash], (err, result) => {
             if (err) reject();
             console.log('Account created:', username);
-            resolve(RegistrationResponseData.SUCCESS);
+            resolve(RegistrationResponse.SUCCESS);
         });
     });
 }
 
-async function attemptLogin(username: string, password: string): Promise<boolean> {
+export async function attemptLogin(username: string, password: string): Promise<boolean> {
     let exists = await accountExists(username);
     if (!username || !password || !exists) return false;
 
@@ -109,7 +110,7 @@ async function attemptLogin(username: string, password: string): Promise<boolean
     });
 }
 
-async function accountExists(username: string) {
+export async function accountExists(username: string) {
     try {
         return await new Promise((resolve, reject) => {
             connection.query('SELECT * FROM accounts WHERE username = ?', [username], (err, result) => {
@@ -123,7 +124,7 @@ async function accountExists(username: string) {
     }
 }
 
-async function generateToken(username: string, expires = '1w') {
+export async function generateToken(username: string, expires = '1w') {
     let id = await new Promise((resolve, reject) => {
         connection.query('SELECT id FROM accounts WHERE username = ?', [username], (err, result) => {
             if (err) reject(err);
@@ -144,9 +145,13 @@ async function generateToken(username: string, expires = '1w') {
     return jwt.sign(payload, secret, options);
 }
 
-async function validateUser(token: string, client: ServerClient) {
+export async function validateUser(token: string, client?: ServerClient | null) {
     try {
         const decoded = jwt.verify(token, config.secret);
+        if (typeof decoded === "string") {
+            console.error("Invalid token");
+            return false;
+        }
 
         interface UserRecord {
             last_logout: number,
@@ -158,7 +163,7 @@ async function validateUser(token: string, client: ServerClient) {
                 if(err) reject(err);
                 if(result.length === 0) reject('User not found');
 
-                if((result[0].last_logout / 1000) > decoded.iat) reject('Token expired');
+                if(!decoded.iat || (result[0].last_logout / 1000) > decoded.iat) reject('Token expired');
                 resolve(result[0]);
             });
         });
@@ -171,7 +176,7 @@ async function validateUser(token: string, client: ServerClient) {
 
     } catch (error) {
         if (error instanceof JsonWebTokenError) {
-            console.error('Error with token');
+            console.error('Token for user is invalid');
         } else {
             console.error('Error verifying JWT');
             console.error(error);
@@ -181,7 +186,7 @@ async function validateUser(token: string, client: ServerClient) {
     return true;
 }
 
-async function getUserID(username: string) {
+export async function getUserID(username: string) {
     return new Promise((resolve, reject) => {
         connection.query('SELECT id FROM accounts WHERE username = ?', [username], (err, result) => {
             if (err) reject(err);
@@ -191,11 +196,13 @@ async function getUserID(username: string) {
 
 }
 
- async function logout(token: string) {
-    const jwt = require('jsonwebtoken');
-
+export async function logout(token: string): Promise<boolean> {
     try {
         const decoded = jwt.verify(token, config.secret);
+        if (typeof decoded === "string") {
+            console.error("Invalid token");
+            return false;
+        }
 
         let loggedOut = await new Promise((resolve, reject) => {
             connection.query('UPDATE accounts SET last_logout = ? WHERE id = ?', [Date.now(), decoded.userId], (err, result) => {
@@ -220,9 +227,13 @@ async function getUserID(username: string) {
     return true;
 }
 
-async function getAccountInfo(token: string): Promise<object> {
+export async function getAccountInfo(token: string): Promise<object> {
     try {
         const decoded = jwt.verify(token, config.secret);
+        if (typeof decoded === "string") {
+            console.error("Invalid token");
+            return PasswordChangeResponse.ERROR;
+        }
 
         return new Promise((resolve, reject) => {
             connection.query('SELECT username, email, email_verified FROM accounts WHERE id = ?', [decoded.userId], (err, result) => {
@@ -241,12 +252,16 @@ async function getAccountInfo(token: string): Promise<object> {
     }
 }
 
-async function changeUsername(token: string, newUsername: string): Promise<NameChangeResponseData> {
-    if (!await isUsernameValid(newUsername)) return NameChangeResponseData.USERNAME_INVALID;
-    if (await isUsernameTaken(newUsername)) return NameChangeResponseData.USERNAME_EXISTS;
+export async function changeUsername(token: string, newUsername: string): Promise<NameChangeResponseData> {
+    if (!await isUsernameValid(newUsername)) return NameChangeResponse.USERNAME_INVALID;
+    if (await isUsernameTaken(newUsername)) return NameChangeResponse.USERNAME_EXISTS;
 
     try {
         const decoded = jwt.verify(token, config.secret);
+        if (typeof decoded === "string") {
+            console.error("Invalid token");
+            return PasswordChangeResponse.ERROR;
+        }
 
         await new Promise((resolve, reject) => {
             connection.query('UPDATE accounts SET username = ? WHERE id = ?', [newUsername, decoded.userId], (err, result) => {
@@ -258,20 +273,24 @@ async function changeUsername(token: string, newUsername: string): Promise<NameC
                 resolve(result);
             });
         });
-        return NameChangeResponseData.SUCCESS;
+        return NameChangeResponse.SUCCESS;
 
     } catch (error) {
-        if (error instanceof JsonWebTokenError) return NameChangeResponseData.ERROR;
+        if (error instanceof JsonWebTokenError) return NameChangeResponse.ERROR;
         throw error;
     }
 }
 
-async function changeEmail(token: string, newEmail: string): Promise<EmailChangeResponseData> {
-    if (!validator.validate(newEmail)) return EmailChangeResponseData.EMAIL_INVALID;
-    if (await isEmailInUse(newEmail)) return EmailChangeResponseData.EMAIL_EXISTS;
+export async function changeEmail(token: string, newEmail: string): Promise<EmailChangeResponseData> {
+    if (!validator.validate(newEmail)) return EmailChangeResponse.EMAIL_INVALID;
+    if (await isEmailInUse(newEmail)) return EmailChangeResponse.EMAIL_EXISTS;
 
     try {
         const decoded = jwt.verify(token, config.secret);
+        if (typeof decoded === "string") {
+            console.error("Invalid token");
+            return PasswordChangeResponse.ERROR;
+        }
 
         await new Promise((resolve, reject) => {
             connection.query('UPDATE accounts SET email = ? WHERE id = ?', [newEmail, decoded.userId], (err, result) => {
@@ -286,34 +305,38 @@ async function changeEmail(token: string, newEmail: string): Promise<EmailChange
         connection.query('UPDATE accounts SET last_email_change = ? WHERE id = ?', [Date.now(), decoded.userId], (err) => {
             if(err) {
                 console.error('Error updating email change time:', err);
-                return EmailChangeResponseData.ERROR;
+                return EmailChangeResponse.ERROR;
             }
         });
 
         await sendEmailVerification(token);
-        return EmailChangeResponseData.SUCCESS;
+        return EmailChangeResponse.SUCCESS;
 
     } catch (error) {
-        if (error instanceof JsonWebTokenError) return EmailChangeResponseData.ERROR;
+        if (error instanceof JsonWebTokenError) return EmailChangeResponse.ERROR;
         throw error;
     }
 }
 
-async function changePassword(token: string, oldPassword: string, newPassword: string, requireOld = true): Promise<PasswordChangeResponseData> {
+export async function changePassword(token: string, oldPassword: string | null, newPassword: string, requireOld = true): Promise<PasswordChangeResponseData> {
     //TODO: Add password restrictions
 
     try {
         const decoded = jwt.verify(token, config.secret);
+        if (typeof decoded === "string") {
+            console.error("Invalid token");
+            return PasswordChangeResponse.ERROR;
+        }
 
         if (requireOld) {
             let passwordValid = await new Promise((resolve, reject) => {
                 connection.query('SELECT password FROM accounts WHERE id = ?', [decoded.userId], (err, result) => {
                     if(err) reject(err);
-                    resolve(verifyPassword(oldPassword, result[0].password));
+                    resolve(verifyPassword(oldPassword!, result[0].password));
                 });
             });
 
-            if (!passwordValid) return PasswordChangeResponseData.PASSWORD_INCORRECT;
+            if (!passwordValid) return PasswordChangeResponse.PASSWORD_INCORRECT;
         }
 
         let hash = await hashPassword(newPassword);
@@ -327,14 +350,14 @@ async function changePassword(token: string, oldPassword: string, newPassword: s
             });
         });
 
-        return PasswordChangeResponseData.SUCCESS;
+        return PasswordChangeResponse.SUCCESS;
     } catch (error) {
-        if (error instanceof JsonWebTokenError) return PasswordChangeResponseData.ERROR;
+        if (error instanceof JsonWebTokenError) return PasswordChangeResponse.ERROR;
         throw error;
     }
 }
 
-async function requestPasswordReset(email: string) {
+export async function requestPasswordReset(email: string) {
     if (!await isEmailInUse(email)) return;
 
     try {
@@ -351,7 +374,7 @@ async function requestPasswordReset(email: string) {
     }
 }
 
-async function requestUsername(email: string) {
+export async function requestUsername(email: string) {
     if (!await isEmailInUse(email)) return;
 
     try {
@@ -365,9 +388,13 @@ async function requestUsername(email: string) {
     }
 }
 
-async function sendEmailVerification(token: string){
+export async function sendEmailVerification(token: string){
     try {
         const decoded = jwt.verify(token, config.secret);
+        if (typeof decoded === "string") {
+            console.error("Invalid token");
+            return false;
+        }
 
         let email: string = await new Promise((resolve, reject) => {
             connection.query('SELECT email FROM accounts WHERE id = ?', [decoded.userId], (err, result) => {
@@ -402,9 +429,13 @@ async function sendEmailVerification(token: string){
     }
 }
 
-async function verifyEmail(token: string): Promise<boolean> {
+export async function verifyEmail(token: string): Promise<boolean> {
     try {
         const decoded = jwt.verify(token, config.secret);
+        if (typeof decoded === "string") {
+            console.error("Invalid token");
+            return false;
+        }
 
         let emailChange = await new Promise<number>((resolve, reject) => {
             connection.query('SELECT last_email_change FROM accounts WHERE id = ?', [decoded.userId], (err, result) => {
@@ -413,7 +444,7 @@ async function verifyEmail(token: string): Promise<boolean> {
             });
         });
 
-        if (Math.floor(emailChange / 1000) > decoded.iat) {
+        if (!decoded.iat || Math.floor(emailChange / 1000) > decoded.iat) {
             return false;
         }
 
@@ -433,7 +464,7 @@ async function verifyEmail(token: string): Promise<boolean> {
     }
 }
 
-async function getUsername(email: string) {
+export async function getUsername(email: string) {
     return await new Promise<string | null>((resolve, reject) => {
         connection.query('SELECT username FROM accounts WHERE email = ?', [email], (err, result) => {
             if (err) reject(err);
@@ -447,7 +478,7 @@ async function getUsername(email: string) {
     });
 }
 
-async function isUsernameTaken(username: string) {
+export async function isUsernameTaken(username: string) {
     return await new Promise<boolean>((resolve, reject) => {
         connection.query('SELECT * FROM accounts WHERE username = ?', [username], (err, result) => {
             if (err) reject(err);
@@ -457,11 +488,11 @@ async function isUsernameTaken(username: string) {
 
 }
 
-async function isUsernameValid(username: string) {
+export async function isUsernameValid(username: string) {
     if(username.match('^(?=.{3,39}$)[a-zA-Z\\d]+(?:-[a-zA-Z\\d]+)*$')) return true;
 }
 
-async function isEmailInUse(email: string) {
+export async function isEmailInUse(email: string) {
     return new Promise((resolve, reject) => {
         connection.query('SELECT * FROM accounts WHERE email = ?', [email], (err, result) => {
             if (err) reject(err);
@@ -476,21 +507,3 @@ async function isEmailInUse(email: string) {
         });
     });
 }
-
-module.exports = {
-    init,
-    createAccount,
-    attemptLogin,
-    generateToken,
-    validateUser,
-    logout,
-    getAccountInfo,
-    changeUsername,
-    changeEmail,
-    changePassword,
-    requestPasswordReset,
-    requestUsername,
-    sendEmailVerification,
-    verifyEmail
-};
-

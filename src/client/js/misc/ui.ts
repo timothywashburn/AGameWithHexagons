@@ -1,4 +1,4 @@
-import PacketServerChat from "../../../shared/packets/packet-server-chat";
+import PacketServerChat from "../../../shared/packets/server/packet-server-chat";
 import { clientSocket } from "../controllers/connection";
 
 document.getElementById('chatSend')!.addEventListener('click', function() {
@@ -6,7 +6,7 @@ document.getElementById('chatSend')!.addEventListener('click', function() {
 	if(chatInput.value === '') return;
 
 	let packet = new PacketServerChat(chatInput.value);
-	packet.send(clientSocket);
+	packet.sendToServer(clientSocket);
 
 	chatInput.value = '';
 });

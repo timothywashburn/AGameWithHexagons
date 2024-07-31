@@ -1,10 +1,11 @@
 import {LibraryResponse} from 'node-mailjet/declarations/types/api';
+import config from '../../../config.json'
+import nodeMailJet from 'node-mailjet';
+import {RequestData} from 'node-mailjet/declarations/request/Request';
 
-const config = require('../../../config');
+const mailjet = nodeMailJet.apiConnect(config.mail.publicKey, config.mail.privateKey);
 
-const mailjet = require('node-mailjet').apiConnect(config.mail.publicKey, config.mail.privateKey);
-
-async function sendResetEmail(username: string, email: string, link: string) {
+export async function sendResetEmail(username: string, email: string, link: string) {
     const request = mailjet
         .post("send", {'version': 'v3.1'})
         .request({
@@ -31,7 +32,7 @@ async function sendResetEmail(username: string, email: string, link: string) {
             ]
         })
     request
-        .then((result: LibraryResponse<Body>) => {
+        .then((result: LibraryResponse<RequestData>) => {
             console.log(result.body);
         })
         .catch((error: unknown) => {
@@ -39,7 +40,7 @@ async function sendResetEmail(username: string, email: string, link: string) {
         })
 }
 
-async function sendUsernameEmail(username: string, email: string) {
+export async function sendUsernameEmail(username: string, email: string) {
     const loginPageUrl = config.host + "/login";
     const request = mailjet
         .post("send", {'version': 'v3.1'})
@@ -68,7 +69,7 @@ async function sendUsernameEmail(username: string, email: string) {
             ]
         })
     request
-        .then((result: LibraryResponse<Body>) => {
+        .then((result: LibraryResponse<RequestData>) => {
             console.log(result.body);
         })
         .catch((error: unknown) => {
@@ -76,7 +77,7 @@ async function sendUsernameEmail(username: string, email: string) {
         })
 }
 
-async function sendVerificationEmail(username: string, email: string, link: string) {
+export async function sendVerificationEmail(username: string, email: string, link: string) {
     const request = mailjet
         .post("send", {'version': 'v3.1'})
         .request({
@@ -104,18 +105,10 @@ async function sendVerificationEmail(username: string, email: string, link: stri
             ]
         })
     request
-        .then((result: LibraryResponse<Body>) => {
+        .then((result: LibraryResponse<RequestData>) => {
             console.log(result.body);
         })
         .catch((error: unknown) => {
             console.error(error);
         })
 }
-
-module.exports = {
-    sendResetEmail,
-    sendUsernameEmail,
-    sendVerificationEmail
-}
-
-

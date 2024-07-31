@@ -2,33 +2,24 @@ import ServerGame from "../objects/server-game";
 import ServerClient from "../objects/server-client";
 import { Request, Response } from 'express';
 import {
-	EmailChangeResponseData,
-	NameChangeResponseData,
+	EmailChangeResponse,
+	EmailChangeResponseData, NameChangeResponse,
+	NameChangeResponseData, PasswordChangeResponse,
 	PasswordChangeResponseData,
-	RegistrationResponseData
+	RegistrationResponseData, ToastMessage
 } from '../../shared/enums';
-import {Query} from 'mysql';
-import {Server} from 'http';
 
-const ejs = require('ejs');
-const fs = require('fs');
+import fs from 'fs';
+import ejs from 'ejs';
+import * as auth from '../authentication';
+import {isDev} from '../misc/utils';
 
-const { isDev } = require('../misc/utils');
-const { getGame } = require('../controllers/game-client-manager');
-// TODO: Cleanup
-const { generateToken, validateUser, getAccountInfo, logout, changeUsername, changeEmail, changePassword,
-	requestPasswordReset, requestUsername, sendEmailVerification, verifyEmail
-} = require("../authentication");
-const PacketClientGameInit = require("../../shared/packets/packet-client-game-init");
-const { AnnouncementType, NameChangeResponseData, EmailChangeResponseData, PasswordChangeResponseData, ToastMessage} = require("../../shared/enums");
-const config = require("../../../config.json");
-const server = require('../server');
-const { sendResetEmail } = require("../controllers/mail");
+import config from '../../../config.json'
 
 module.exports = {
 	async gamedata(req: Request, res: Response) {
 		const token = req.headers.authorization!.split(' ')[1];
-		let valid = token && await validateUser(token, null);
+		let valid = token && await auth.validateUser(token, null);
 
 		console.log('game data requested');
 		let responseData = {
@@ -43,14 +34,14 @@ module.exports = {
 					maxPlayers: game.clientManager.maxPlayers,
 				};
 			}),
-			dev: undefined,
-			html: undefined
+			dev: {},
+			html: {}
 		};
 
 		if (isDev) responseData.dev = config.dev;
 
 		fs.readFile(`${__dirname}/../../client/views/partials/game-info.ejs`, 'utf8',
-			(err: NodeJS.ErrnoException, file: string) => {
+			(err: NodeJS.ErrnoException | null, file: string) => {
 			if (err) {
 				console.error('Error reading file:', err);
 				return;
@@ -76,7 +67,7 @@ module.exports = {
 			return;
 		}
 
-		let isAuthenticated = token && await validateUser(token, client);
+		let isAuthenticated = token && await auth.validateUser(token, client);
 
 		let game = ServerGame.getGame(gameID);
 		if (!game) {
@@ -108,8 +99,8 @@ module.exports = {
 	register(req: Request, res: Response) {
 		//TODO: Implement name restrictions
 
-		const username = req.query.username;
-		const password = req.query.password;
+		const username = req.query.username!.toString();
+		const password = req.query.password!.toString();
 
 		if(!username || !password) {
 			res.json({
@@ -119,14 +110,12 @@ module.exports = {
 			return;
 		}
 
-		const { createAccount, generateToken } = require('../authentication');
-
-		createAccount(username, password)
+		auth.createAccount(username, password)
 			.then(async (result: RegistrationResponseData) => {
 				res.json({
 					success: result.id === 0x00,
 					result: result.id,
-					token: result.id === 0x00 ? await generateToken(username) : null,
+					token: result.id === 0x00 ? await auth.generateToken(username) : null,
 				});
 			})
 			.catch((error: unknown) => {
@@ -142,8 +131,8 @@ module.exports = {
 	login(req: Request, res: Response) {
 		//TODO: Implement rate limits and captcha?
 
-		const username = req.query.username;
-		const password = req.query.password;
+		const username = req.query.username!.toString();
+		const password = req.query.password!.toString();
 
 		if(!username || !password) {
 			res.json({
@@ -153,13 +142,11 @@ module.exports = {
 			return;
 		}
 
-		const { attemptLogin, generateToken } = require('../authentication');
-
-		attemptLogin(username, password)
+		auth.attemptLogin(username, password)
 			.then(async (result: boolean) => {
 				res.json({
 					success: result,
-					token: result ? await generateToken(username) : null,
+					token: result ? await auth.generateToken(username) : null,
 				});
 			})
 			.catch((error: unknown) => {
@@ -175,9 +162,9 @@ module.exports = {
 		console.error('Logging out:', req.headers.authorization!.split(' ')[1]);
 
 		const token= req.headers.authorization!.split(' ')[1];
-		let valid = token && await validateUser(token, null);
+		let valid = token && await auth.validateUser(token, null);
 
-		if(valid) logout(token)
+		if(valid) auth.logout(token)
 			.then(async (result: boolean) => {
 
 				res.json({
@@ -198,9 +185,9 @@ module.exports = {
 
 	async account(req: Request, res: Response) {
 		const token= req.headers.authorization!.split(' ')[1];
-		let valid = token && await validateUser(token, null);
+		let valid = token && await auth.validateUser(token, null);
 
-		if(valid) getAccountInfo(token)
+		if(valid) auth.getAccountInfo(token)
 			.then(async (result: object) => {
 				res.json({
 					success: true,
@@ -220,13 +207,14 @@ module.exports = {
 	},
 
 	async changeusername(req: Request, res: Response) {
-
-		const token= req.headers.authorization!.split(' ')[1];
+		const token = req.headers.authorization!.split(' ')[1];
 		let username = req.query.username;
+		if(!username) return;
+		username = username.toString();
 
-		let valid = token && username && await validateUser(token, null);
+		let valid = token && username && await auth.validateUser(token, null);
 
-		if(valid) changeUsername(token, username)
+		if(valid) auth.changeUsername(token, username)
 			.then(async (result: NameChangeResponseData) => {
 				res.json({
 					result: result.id
@@ -236,21 +224,23 @@ module.exports = {
 				console.error('Error changing username');
 				console.error(error);
 				res.json({
-					result: NameChangeResponseData.ERROR.id
+					result: NameChangeResponse.ERROR.id
 				});
 			});
 		else res.json({
-			result: NameChangeResponseData.ERROR.id
+			result: NameChangeResponse.ERROR.id
 		});
 	},
 
 	async changeemail(req: Request, res: Response) {
 		const token= req.headers.authorization!.split(' ')[1];
 		let email = req.query.email;
+		if(!email) return;
+		email = email.toString();
 
-		let valid = token && email && await validateUser(token, null);
+		let valid = token && email && await auth.validateUser(token, null);
 
-		if(valid) changeEmail(token, email)
+		if(valid) auth.changeEmail(token, email)
 			.then(async (result: EmailChangeResponseData) => {
 				res.json({
 					result: result.id
@@ -260,11 +250,11 @@ module.exports = {
 				console.error('Error changing email:');
 				console.error(error);
 				res.json({
-					result: EmailChangeResponseData.ERROR.id
+					result: EmailChangeResponse.ERROR.id
 				});
 			});
 		else res.json({
-			result: EmailChangeResponseData.ERROR.id
+			result: EmailChangeResponse.ERROR.id
 		});
 	},
 
@@ -272,12 +262,13 @@ module.exports = {
 
 		const token= req.headers.authorization!.split(' ')[1];
 
-		let oldPassword = req.query.oldPassword;
-		let newPassword = req.query.newPassword;
+		if (!req.query.oldPassword || !req.query.newPassword) return;
+		let oldPassword = req.query.oldPassword.toString();
+		let newPassword = req.query.newPassword.toString();
 
-		let valid = token && oldPassword && newPassword && await validateUser(token, null);
+		let valid = token && oldPassword && newPassword && await auth.validateUser(token, null);
 
-		if(valid) changePassword(token, oldPassword, newPassword)
+		if(valid) auth.changePassword(token, oldPassword, newPassword)
 			.then(async (result: PasswordChangeResponseData) => {
 				res.json({
 					result: result.id
@@ -287,20 +278,20 @@ module.exports = {
 				console.error('Error changing email:');
 				console.error(error);
 				res.json({
-					result: PasswordChangeResponseData.ERROR.id
+					result: PasswordChangeResponse.ERROR.id
 				});
 			});
 		else res.json({
-			result: PasswordChangeResponseData.ERROR.id
+			result: PasswordChangeResponse.ERROR.id
 		});
 	},
 
 	async resetpassword(req: Request, res: Response) {
-		const token = req.query.token;
-		const password = req.query.password;
+		const token = req.query.token!.toString();
+		const password = req.query.password!.toString();
 
-		let valid = token && password && await validateUser(token);
-		if(valid) changePassword(token, null, password, false)
+		let valid = token && password && await auth.validateUser(token);
+		if(valid) auth.changePassword(token, null, password, false)
 			.then(async (result: PasswordChangeResponseData) => {
 				res.json({
 					result: result.id
@@ -310,17 +301,17 @@ module.exports = {
 				console.error('Error changing email:');
 				console.error(error);
 				res.json({
-					result: PasswordChangeResponseData.ERROR.id
+					result: PasswordChangeResponse.ERROR.id
 				});
 			});
 		else res.json({
-			result: PasswordChangeResponseData.ERROR.id
+			result: PasswordChangeResponse.ERROR.id
 		});
 	},
 
 	async forgotpassword(req: Request, res: Response) {
-		const email = req.query.email;
-		await requestPasswordReset(email);
+		const email = req.query.email!.toString();
+		await auth.requestPasswordReset(email);
 
 		res.json({
 			success: true
@@ -328,8 +319,8 @@ module.exports = {
 	},
 
 	async forgotusername(req: Request, res: Response) {
-		const email = req.query.email;
-		await requestUsername(email);
+		const email = req.query.email!.toString();
+		await auth.requestUsername(email);
 
 		res.json({
 			success: true
@@ -338,10 +329,10 @@ module.exports = {
 
 	async resendverification(req: Request, res: Response) {
 		const token = req.headers.authorization!.split(' ')[1];
-		let valid = token && await validateUser(token, null);
+		let valid = token && await auth.validateUser(token, null);
 
 		if(valid) {
-			await sendEmailVerification(token);
+			await auth.sendEmailVerification(token);
 			res.json({
 				success: true
 			});
@@ -353,11 +344,11 @@ module.exports = {
 	},
 
 	async verify(req: Request, res: Response) {
-		const token = req.query.token;
-		let valid = token && await validateUser(token, null);
+		const token = req.query.token!.toString();
+		let valid = token && await auth.validateUser(token, null);
 
 		if(valid) {
-			await verifyEmail(token)
+			await auth.verifyEmail(token)
 				.then(async (result: boolean) => {
 					res.redirect('/account?toast=' + (result ? ToastMessage.EMAIL_VERIFIED.id : ToastMessage.EMAIL_VERIFIED_ERROR.id));
 				})
