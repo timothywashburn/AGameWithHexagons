@@ -23,7 +23,7 @@ export default class ClientTroop {
 
 	renderTroop() {
 		ctx.save();
-		ctx.drawImage(circle, this.parentTile.literalX! - radius, this.parentTile.literalY! - radius, radius * 2, radius * 2);
+		ctx.drawImage(circle, this.parentTile.canvasX! - radius, this.parentTile.canvasY! - radius, radius * 2, radius * 2);
 		ctx.restore();
 	}
 

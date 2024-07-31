@@ -16,8 +16,8 @@ hexagonHover.src = 'images/hexagon-hover.svg';
 export default class ClientTile {
 
 	public id: number;
-	public x: number;
-	public y: number;
+	public coordinateX: number;
+	public coordinateY: number;
 
 	public color: string;
 	// public occupant: Troop;
@@ -28,17 +28,17 @@ export default class ClientTile {
 	public isSelected: boolean;
 	public isHovered: boolean;
 
-	public literalX: number | undefined;
-	public literalY: number | undefined;
+	public canvasX: number | undefined;
+	public canvasY: number | undefined;
 	public path: Path2D | undefined;
 
 	constructor(tileData: TileInitData) {
 		this.id = tileData.id;
-		this.x = tileData.x;
-		this.y = tileData.y;
+		this.coordinateX = tileData.x;
+		this.coordinateY = tileData.y;
 
-		if((this.x + this.y) % 2 !== 0) {
-			throw new Error(`Tile at ${this.x}, ${this.y} is not valid`);
+		if((this.coordinateX + this.coordinateY) % 2 !== 0) {
+			throw new Error(`Tile at ${this.coordinateX}, ${this.coordinateY} is not valid`);
 		}
 
 		this.color = tileData.color;
@@ -56,13 +56,13 @@ export default class ClientTile {
 	}
 
 	renderTile() {
-		this.literalX = canvas.width / 2 + this.x * apothem;
-		this.literalY = canvas.height / 2 - this.y * radius * (1 + Math.sin(Math.PI / 6));
+		this.canvasX = canvas.width / 2 + this.coordinateX * apothem;
+		this.canvasY = canvas.height / 2 - this.coordinateY * radius * (1 + Math.sin(Math.PI / 6));
 
 		this.path = new Path2D();
 		for (let i = 0; i < 6; i++) {
-			let pointX = this.literalX + radius * Math.cos(Math.PI / 3 * i + Math.PI / 6);
-			let pointY = this.literalY + radius * Math.sin(Math.PI / 3 * i + Math.PI / 6);
+			let pointX = this.canvasX + radius * Math.cos(Math.PI / 3 * i + Math.PI / 6);
+			let pointY = this.canvasY + radius * Math.sin(Math.PI / 3 * i + Math.PI / 6);
 			if(i === 0) {
 				this.path.moveTo(pointX, pointY);
 			} else this.path.lineTo(pointX, pointY);
@@ -75,7 +75,7 @@ export default class ClientTile {
 		ctx.restore();
 
 		ctx.save();
-		ctx.drawImage(this.getImage(), this.literalX - radius, this.literalY - radius, radius * 2, radius * 2);
+		ctx.drawImage(this.getImage(), this.canvasX - radius, this.canvasY - radius, radius * 2, radius * 2);
 		ctx.restore();
 
 		ctx.stroke(this.path);
