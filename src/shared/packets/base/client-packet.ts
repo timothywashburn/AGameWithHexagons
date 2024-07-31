@@ -6,7 +6,7 @@ export default class ClientPacket extends Packet {
 	public clients: ServerClient[] = [];
 
 	constructor(id: number) {
-		super(id, PacketType.SERVER_BOUND);
+		super(id, PacketType.CLIENT_BOUND);
 	}
 
 	addClient(client: ServerClient) {
