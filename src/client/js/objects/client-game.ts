@@ -1,9 +1,9 @@
 import { prepareFrame } from '../controllers/render';
 import ClientTile from './client-tile'
 import ClientTroop from './client-troop';
-import {BuildingSnapshot, ClientSnapshot, TileSnapshot, TroopSnapshot} from '../../../shared/interfaces/snapshot';
+import {BuildingSnapshot, PlayerSnapshot, TileSnapshot, TroopSnapshot} from '../../../shared/interfaces/snapshot';
 import GameSnapshot from '../../../shared/interfaces/snapshot';
-import ClientClient from './client-client';
+import ClientPlayer from './client-player';
 import ClientBuilding from './client-building';
 
 let game: ClientGame;
@@ -14,7 +14,7 @@ export class ClientGame {
 	public startTime: number;
 	public resources: any;
 
-	public clients: ClientClient[];
+	public players: ClientPlayer[];
 	public tiles: ClientTile[];
 	public troops: ClientTroop[];
 	public buildings: ClientBuilding[];
@@ -28,7 +28,7 @@ export class ClientGame {
 
 		this.setupDebug();
 
-		this.clients = [];
+		this.players = [];
 		this.tiles = [];
 		this.troops = [];
 		this.buildings = [];
@@ -62,7 +62,7 @@ export class ClientGame {
 			"goo": 0,
 		}
 
-		this.clients = snapshot.clients.map((clientInitData: ClientSnapshot) => new ClientClient(clientInitData));
+		this.players = snapshot.players.map((playerInitData: PlayerSnapshot) => new ClientPlayer(playerInitData));
 		this.tiles = snapshot.tiles.map((tileInitData: TileSnapshot) => new ClientTile(tileInitData));
 		this.troops = snapshot.troops.map((troopInitData: TroopSnapshot) => new ClientTroop(troopInitData));
 		this.buildings = snapshot.buildings.map((buildingInitData: BuildingSnapshot) => new ClientBuilding(buildingInitData));

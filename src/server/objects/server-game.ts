@@ -3,12 +3,13 @@ import ServerClient from "./server-client";
 import ServerTile from "./server-tile";
 import ServerTroop from "./server-troop";
 import GameSnapshot from '../../shared/interfaces/snapshot';
-import GameClientManager from '../controllers/game-client-manager';
+import ConnectionManager from '../controllers/connection-manager';
 import {AnnouncementType} from '../../shared/enums';
 import ServerBuilding from './server-building';
 import PacketClientGameInit from '../../shared/packets/client/packet-client-game-init';
 import PacketClientGameSnapshot from '../../shared/packets/client/packet-client-game-snapshot';
 import {cli} from 'webpack';
+import ServerPlayer from './server-player';
 
 let nextID = 0;
 
@@ -16,9 +17,10 @@ export default class ServerGame {
     public static gameList: ServerGame[] = [];
 
     public id: number;
-    public clientManager: GameClientManager;
+    public clientManager: ConnectionManager;
     public readonly startTime: number = Date.now();
 
+    public players: ServerPlayer[] = [];
     public tiles: ServerTile[] = [];
     public troops: ServerTroop[] = [];
     public buildings: ServerBuilding[] = [];
@@ -28,7 +30,7 @@ export default class ServerGame {
     constructor(httpServer: Server, boardSize: number) {
         this.id = nextID++;
 
-        this.clientManager = new GameClientManager(this);
+        this.clientManager = new ConnectionManager(this);
 
         this.boardSize = boardSize;
 
@@ -66,7 +68,7 @@ export default class ServerGame {
     getFullGameSnapshot(client: ServerClient): GameSnapshot {
         return {
             isAuthenticated: client.isAuthenticated,
-            clients: this.clientManager.clients.map(client => client.getClientSnapshot(client)),
+            players: this.players.map(player => player.getPlayerSnapshot(client)),
             tiles: this.tiles.map(tile => tile.getTileSnapshot(client)),
             troops: this.troops.map(troop => troop.getTroopSnapshot(client)),
             buildings: this.buildings.map(building => building.getBuildingSnapshot(client))
@@ -81,6 +83,18 @@ export default class ServerGame {
         let packet = new PacketClientGameSnapshot(this.getFullGameSnapshot(client));
         packet.addClient(client);
         await packet.sendToClients();
+    }
+
+    getPlayer(id: number): ServerPlayer | null {
+        for (let player of this.players) if (player.id === id) return player;
+        console.error(`PLAYER NOT FOUND: ${id}`);
+        return null;
+    }
+
+    getTile(id: number): ServerTile | null {
+        for (let game of this.tiles) if (game.id === id) return game;
+        console.error(`TILE NOT FOUND: ${id}`);
+        return null;
     }
 
     static getGame(id: number): ServerGame | null {

@@ -4,13 +4,10 @@ import PacketServerChat from '../../shared/packets/server/packet-server-chat';
 import ServerGame from './server-game';
 import PacketClientChat from '../../shared/packets/client/packet-client-chat';
 import {generateUsername} from 'unique-username-generator';
-import {TeamColor} from '../../shared/enums';
 import PacketServerSpawnUnit from '../../shared/packets/server/packet-server-spawn-unit';
 import ServerTroop from './server-troop';
 import ServerTile from './server-tile';
-import {ClientSnapshot} from '../../shared/interfaces/snapshot';
 
-let nextColor = 0;
 let nextID = -1;
 
 export default class ServerClient {
@@ -18,7 +15,6 @@ export default class ServerClient {
 
 	public game: ServerGame | null = null;
 
-	public color: string;
 	public socket: Socket;
 	public isAuthenticated: boolean;
 	public isConnected: boolean = true;
@@ -26,8 +22,6 @@ export default class ServerClient {
 
 	constructor(socket: Socket) {
 		ServerClient.clientList.push(this);
-
-		this.color = Object.values(TeamColor)[nextColor++ % Object.keys(TeamColor).length];
 
 		this.socket = socket;
 		this.isAuthenticated = false;
@@ -57,18 +51,10 @@ export default class ServerClient {
 
 			if (packet.packetTypeID === ServerPacketID.SPAWN.id) {
 				let packetServerSpawnUnit = packet as PacketServerSpawnUnit;
-				new ServerTroop(this.game!, this, ServerTile.getTile(packetServerSpawnUnit.tileID)!);
+				new ServerTroop(this.game!, this, this.game!.getTile(packetServerSpawnUnit.tileID)!);
 				this.game?.sendServerSnapshot();
 			}
 		});
-	}
-
-	getClientSnapshot(forClient: ServerClient): ClientSnapshot {
-		return {
-			id: this.getID(),
-			username: this.profile.username,
-			color: this.color,
-		};
 	}
 
 	getID() {

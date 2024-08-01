@@ -5,11 +5,13 @@ import ServerClient from '../objects/server-client';
 import {AnnouncementTypeData, TeamColor} from '../../shared/enums';
 import ServerGame from '../objects/server-game';
 import { AnnouncementType } from '../../shared/enums';
+import {cli} from 'webpack';
+import ServerPlayer from '../objects/server-player';
 
-export default class GameClientManager {
-	public clients: ServerClient[] = [];
-	public teamColors: typeof TeamColor[] = []
+export default class ConnectionManager {
 	public readonly game: ServerGame;
+
+	public clients: ServerClient[] = [];
 	public maxPlayers: number;
 
 	constructor(game: ServerGame) {
@@ -21,6 +23,17 @@ export default class GameClientManager {
 	async connectClient(client: ServerClient) {
 		this.clients.push(client);
 		client.game = this.game;
+
+		let foundPlayer = false;
+		for (let player of this.game.players) {
+			if (player.id != client.getID()) continue;
+			foundPlayer = true;
+			player.client = client;
+			break;
+		}
+		if (!foundPlayer) {
+			new ServerPlayer(this.game, client);
+		}
 
 		let packet = new PacketClientGameInit(this.game.getFullGameSnapshot(client));
 		packet.addClient(client);

@@ -7,10 +7,9 @@ import ServerGame from './server-game';
 let nextID = 0;
 
 export default class ServerTile {
-    public static tileList: ServerTile[] = [];
+    public game: ServerGame;
 
     public id: number;
-    public game: ServerGame;
     public x: number;
     public y: number;
     public color: string;
@@ -19,14 +18,15 @@ export default class ServerTile {
     public building: ServerBuilding | null = null;
 
     constructor(game: ServerGame, x: number, y: number) {
-        this.id = nextID++;
         this.game = game;
+
+        this.id = nextID++;
         this.x = x;
         this.y = y;
         this.color = getRBGAround(134, 44, 54, 40);
 
         if (!this.isTileValid()) throw new Error("Invalid tile attempting to load");
-        ServerTile.tileList.push(this);
+        game.tiles.push(this);
     }
 
     getTileSnapshot(client: ServerClient): TileSnapshot {
@@ -43,12 +43,6 @@ export default class ServerTile {
 
     isTileValid() {
         return (this.x + this.y) % 2 === 0;
-    }
-
-    static getTile(id: number): ServerTile | null {
-        for (let game of ServerTile.tileList) if (game.id === id) return game;
-        console.error(`TILE NOT FOUND: ${id}`);
-        return null;
     }
 }
 
