@@ -1,4 +1,4 @@
-import { prepareFrame } from '../render';
+import { prepareFrame } from '../controllers/render';
 import ClientTile from './client-tile'
 import ClientTroop from './client-troop';
 import GameInitData, {TileInitData, TroopInitData} from '../../../shared/interfaces/init-data';
