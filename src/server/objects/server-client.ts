@@ -3,11 +3,14 @@ import Packet from '../../shared/packets/base/packet';
 import PacketServerChat from '../../shared/packets/server/packet-server-chat';
 import ServerGame from './server-game';
 
-import { PacketType } from '../../shared/packets/base/packet';
+import { PacketDestination } from '../../shared/packets/base/packet';
 import PacketClientChat from '../../shared/packets/client/packet-client-chat';
 import { generateUsername } from 'unique-username-generator';
-import { ServerPacketType } from '../../shared/packets/base/packet';
+import { ServerPacketID } from '../../shared/packets/base/packet';
 import { TeamColor } from '../../shared/enums';
+import PacketServerSpawnUnit from '../../shared/packets/server/packet-server-spawn-unit';
+import ServerTroop from './server-troop';
+import ServerTile from './server-tile';
 
 let nextColor = 0;
 let nextID = -1;
@@ -37,9 +40,9 @@ export default class ServerClient {
 		});
 
 		socket.on('packet', (packet: Packet) => {
-			if (packet.type !== PacketType.SERVER_BOUND) return;
+			if (packet.packetDestination !== PacketDestination.SERVER_BOUND) return;
 
-			if(packet.id === ServerPacketType.CHAT.id) {
+			if (packet.packetTypeID === ServerPacketID.CHAT.id) {
 				let packetServerChat = packet as PacketServerChat;
 
 				console.log(`Receiving chat message from client ${this.getID()}: ${packetServerChat.message}`);
@@ -52,12 +55,24 @@ export default class ServerClient {
 
 				responsePacket.sendToClients();
 			}
+
+			if (packet.packetTypeID === ServerPacketID.SPAWN.id) {
+				let packetServerSpawnUnit = packet as PacketServerSpawnUnit;
+				new ServerTroop(this.game!, this, ServerTile.getTile(packetServerSpawnUnit.tileID)!);
+				this.game?.sendServerSnapshot();
+			}
 		});
 	}
 
 	getID() {
 		// TODO: Figure out if ids should be done this way or not
 		return this.profile.userID;
+	}
+
+	static getClient(id: number): ServerClient | null {
+		for (let client of ServerClient.clientList) if (client.getID() === id) return client;
+		console.error(`CLIENT NOT FOUND: ${id}`);
+		return null;
 	}
 }
 

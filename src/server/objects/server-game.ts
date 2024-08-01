@@ -2,9 +2,12 @@ import {Server} from "http";
 import ServerClient from "./server-client";
 import ServerTile from "./server-tile";
 import ServerTroop from "./server-troop";
-import GameInitData from '../../shared/interfaces/init-data';
+import GameSnapshot from '../../shared/interfaces/snapshot';
 import GameClientManager from '../controllers/game-client-manager';
 import {AnnouncementType} from '../../shared/enums';
+import ServerBuilding from './server-building';
+import PacketClientGameInit from '../../shared/packets/client/packet-client-game-init';
+import PacketClientGameSnapshot from '../../shared/packets/client/packet-client-game-snapshot';
 
 let nextID = 0;
 
@@ -12,13 +15,12 @@ export default class ServerGame {
     public static gameList: ServerGame[] = [];
 
     public id: number;
-
     public clientManager: GameClientManager;
-
     public readonly startTime: number = Date.now();
 
     public tiles: ServerTile[] = [];
     public troops: ServerTroop[] = [];
+    public buildings: ServerBuilding[] = [];
 
     public readonly boardSize: number;
 
@@ -60,24 +62,22 @@ export default class ServerGame {
         // this.tiles.push(new ServerTile(-5, 0)); //This tile should Error
     }
 
-    getClientInitData(client: ServerClient): GameInitData {
+    getFullGameSnapshot(client: ServerClient): GameSnapshot {
         return {
             isAuthenticated: client.isAuthenticated,
-            tiles: this.tiles.map(tile => tile.getClientTileData(client)),
-            troops: this.troops.map(troop => troop.getClientTroopData(client))
+            tiles: this.tiles.map(tile => tile.getClientTileSnapshot(client)),
+            troops: this.troops.map(troop => troop.getClientTroopSnapshot(client))
         }
     }
 
-    getSnapshotData(client: ServerClient) {
-        // return {
-        //     tiles: this.tiles
-        // }
+    async sendServerSnapshot() {
+        this.clientManager.clients.forEach(client => this.sendSnapshot(client));
     }
 
-    sendSnapshot(client: ServerClient) {
-        // let packet = new PacketClientGameSnapshot(this.getClientInitData(client));
-        // packet.addClient(client);
-        // packet.send();
+    async sendSnapshot(client: ServerClient) {
+        let packet = new PacketClientGameSnapshot(this.getFullGameSnapshot(client));
+        packet.addClient(client);
+        await packet.sendToClients();
     }
 
     addPlayer() {
@@ -90,8 +90,9 @@ export default class ServerGame {
         this.clientManager.updatePlayerList();
     }
 
-    static getGame(id: number): ServerGame {
+    static getGame(id: number): ServerGame | null {
         for (let game of ServerGame.gameList) if (game.id === id) return game;
-        throw new Error("Game not found");
+        console.error(`GAME NOT FOUND: ${id}`);
+        return null;
     }
 }

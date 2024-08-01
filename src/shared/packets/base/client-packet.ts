@@ -1,12 +1,12 @@
 import {Socket} from 'socket.io';
 import ServerClient from '../../../server/objects/server-client';
-import Packet, {PacketType} from './packet';
+import Packet, {PacketDestination} from './packet';
 
 export default class ClientPacket extends Packet {
 	public clients: ServerClient[] = [];
 
 	constructor(id: number) {
-		super(id, PacketType.CLIENT_BOUND);
+		super(id, PacketDestination.CLIENT_BOUND);
 	}
 
 	addClient(client: ServerClient) {

@@ -1,12 +1,12 @@
-import Packet, { PacketType, ClientPacketType } from '../base/packet';
-import GameInitData from '../../interfaces/init-data';
+import Packet, { PacketDestination, ClientPacketID } from '../base/packet';
+import GameSnapshot from '../../interfaces/snapshot';
 import ClientPacket from '../base/client-packet';
 
 export default class PacketClientGameInit extends ClientPacket {
-	public initData;
+	public initData: GameSnapshot;
 
-	constructor(initData: GameInitData) {
-		super(ClientPacketType.GAME_INIT.id);
+	constructor(initData: GameSnapshot) {
+		super(ClientPacketID.GAME_INIT.id);
 		this.initData = initData;
 	}
 };

@@ -5,32 +5,28 @@ import {NameChangeResponseData} from '../../enums';
 export default class Packet {
 	public clients: ServerClient[] = [];
 
-	public id: number;
-	public type: PacketType;
+	public packetTypeID: number;
+	public packetDestination: PacketDestination;
 
-	constructor(id: number, type: PacketType) {
-		this.id = id;
-		this.type = type;
+	constructor(id: number, type: PacketDestination) {
+		this.packetTypeID = id;
+		this.packetDestination = type;
 	}
 }
 
-export function getPacket(id: number): PacketData | null {
-	for (let packetName in ClientPacketType) {
-		if (ClientPacketType[packetName].id === id) {
-			return ClientPacketType[packetName];
-		}
+export function getPacketName(id: number): string | null {
+	for (let packetName in ClientPacketID) {
+		if (ClientPacketID[packetName].id === id) return packetName;
 	}
 
-	for (let packetName in ServerPacketType) {
-		if (ServerPacketType[packetName].id === id) {
-			return ServerPacketType[packetName];
-		}
+	for (let packetName in ServerPacketID) {
+		if (ServerPacketID[packetName].id === id) return packetName;
 	}
 
 	return null;
 }
 
-export enum PacketType {
+export enum PacketDestination {
 	SERVER_BOUND = 'SERVER_BOUND',
 	CLIENT_BOUND = 'CLIENT_BOUND',
 }
@@ -39,14 +35,15 @@ interface PacketData {
 	id: number
 }
 
-export const ClientPacketType: Readonly<{ [key: string]: PacketData }> = Object.freeze({
+export const ClientPacketID: Readonly<{ [key: string]: PacketData }> = Object.freeze({
 	GAME_INIT: { id: 0x01 },
 	GAME_SNAPSHOT: { id: 0x02 },
 	PLAYER_LIST_INFO: { id: 0x04 },
-	CHAT: { id: 0x06 },
-	ANNOUNCEMENT: { id: 0x07 },
+	CHAT: { id: 0x05 },
+	ANNOUNCEMENT: { id: 0x06 },
 });
 
-export const ServerPacketType: Readonly<{ [key: string]: PacketData }> = Object.freeze({
-	CHAT: { id: 0x05 },
+export const ServerPacketID: Readonly<{ [key: string]: PacketData }> = Object.freeze({
+	CHAT: { id: 0x01 },
+	SPAWN: { id: 0x02 },
 });

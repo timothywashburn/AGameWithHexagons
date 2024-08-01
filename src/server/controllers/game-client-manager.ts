@@ -22,11 +22,9 @@ export default class GameClientManager {
 		this.clients.push(client);
 		client.game = this.game;
 
-		let packet = new PacketClientGameInit(this.game.getClientInitData(client));
+		let packet = new PacketClientGameInit(this.game.getFullGameSnapshot(client));
 		packet.addClient(client);
 		await packet.sendToClients();
-
-		this.game.sendSnapshot(client);
 
 		this.updatePlayerList();
 		this.sendAlert(client, AnnouncementType.GAME_JOIN);

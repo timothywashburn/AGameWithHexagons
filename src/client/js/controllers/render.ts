@@ -1,4 +1,8 @@
 import { getGame } from '../objects/client-game';
+import PacketServerChat from '../../../shared/packets/server/packet-server-chat';
+import {clientSocket} from './connection';
+import PacketServerSpawnUnit from '../../../shared/packets/server/packet-server-spawn-unit';
+import {cli} from 'webpack';
 
 const canvas = document.getElementById('gameCanvas') as HTMLCanvasElement;
 const ctx = canvas.getContext('2d')!;
@@ -66,11 +70,21 @@ canvas.addEventListener('mouseup', event => {
 
 const stationaryClick = (event: MouseEvent) => {
 	let clickedTile = getTile(event.clientX, event.clientY);
-	if (clickedTile != null && clickedTile.isSelected) {
-		clickedTile.isSelected = false;
-	} else {
-		for (let tile of getGame().tiles) {
-			tile.isSelected = clickedTile === tile;
+	for (let tile of getGame().tiles) {
+		if (tile == clickedTile) {
+			if (tile.isSelected) {
+				tile.isSelected = false;
+			} else {
+				tile.isSelected = true;
+
+				if(!tile.troop) {
+					let packet = new PacketServerSpawnUnit(tile.id, 0);
+					packet.sendToServer(clientSocket);
+				}
+			}
+
+		} else if (tile.isSelected && tile != clickedTile) {
+			tile.isSelected = false;
 		}
 	}
 }

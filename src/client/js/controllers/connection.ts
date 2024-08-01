@@ -1,4 +1,4 @@
-import { ClientPacketType, PacketType, getPacket } from '../../../shared/packets/base/packet';
+import { ClientPacketID, PacketDestination, getPacketName } from '../../../shared/packets/base/packet';
 import {AnnouncementType, AnnouncementTypeData} from '../../../shared/enums';
 import { io } from 'socket.io-client';
 import {devConfig, joinGame} from '../pages/play';
@@ -20,10 +20,10 @@ clientSocket.on('connect', () => {
 });
 
 clientSocket.on('packet', function (packet: Packet) {
-	if(packet.type !== PacketType.CLIENT_BOUND) return;
-	console.log(`receiving packet: ` + getPacket(packet.id));
+	if(packet.packetDestination !== PacketDestination.CLIENT_BOUND) return;
+	console.log(`receiving packet: ` + getPacketName(packet.packetTypeID));
 
-	if(packet.id === ClientPacketType.GAME_INIT.id) {
+	if(packet.packetTypeID === ClientPacketID.GAME_INIT.id) {
 		let packetClientGameInit = packet as PacketClientGameInit;
 
 		(window as any).gameData.initData = packetClientGameInit.initData;
@@ -31,11 +31,11 @@ clientSocket.on('packet', function (packet: Packet) {
 
 		if (devConfig.hideChat) document.getElementById('chatBox')!.style.display = "none"
 		if (devConfig.hidePlayerList) document.getElementById('playerList')!.style.display = "none"
-	} else if(packet.id === ClientPacketType.GAME_SNAPSHOT.id) {
+	} else if(packet.packetTypeID === ClientPacketID.GAME_SNAPSHOT.id) {
 		let packetClientGameSnapshot = packet as PacketClientGameSnapshot;
 		getGame().updateGame(packetClientGameSnapshot.snapshot);
 
-	} else if(packet.id === ClientPacketType.PLAYER_LIST_INFO.id) {
+	} else if(packet.packetTypeID === ClientPacketID.PLAYER_LIST_INFO.id) {
 		let packetClientPlayerListInfo = packet as PacketClientPlayerListInfo;
 
 		(window as any).gameData.playerListInfo = packetClientPlayerListInfo.playerListInfo;
@@ -52,7 +52,7 @@ clientSocket.on('packet', function (packet: Packet) {
 			playerList.appendChild(listItem);
 		});
 
-	} else if(packet.id === ClientPacketType.CHAT.id) {
+	} else if(packet.packetTypeID === ClientPacketID.CHAT.id) {
 		let packetClientChat = packet as PacketClientChat;
 
 		const chatMessages = document.getElementById('chatMessages')!;
@@ -64,7 +64,7 @@ clientSocket.on('packet', function (packet: Packet) {
 		chatMessages.appendChild(message);
 		chatMessages.scrollTop = chatMessages.scrollHeight;
 
-	} else if(packet.id === ClientPacketType.ANNOUNCEMENT.id) {
+	} else if(packet.packetTypeID === ClientPacketID.ANNOUNCEMENT.id) {
 		let packetClientAnnouncement = packet as PacketClientAnnouncement;
 
 		const chatMessages = document.getElementById('chatMessages')!;

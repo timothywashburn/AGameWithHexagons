@@ -1,11 +1,11 @@
-import { ServerPacketType } from '../base/packet';
+import { ServerPacketID } from '../base/packet';
 import ServerPacket from '../base/server-packet';
 
 export default class PacketServerChat extends ServerPacket {
     public message: string;
 
     constructor(message: string) {
-        super(ServerPacketType.CHAT.id);
+        super(ServerPacketID.CHAT.id);
 
         this.message = message;
     }

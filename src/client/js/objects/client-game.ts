@@ -1,7 +1,7 @@
 import { prepareFrame } from '../controllers/render';
 import ClientTile from './client-tile'
 import ClientTroop from './client-troop';
-import GameInitData, {TileInitData, TroopInitData} from '../../../shared/interfaces/init-data';
+import {TileSnapshot, TroopSnapshot} from '../../../shared/interfaces/snapshot';
 import GameSnapshot from '../../../shared/interfaces/snapshot';
 
 let game: ClientGame;
@@ -18,7 +18,7 @@ export class ClientGame {
 	public frame: number = 1;
 	public renderTimes: number[] = [];
 
-	constructor(initData: GameInitData) {
+	constructor(initData: GameSnapshot) {
 		game = this;
 		this.startTime = Date.now();
 
@@ -28,7 +28,7 @@ export class ClientGame {
 		this.troops = [];
 		this.buildings = [];
 
-		this.loadGame(initData);
+		this.updateGame(initData);
 
 		console.log('starting game render');
 		this.startRender();
@@ -48,7 +48,7 @@ export class ClientGame {
 		console.log("debugging enabled");
 	}
 
-	loadGame(initData: GameInitData) {
+	updateGame(snapshot: GameSnapshot) {
 		// console.log("initData");
 		// console.log(initData);
 
@@ -57,15 +57,8 @@ export class ClientGame {
 			"goo": 0,
 		}
 
-		this.tiles = initData.tiles.map((tileInitData: TileInitData) => new ClientTile(tileInitData));
-		this.troops = initData.troops.map((troopInitData: TroopInitData) => new ClientTroop(troopInitData));
-	}
-
-	updateGame(snapshot: GameSnapshot) {
-		// console.log("snapshot");
-		// console.log(snapshot);
-
-		// this.tiles.forEach(tile => tile.updateTile(snapshot.tiles.find((testTile: ClientTile) => testTile.id === tile.id)));
+		this.tiles = snapshot.tiles.map((tileInitData: TileSnapshot) => new ClientTile(tileInitData));
+		this.troops = snapshot.troops.map((troopInitData: TroopSnapshot) => new ClientTroop(troopInitData));
 	}
 
 	startRender() {

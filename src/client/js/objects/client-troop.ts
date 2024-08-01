@@ -1,6 +1,6 @@
 import { getGame } from './client-game'
 import ClientTile from "./client-tile";
-import {TroopInitData} from '../../../shared/interfaces/init-data';
+import {TroopSnapshot} from '../../../shared/interfaces/snapshot';
 
 const canvas = document.getElementById('gameCanvas') as HTMLCanvasElement;
 const ctx = canvas.getContext('2d')!;
@@ -15,7 +15,7 @@ export default class ClientTroop {
 	public ownerID: number;
 	public parentTile: ClientTile;
 
-	constructor(troopData: TroopInitData) {
+	constructor(troopData: TroopSnapshot) {
 		this.id = troopData.id;
 		this.ownerID = troopData.ownerID;
 		this.parentTile = this.getParentTile(troopData.parentTileID);
