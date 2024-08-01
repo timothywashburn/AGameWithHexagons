@@ -1,16 +1,14 @@
 import {Socket} from "socket.io";
-import Packet from '../../shared/packets/base/packet';
+import Packet, {PacketDestination, ServerPacketID} from '../../shared/packets/base/packet';
 import PacketServerChat from '../../shared/packets/server/packet-server-chat';
 import ServerGame from './server-game';
-
-import { PacketDestination } from '../../shared/packets/base/packet';
 import PacketClientChat from '../../shared/packets/client/packet-client-chat';
-import { generateUsername } from 'unique-username-generator';
-import { ServerPacketID } from '../../shared/packets/base/packet';
-import { TeamColor } from '../../shared/enums';
+import {generateUsername} from 'unique-username-generator';
+import {TeamColor} from '../../shared/enums';
 import PacketServerSpawnUnit from '../../shared/packets/server/packet-server-spawn-unit';
 import ServerTroop from './server-troop';
 import ServerTile from './server-tile';
+import {ClientSnapshot} from '../../shared/interfaces/snapshot';
 
 let nextColor = 0;
 let nextID = -1;
@@ -62,6 +60,14 @@ export default class ServerClient {
 				this.game?.sendServerSnapshot();
 			}
 		});
+	}
+
+	getClientSnapshot(forClient: ServerClient): ClientSnapshot {
+		return {
+			id: this.getID(),
+			username: this.profile.username,
+			color: this.color,
+		};
 	}
 
 	getID() {

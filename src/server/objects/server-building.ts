@@ -20,7 +20,7 @@ export default class ServerBuilding {
 		this.game.buildings.push(this);
 	}
 
-	getClientBuildingSnapshot(client: ServerClient): BuildingSnapshot {
+	getBuildingSnapshot(client: ServerClient): BuildingSnapshot {
 		return {
 			id: this.id,
 			ownerID: this.owner.getID(),

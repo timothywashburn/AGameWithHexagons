@@ -29,7 +29,7 @@ export default class ServerTile {
         ServerTile.tileList.push(this);
     }
 
-    getClientTileSnapshot(client: ServerClient): TileSnapshot {
+    getTileSnapshot(client: ServerClient): TileSnapshot {
         let snapshot: TileSnapshot = {
             id: this.id,
             x: this.x,

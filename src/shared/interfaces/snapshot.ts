@@ -1,7 +1,14 @@
 export default interface GameSnapshot {
     isAuthenticated: boolean,
+    clients: ClientSnapshot[],
     tiles: TileSnapshot[],
     troops: TroopSnapshot[]
+}
+
+export interface ClientSnapshot {
+    id: number,
+    username: string,
+    color: string
 }
 
 export interface TileSnapshot {

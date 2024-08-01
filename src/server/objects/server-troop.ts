@@ -20,7 +20,7 @@ export default class ServerTroop {
 		this.game.troops.push(this);
 	}
 
-	getClientTroopSnapshot(client: ServerClient): TroopSnapshot {
+	getTroopSnapshot(client: ServerClient): TroopSnapshot {
 		return {
 			id: this.id,
 			ownerID: this.owner.getID(),

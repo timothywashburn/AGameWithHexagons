@@ -8,6 +8,7 @@ import {AnnouncementType} from '../../shared/enums';
 import ServerBuilding from './server-building';
 import PacketClientGameInit from '../../shared/packets/client/packet-client-game-init';
 import PacketClientGameSnapshot from '../../shared/packets/client/packet-client-game-snapshot';
+import {cli} from 'webpack';
 
 let nextID = 0;
 
@@ -65,8 +66,9 @@ export default class ServerGame {
     getFullGameSnapshot(client: ServerClient): GameSnapshot {
         return {
             isAuthenticated: client.isAuthenticated,
-            tiles: this.tiles.map(tile => tile.getClientTileSnapshot(client)),
-            troops: this.troops.map(troop => troop.getClientTroopSnapshot(client))
+            clients: this.clientManager.clients.map(client => client.getClientSnapshot(client)),
+            tiles: this.tiles.map(tile => tile.getTileSnapshot(client)),
+            troops: this.troops.map(troop => troop.getTroopSnapshot(client))
         }
     }
 
