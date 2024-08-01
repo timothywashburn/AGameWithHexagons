@@ -21,6 +21,7 @@ export default class ServerClient {
 	public color: string;
 	public socket: Socket;
 	public isAuthenticated: boolean;
+	public isConnected: boolean = true;
 	public profile: UserProfile;
 
 	constructor(socket: Socket) {
@@ -33,7 +34,7 @@ export default class ServerClient {
 		this.profile = new UserProfile(nextID--, generateUsername("", 3, 20));
 
 		socket.on('disconnect', () => {
-			if (this.game) this.game.removePlayer(this);
+			if (this.game) this.game.clientManager.disconnectClient(this);
 			ServerClient.clientList = ServerClient.clientList.filter(client => client !== this);
 		});
 

@@ -92,7 +92,7 @@ export async function join(req: Request, res: Response) {
 		return;
 	}
 
-	await game.clientManager.addClientToGame(client);
+	await game.clientManager.connectClient(client);
 }
 
 export function register(req: Request, res: Response) {

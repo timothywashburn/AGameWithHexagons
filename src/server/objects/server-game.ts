@@ -68,7 +68,8 @@ export default class ServerGame {
             isAuthenticated: client.isAuthenticated,
             clients: this.clientManager.clients.map(client => client.getClientSnapshot(client)),
             tiles: this.tiles.map(tile => tile.getTileSnapshot(client)),
-            troops: this.troops.map(troop => troop.getTroopSnapshot(client))
+            troops: this.troops.map(troop => troop.getTroopSnapshot(client)),
+            buildings: this.buildings.map(building => building.getBuildingSnapshot(client))
         }
     }
 
@@ -80,16 +81,6 @@ export default class ServerGame {
         let packet = new PacketClientGameSnapshot(this.getFullGameSnapshot(client));
         packet.addClient(client);
         await packet.sendToClients();
-    }
-
-    addPlayer() {
-    }
-
-    removePlayer(client: ServerClient) {
-        this.clientManager.clients = this.clientManager.clients.filter((testClient: ServerClient) => testClient !== client);
-
-        this.clientManager.sendAlert(client, AnnouncementType.GAME_LEAVE);
-        this.clientManager.updatePlayerList();
     }
 
     static getGame(id: number): ServerGame | null {

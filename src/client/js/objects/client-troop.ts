@@ -1,31 +1,32 @@
-import { getGame } from './client-game'
+import {getGame} from './client-game'
 import ClientTile from "./client-tile";
 import {TroopSnapshot} from '../../../shared/interfaces/snapshot';
+import ClientClient from './client-client';
+import {Client} from 'node-mailjet';
 
 const canvas = document.getElementById('gameCanvas') as HTMLCanvasElement;
 const ctx = canvas.getContext('2d')!;
-
-const circle = new Image();
-circle.src = 'images/test.svg';
 
 let radius = 20;
 
 export default class ClientTroop {
 	public id: number;
-	public ownerID: number;
+	public owner: ClientClient;
 	public parentTile: ClientTile;
 
-	// public circle;
+	public sprite = new Image();
 
 	constructor(troopData: TroopSnapshot) {
 		this.id = troopData.id;
-		this.ownerID = troopData.ownerID;
+		this.owner = ClientClient.getClient(troopData.ownerID)!;
 		this.parentTile = this.getParentTile(troopData.parentTileID);
+
+		this.prepareSprite();
 	}
 
 	renderTroop() {
 		ctx.save();
-		ctx.drawImage(circle, this.parentTile.canvasX! - radius, this.parentTile.canvasY! - radius, radius * 2, radius * 2);
+		ctx.drawImage(this.sprite, this.parentTile.canvasX! - radius, this.parentTile.canvasY! - radius, radius * 2, radius * 2);
 		ctx.restore();
 	}
 
@@ -33,11 +34,17 @@ export default class ClientTroop {
 		return getGame().tiles.find(tile => tile.id === parentTileID)!;
 	}
 
-	// prepareSprite() {
-	// 	try {
-	// 		const response = await fetch('images/test.svg');
-	// 		let svgString = await response.text();
-	// 		svgString = svgString.replace(/fill="[^"]*"/g, `fill="${color}"`);
-	// 	}
-	// }
+	async prepareSprite() {
+		try {
+			const response = await fetch('images/test.svg');
+			let svgString = await response.text();
+			svgString = svgString.replace(/fill:#003545/g, `fill:${this.owner.color}`);
+
+			this.sprite = new Image();
+			const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+			this.sprite.src = URL.createObjectURL(svgBlob);
+		} catch (error) {
+			console.error(error);
+		}
+	}
 }

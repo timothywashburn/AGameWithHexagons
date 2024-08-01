@@ -18,7 +18,7 @@ export default class GameClientManager {
 		this.maxPlayers = 8;
 	}
 
-	async addClientToGame(client: ServerClient) {
+	async connectClient(client: ServerClient) {
 		this.clients.push(client);
 		client.game = this.game;
 
@@ -28,6 +28,13 @@ export default class GameClientManager {
 
 		this.updatePlayerList();
 		this.sendAlert(client, AnnouncementType.GAME_JOIN);
+	}
+
+	disconnectClient(client: ServerClient) {
+		this.clients = this.clients.filter((testClient: ServerClient) => testClient !== client);
+
+		this.sendAlert(client, AnnouncementType.GAME_LEAVE);
+		this.updatePlayerList();
 	}
 
 	updatePlayerList() {

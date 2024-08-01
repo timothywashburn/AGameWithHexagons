@@ -18,7 +18,6 @@ hexagonSelected.src = 'images/hexagon-selected.svg';
 hexagonHover.src = 'images/hexagon-hover.svg';
 
 export default class ClientTile {
-
 	public id: number;
 	public x: number;
 	public y: number;
