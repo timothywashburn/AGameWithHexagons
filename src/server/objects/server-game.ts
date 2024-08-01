@@ -43,23 +43,20 @@ export default class ServerGame {
     }
 
     generateTiles() {
-        // for (let row = -this.boardSize + 1; row < this.boardSize; row++) {
-        // 	for (let column = Math.abs(row) - (this.boardSize - 1) * 2; column <= -Math.abs(row) + (this.boardSize - 1) * 2; column += 2) {
-        //         let tile = new ServerTile(column, row);
-        //         if (!this.tileIsValid(tile)) {
-        //             continue;
-        //         }
-        // 		this.tiles.push(tile);
-        // 	}
-        // }
+        for (let row = -this.boardSize + 1; row < this.boardSize; row++) {
+        	for (let column = Math.abs(row) - (this.boardSize - 1) * 2; column <= -Math.abs(row) + (this.boardSize - 1) * 2; column += 2) {
+                let tile = new ServerTile(this, column, row);
+        		this.tiles.push(tile);
+        	}
+        }
 
-        let testTile = new ServerTile(0, 0);
-        this.troops.push(new ServerTroop(11, testTile));
-        this.tiles.push(testTile);
-
-        this.tiles.push(new ServerTile(-4, 0));
-        this.tiles.push(new ServerTile(-6, 0));
-        this.tiles.push(new ServerTile(-5, -1));
+        // let testTile = new ServerTile(0, 0);
+        // this.troops.push(new ServerTroop(11, testTile));
+        // this.tiles.push(testTile);
+        //
+        // this.tiles.push(new ServerTile(-4, 0));
+        // this.tiles.push(new ServerTile(-6, 0));
+        // this.tiles.push(new ServerTile(-5, -1));
         // this.tiles.push(new ServerTile(-5, 0)); //This tile should Error
     }
 
@@ -81,10 +78,6 @@ export default class ServerGame {
         // let packet = new PacketClientGameSnapshot(this.getClientInitData(client));
         // packet.addClient(client);
         // packet.send();
-    }
-
-    tileIsValid(tile: ServerTile) {
-        return (tile.x + tile.y) % 2 === 0;
     }
 
     addPlayer() {
