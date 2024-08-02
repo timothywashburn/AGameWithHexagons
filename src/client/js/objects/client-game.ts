@@ -22,6 +22,8 @@ export class ClientGame {
 	public frame: number = 1;
 	public renderTimes: number[] = [];
 
+	public selectedTile: ClientTile | null = null;
+
 	constructor(initData: GameSnapshot) {
 		game = this;
 		this.startTime = Date.now();

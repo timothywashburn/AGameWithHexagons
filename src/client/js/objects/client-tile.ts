@@ -3,6 +3,7 @@ import ServerTroop from '../../../server/objects/server-troop';
 import ServerBuilding from '../../../server/objects/server-building';
 import ClientTroop from './client-troop';
 import ClientBuilding from './client-building';
+import {getGame} from './client-game';
 
 const canvas = document.getElementById('gameCanvas') as HTMLCanvasElement;
 const ctx = canvas.getContext('2d')!;
@@ -26,7 +27,6 @@ export default class ClientTile {
 	public troop: ClientTroop | null = null;
 	public building: ClientBuilding | null = null;
 
-	public isSelected: boolean;
 	public isHovered: boolean;
 
 	public canvasX: number | undefined;
@@ -44,7 +44,6 @@ export default class ClientTile {
 
 		this.color = tileData.color;
 
-		this.isSelected = false;
 		this.isHovered = false;
 	}
 
@@ -79,7 +78,7 @@ export default class ClientTile {
 	}
 
 	getImage() {
-		if (this.isSelected) return hexagonSelected;
+		if (getGame().selectedTile == this) return hexagonSelected;
 		if (this.isHovered) return hexagonHover;
 		return hexagon;
 	}

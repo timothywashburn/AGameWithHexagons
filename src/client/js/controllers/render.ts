@@ -70,21 +70,14 @@ canvas.addEventListener('mouseup', event => {
 
 const stationaryClick = (event: MouseEvent) => {
 	let clickedTile = getTile(event.clientX, event.clientY);
-	for (let tile of getGame().tiles) {
-		if (tile == clickedTile) {
-			if (tile.isSelected) {
-				tile.isSelected = false;
-			} else {
-				tile.isSelected = true;
+	if (getGame().selectedTile == clickedTile) {
+		getGame().selectedTile = null;
+	} else if (clickedTile != null) {
+		getGame().selectedTile = clickedTile;
 
-				if(!tile.troop) {
-					let packet = new PacketServerSpawnUnit(tile.id, 0);
-					packet.sendToServer(clientSocket);
-				}
-			}
-
-		} else if (tile.isSelected && tile != clickedTile) {
-			tile.isSelected = false;
+		if(!clickedTile.troop) {
+			let packet = new PacketServerSpawnUnit(clickedTile.id, 0);
+			packet.sendToServer(clientSocket);
 		}
 	}
 }
@@ -120,9 +113,9 @@ canvas.addEventListener('mousemove', event => {
 	}
 });
 
-const getTile = (mouseX: number, mouseY: number) => {
+const getTile = (canvasX: number, canvasY: number) => {
 	for (let tile of getGame().tiles) {
-		if (ctx.isPointInPath(tile.path!, mouseX, mouseY)) {
+		if (ctx.isPointInPath(tile.path!, canvasX, canvasY)) {
 			return tile;
 		}
 	}

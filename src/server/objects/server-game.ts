@@ -50,8 +50,7 @@ export default class ServerGame {
     generateTiles() {
         for (let row = -this.boardSize + 1; row < this.boardSize; row++) {
         	for (let column = Math.abs(row) - (this.boardSize - 1) * 2; column <= -Math.abs(row) + (this.boardSize - 1) * 2; column += 2) {
-                let tile = new ServerTile(this, column, row);
-        		this.tiles.push(tile);
+                new ServerTile(this, column, row);
         	}
         }
 
