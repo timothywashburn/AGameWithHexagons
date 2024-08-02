@@ -2,7 +2,7 @@ import {Server} from "http";
 import ServerClient from "./server-client";
 import ServerTile from "./server-tile";
 import ServerTroop from "./server-troop";
-import GameSnapshot from '../../shared/interfaces/snapshot';
+import {GameSnapshot} from '../../shared/interfaces/snapshot';
 import ConnectionManager from '../controllers/connection-manager';
 import {AnnouncementType} from '../../shared/enums';
 import ServerBuilding from './server-building';

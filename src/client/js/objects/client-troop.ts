@@ -3,25 +3,30 @@ import ClientTile from "./client-tile";
 import {TroopSnapshot} from '../../../shared/interfaces/snapshot';
 import ClientPlayer from './client-player';
 import {Client} from 'node-mailjet';
+import ClientElement from './client-element';
 
 const canvas = document.getElementById('gameCanvas') as HTMLCanvasElement;
 const ctx = canvas.getContext('2d')!;
 
 let radius = 20;
 
-export default class ClientTroop {
-	public id: number;
+export default class ClientTroop extends ClientElement {
 	public owner: ClientPlayer;
 	public parentTile: ClientTile;
 
 	public sprite = new Image();
 
-	constructor(troopData: TroopSnapshot) {
-		this.id = troopData.id;
-		this.owner = ClientPlayer.getClient(troopData.ownerID)!;
-		this.parentTile = this.getParentTile(troopData.parentTileID);
+	constructor(troopSnapshot: TroopSnapshot) {
+		super(troopSnapshot.id);
+
+		this.updateTroop(troopSnapshot);
 
 		this.prepareSprite();
+	}
+
+	updateTroop(troopSnapshot: TroopSnapshot) {
+		this.owner = ClientPlayer.getClient(troopSnapshot.ownerID)!;
+		this.parentTile = this.getParentTile(troopSnapshot.parentTileID);
 	}
 
 	renderTroop() {

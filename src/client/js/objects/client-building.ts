@@ -1,9 +1,14 @@
-// TODO: create instances from constructor, assign to player, apply player color, spawn and render in given tile
+import {BuildingSnapshot, ElementSnapshot, TroopSnapshot} from '../../../shared/interfaces/snapshot';
+import ClientPlayer from './client-player';
+import ClientElement from './client-element';
 
-import {BuildingSnapshot, TroopSnapshot} from '../../../shared/interfaces/snapshot';
-
-export default class ClientBuilding {
-
+export default class ClientBuilding extends ClientElement {
     constructor(buildingSnapshot: BuildingSnapshot) {
+        super(buildingSnapshot.id);
+
+    //     TODO: Finish
+    }
+
+    updateBuilding(buildingSnapshot: BuildingSnapshot) {
     }
 }

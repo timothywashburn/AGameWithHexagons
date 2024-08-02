@@ -1,13 +1,18 @@
 import {PlayerSnapshot} from '../../../shared/interfaces/snapshot';
 import {getGame} from './client-game';
+import ClientElement from './client-element';
 
-export default class ClientPlayer {
-	public id: number;
+export default class ClientPlayer extends ClientElement {
 	public color: string;
 
-	constructor(playerData: PlayerSnapshot) {
-		this.id = playerData.id;
-		this.color = playerData.color;
+	constructor(playerSnapshot: PlayerSnapshot) {
+		super(playerSnapshot.id);
+
+		this.updatePlayer(playerSnapshot);
+	}
+
+	updatePlayer(playerSnapshot: PlayerSnapshot) {
+		this.color = playerSnapshot.color;
 	}
 
 	static getClient(id: number): ClientPlayer | null {

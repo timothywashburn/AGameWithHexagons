@@ -1,4 +1,8 @@
-export default interface GameSnapshot {
+export interface ElementSnapshot {
+    id: number
+}
+
+export interface GameSnapshot extends ElementSnapshot {
     isAuthenticated: boolean,
     players: PlayerSnapshot[],
     tiles: TileSnapshot[],
@@ -6,13 +10,11 @@ export default interface GameSnapshot {
     buildings: BuildingSnapshot[]
 }
 
-export interface PlayerSnapshot {
-    id: number,
+export interface PlayerSnapshot extends ElementSnapshot {
     color: string
 }
 
-export interface TileSnapshot {
-    id: number,
+export interface TileSnapshot extends ElementSnapshot {
     x: number,
     y: number,
     color: string,
@@ -20,14 +22,12 @@ export interface TileSnapshot {
     buildingID?: number
 }
 
-export interface TroopSnapshot {
-    id: number,
+export interface TroopSnapshot extends ElementSnapshot {
     ownerID: number,
     parentTileID: number
 }
 
-export interface BuildingSnapshot {
-    id: number,
+export interface BuildingSnapshot extends ElementSnapshot {
     ownerID: number,
     parentTileID: number
 }
