@@ -2,7 +2,7 @@ export interface ElementSnapshot {
     id: number
 }
 
-export interface GameSnapshot extends ElementSnapshot {
+export interface GameSnapshot {
     isAuthenticated: boolean,
     players: PlayerSnapshot[],
     tiles: TileSnapshot[],
