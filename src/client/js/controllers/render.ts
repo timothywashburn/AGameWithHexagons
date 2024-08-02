@@ -72,8 +72,18 @@ const stationaryClick = (event: MouseEvent) => {
 	let clickedTile = getTile(event.clientX, event.clientY);
 	if (getGame().selectedTile == clickedTile) {
 		getGame().selectedTile = null;
+
+		// hide sidebar
+		document.getElementById('sidebar-tile')!.style.display = 'none';
+		document.getElementById('sidebar-troop')!.style.display = 'none';
+		document.getElementById('sidebar-tile')!.style.setProperty('--content-display', 'none');
 	} else if (clickedTile != null) {
 		getGame().selectedTile = clickedTile;
+
+		// activate sidebar
+		document.getElementById('sidebar-tile')!.style.display = 'block';
+		document.getElementById('sidebar-troop')!.style.display = 'none';
+		document.getElementById('sidebar-tile')!.style.setProperty('--content-display', 'tile');
 
 		if(!clickedTile.troop) {
 			let packet = new PacketServerSpawnUnit(clickedTile.id, 0);
