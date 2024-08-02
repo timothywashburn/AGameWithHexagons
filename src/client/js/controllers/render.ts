@@ -84,11 +84,6 @@ const stationaryClick = (event: MouseEvent) => {
 		document.getElementById('sidebar-tile')!.style.display = 'block';
 		document.getElementById('sidebar-troop')!.style.display = 'none';
 		document.getElementById('sidebar-tile')!.style.setProperty('--content-display', 'tile');
-
-		if(!clickedTile.troop) {
-			let packet = new PacketServerSpawnUnit(clickedTile.id, 0);
-			packet.sendToServer(clientSocket);
-		}
 	}
 }
 
