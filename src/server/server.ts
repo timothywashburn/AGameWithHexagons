@@ -12,7 +12,7 @@ const app = express();
 
 import * as endpoints from './api/api-endpoints';
 import webpackConfig from '../../webpack.dev';
-import * as authentication from './authentication';
+import * as authentication from './controllers/authentication';
 import config from '../../config.json';
 import { isDev } from './misc/utils';
 

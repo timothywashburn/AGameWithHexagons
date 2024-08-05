@@ -5,15 +5,18 @@ import ServerGame from './server-game';
 import PacketClientChat from '../../shared/packets/client/packet-client-chat';
 import {generateUsername} from 'unique-username-generator';
 import PacketServerSpawnUnit from '../../shared/packets/server/packet-server-spawn-unit';
-import ServerTroop from './server-troop';
-import ServerTile from './server-tile';
+import ServerTroop, {ServerTroopInitData} from './server-troop';
+import ServerMeleeTroop from './units/server-melee-troop';
+import {getTroopType, TroopType} from '../../shared/enums/unit-enums';
+import {init} from '../controllers/authentication';
+import {getServerTroopConstructor} from '../server-register';
 
 let nextID = -1;
 
 export default class ServerClient {
 	public static clientList: ServerClient[] = [];
 
-	public game: ServerGame | null = null;
+	private game: ServerGame | null = null;
 
 	public socket: Socket;
 	public isAuthenticated: boolean;
@@ -42,7 +45,7 @@ export default class ServerClient {
 				let message = packetServerChat.message;
 				let responsePacket = new PacketClientChat(this.profile.userID, message);
 
-				this.game!.clientManager.clients.forEach((client: ServerClient) => {
+				this.getGame().clientManager.clients.forEach((client: ServerClient) => {
 					responsePacket.addClient(client);
 				});
 
@@ -51,8 +54,15 @@ export default class ServerClient {
 
 			if (packet.packetTypeID === ServerPacketID.SPAWN.id) {
 				let packetServerSpawnUnit = packet as PacketServerSpawnUnit;
-				new ServerTroop(this.game!, this, this.game!.getTile(packetServerSpawnUnit.tileID)!);
-				this.game?.sendServerSnapshot();
+				let troopType = getTroopType(packetServerSpawnUnit.troopTypeID);
+				let initData: ServerTroopInitData = {
+					game: this.getGame(),
+					owner: this,
+					parentTile: this.getGame().getTile(packetServerSpawnUnit.tileID)!
+				};
+				let TroopConstructor = getServerTroopConstructor(troopType);
+				new TroopConstructor(initData);
+				this.getGame().sendServerSnapshot();
 			}
 		});
 	}
@@ -60,6 +70,14 @@ export default class ServerClient {
 	getID() {
 		// TODO: Figure out if ids should be done this way or not
 		return this.profile.userID;
+	}
+
+	getGame() {
+		return this.game!;
+	}
+
+	setGame(game: ServerGame) {
+		this.game = game;
 	}
 
 	static getClient(id: number): ServerClient | null {

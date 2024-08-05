@@ -2,9 +2,9 @@ import PacketClientGameInit from '../../shared/packets/client/packet-client-game
 import PacketClientPlayerListInfo from '../../shared/packets/client/packet-client-player-list-info';
 import PacketClientAnnouncement from '../../shared/packets/client/packet-client-announcement';
 import ServerClient from '../objects/server-client';
-import {AnnouncementTypeData, TeamColor} from '../../shared/enums';
+import {AnnouncementTypeData, TeamColor} from '../../shared/enums/misc-enums';
 import ServerGame from '../objects/server-game';
-import { AnnouncementType } from '../../shared/enums';
+import { AnnouncementType } from '../../shared/enums/misc-enums';
 import {cli} from 'webpack';
 import ServerPlayer from '../objects/server-player';
 
@@ -22,7 +22,7 @@ export default class ConnectionManager {
 
 	async connectClient(client: ServerClient) {
 		this.clients.push(client);
-		client.game = this.game;
+		client.setGame(this.game);
 
 		let foundPlayer = false;
 		for (let player of this.game.players) {

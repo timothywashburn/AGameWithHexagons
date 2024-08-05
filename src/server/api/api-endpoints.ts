@@ -7,11 +7,11 @@ import {
 	NameChangeResponseData, PasswordChangeResponse,
 	PasswordChangeResponseData,
 	RegistrationResponseData, ToastMessage
-} from '../../shared/enums';
+} from '../../shared/enums/misc-enums';
 
 import fs from 'fs';
 import ejs from 'ejs';
-import * as auth from '../authentication';
+import * as auth from '../controllers/authentication';
 import {isDev} from '../misc/utils';
 
 import config from '../../../config.json'

@@ -1,4 +1,4 @@
-import {PasswordChangeResponse, PasswordChangeResponseData} from '../../../shared/enums';
+import {PasswordChangeResponse, PasswordChangeResponseData} from '../../../shared/enums/misc-enums';
 
 const urlParams = new URLSearchParams(window.location.search);
 const token = urlParams.get('token');

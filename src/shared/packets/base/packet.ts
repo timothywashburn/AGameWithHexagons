@@ -1,6 +1,6 @@
 import {Server, Socket} from 'socket.io';
 import ServerClient from '../../../server/objects/server-client';
-import {NameChangeResponseData} from '../../enums';
+import {NameChangeResponseData} from '../../enums/misc-enums';
 
 export default class Packet {
 	public clients: ServerClient[] = [];

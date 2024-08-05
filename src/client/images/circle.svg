@@ -48,5 +48,11 @@
                 cx="512"
                 cy="512"
                 r="512" />
+        <circle
+                style="fill:#003545;stroke-width:0.241"
+                id="path7597"
+                cx="512"
+                cy="512"
+                r="412" />
     </g>
 </svg>

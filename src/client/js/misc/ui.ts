@@ -33,7 +33,7 @@ document.addEventListener('keypress', function (e) {
 
 document.getElementById('spawn-troop1')!.addEventListener('click', function() {
 	console.log("spawning troop 1");
-	let packet = new PacketServerSpawnUnit(getGame().selectedTile!.id, 0);
+	let packet = new PacketServerSpawnUnit(0, getGame().selectedTile!.id);
 	packet.sendToServer(clientSocket);
 });
 

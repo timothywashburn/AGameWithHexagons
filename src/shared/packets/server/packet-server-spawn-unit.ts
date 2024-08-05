@@ -2,13 +2,13 @@ import { ServerPacketID } from '../base/packet';
 import ServerPacket from '../base/server-packet';
 
 export default class PacketServerSpawnUnit extends ServerPacket {
-    public tileID: number;
     public troopTypeID: number;
+    public tileID: number;
 
-    constructor(tileID: number, troopTypeID: number) {
+    constructor(troopTypeID: number, tileID: number) {
         super(ServerPacketID.SPAWN.id);
 
-        this.tileID = tileID;
         this.troopTypeID = troopTypeID;
+        this.tileID = tileID;
     }
 };

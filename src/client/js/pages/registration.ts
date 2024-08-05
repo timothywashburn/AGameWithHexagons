@@ -1,4 +1,4 @@
-import {RegistrationResponse, RegistrationResponseData} from '../../../shared/enums';
+import {RegistrationResponse, RegistrationResponseData} from '../../../shared/enums/misc-enums';
 
 document.getElementById('registerForm')!.addEventListener('submit', function(e) {
     e.preventDefault();

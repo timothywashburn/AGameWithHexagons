@@ -3,7 +3,7 @@ import {
     EmailChangeResponseData,
     PasswordChangeResponseData,
     ToastMessage, NameChangeResponse, EmailChangeResponse, PasswordChangeResponse,
-} from '../../../shared/enums';
+} from '../../../shared/enums/misc-enums';
 import { showToast } from "../controllers/toast";
 import { Modal } from "bootstrap";
 

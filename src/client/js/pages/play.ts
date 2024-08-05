@@ -2,7 +2,7 @@ import '../objects/client-game';
 import '../controllers/connection';
 import '../misc/ui'
 import '../../../shared/packets/base/packet';
-import { ToastMessage } from '../../../shared/enums';
+import { ToastMessage } from '../../../shared/enums/misc-enums';
 import { showToast } from "../controllers/toast";
 import { Modal } from "bootstrap";
 

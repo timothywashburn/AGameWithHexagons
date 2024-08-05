@@ -4,7 +4,7 @@ import ServerTile from "./server-tile";
 import ServerTroop from "./server-troop";
 import {GameSnapshot} from '../../shared/interfaces/snapshot';
 import ConnectionManager from '../controllers/connection-manager';
-import {AnnouncementType} from '../../shared/enums';
+import {AnnouncementType} from '../../shared/enums/misc-enums';
 import ServerBuilding from './server-building';
 import PacketClientGameInit from '../../shared/packets/client/packet-client-game-init';
 import PacketClientGameSnapshot from '../../shared/packets/client/packet-client-game-snapshot';
@@ -74,14 +74,14 @@ export default class ServerGame {
         }
     }
 
-    async sendServerSnapshot() {
+    sendServerSnapshot() {
         this.clientManager.clients.forEach(client => this.sendSnapshot(client));
     }
 
-    async sendSnapshot(client: ServerClient) {
+    sendSnapshot(client: ServerClient) {
         let packet = new PacketClientGameSnapshot(this.getFullGameSnapshot(client));
         packet.addClient(client);
-        await packet.sendToClients();
+        packet.sendToClients();
     }
 
     getPlayer(id: number): ServerPlayer | null {

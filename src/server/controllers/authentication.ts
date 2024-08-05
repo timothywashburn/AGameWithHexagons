@@ -1,4 +1,4 @@
-import ServerClient, {UserProfile} from './objects/server-client';
+import ServerClient, {UserProfile} from '../objects/server-client';
 import {Connection} from 'mysql';
 import {JsonWebTokenError, Jwt, JwtPayload} from 'jsonwebtoken';
 import {
@@ -7,15 +7,15 @@ import {
     NameChangeResponseData, PasswordChangeResponse,
     PasswordChangeResponseData, RegistrationResponse,
     RegistrationResponseData
-} from '../shared/enums';
+} from '../../shared/enums/misc-enums';
 
 import mysql from 'mysql';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import validator from 'email-validator';
 
-import config from '../../config.json';
-import { sendResetEmail, sendUsernameEmail, sendVerificationEmail } from './controllers/mail';
+import config from '../../../config.json';
+import { sendResetEmail, sendUsernameEmail, sendVerificationEmail } from './mail';
 import {strict} from 'assert';
 
 const saltRounds = 10;
