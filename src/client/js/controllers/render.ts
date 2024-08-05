@@ -74,16 +74,23 @@ const stationaryClick = (event: MouseEvent) => {
 		getGame().selectedTile = null;
 
 		// hide sidebar
-		document.getElementById('sidebar-tile')!.style.display = 'none';
-		document.getElementById('sidebar-troop')!.style.display = 'none';
-		document.getElementById('sidebar-tile')!.style.setProperty('--content-display', 'none');
+		document.getElementById('sidebar')!.style.display = 'none';
 	} else if (clickedTile != null) {
 		getGame().selectedTile = clickedTile;
 
 		// activate sidebar
+		document.getElementById('sidebar')!.style.display = 'block';
 		document.getElementById('sidebar-tile')!.style.display = 'block';
 		document.getElementById('sidebar-troop')!.style.display = 'none';
-		document.getElementById('sidebar-tile')!.style.setProperty('--content-display', 'tile');
+		document.getElementById('sidebar-building')!.style.display = 'none';
+		console.log(`${clickedTile.id} has troop ${clickedTile.troop}`);
+
+		// activate proper toggle buttons based on tile occupants
+		// document.getElementById('toggle-tile')!.style.display = 'block';
+		// if (clickedTile.troop != null) document.getElementById('toggle-troop')!.style.display = 'block';
+		// else document.getElementById('toggle-troop')!.style.display = 'none';
+		// if (clickedTile.building != null) document.getElementById('toggle-building')!.style.display = 'block';
+		// else document.getElementById('toggle-building')!.style.display = 'none';
 	}
 }
 

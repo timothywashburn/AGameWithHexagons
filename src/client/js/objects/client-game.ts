@@ -22,10 +22,10 @@ export class ClientGame {
 	public startTime: number;
 	public resources: any;
 
-	public players: ClientPlayer[];
-	public tiles: ClientTile[];
-	public troops: ClientTroop[];
-	public buildings: ClientBuilding[];
+	public players: ClientPlayer[] = [];
+	public tiles: ClientTile[] = [];
+	public troops: ClientTroop[] = [];
+	public buildings: ClientBuilding[] = [];
 
 	public frame: number = 1;
 	public renderTimes: number[] = [];
@@ -37,11 +37,6 @@ export class ClientGame {
 		this.startTime = Date.now();
 
 		this.setupDebug();
-
-		this.players = [];
-		this.tiles = [];
-		this.troops = [];
-		this.buildings = [];
 
 		this.initGame(initData);
 
@@ -143,7 +138,17 @@ export class ClientGame {
 	}
 
 	getTroop(id: number): ClientTroop | null {
-		for (let troop of this.troops) if (troop.id === id) return troop;
+		console.log(`searching for id ${id}`)
+		console.log(typeof this.troops);
+		for (let i = 0; i < this.troops.length; i++) {
+			let troop = this.troops[i];
+			console.log(`compare item ${troop.id} to id ${id}`);
+			if (troop.id === id) return troop;
+		}
+		// for (let troop of this.troops) {
+		// 	console.log(`compare item ${troop.id} to id ${id}`);
+		// 	if (troop.id === id) return troop;
+		// }
 		console.error(`TROOP NOT FOUND: ${id}`);
 		return null;
 	}

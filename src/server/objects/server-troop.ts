@@ -17,6 +17,8 @@ export default class ServerTroop {
 		this.owner = owner;
 		this.parentTile = parentTile;
 
+		parentTile.troop = this;
+
 		this.game.troops.push(this);
 	}
 
