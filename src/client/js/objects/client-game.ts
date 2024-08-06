@@ -141,25 +141,29 @@ export class ClientGame {
 		requestAnimationFrame(() => this.tick());
 	}
 
-	getPlayer(id: number): ClientPlayer | null {
+	getPlayer(id: number | undefined): ClientPlayer | null {
+		if (id == undefined) return null;
 		for (let player of this.players) if (player.id === id) return player;
 		console.error(`PLAYER NOT FOUND: ${id}`);
 		return null;
 	}
 
-	getTile(id: number): ClientTile | null {
+	getTile(id: number | undefined): ClientTile | null {
+		if (id == undefined) return null;
 		for (let tile of this.tiles) if (tile.id === id) return tile;
 		console.error(`TILE NOT FOUND: ${id}`);
 		return null;
 	}
 
-	getTroop(id: number): ClientTroop | null {
+	getTroop(id: number | undefined): ClientTroop | null {
+		if (id == undefined) return null;
 		for (let troop of this.troops) if (troop.id === id) return troop;
 		console.error(`TROOP NOT FOUND: ${id}`);
 		return null;
 	}
 
-	getBuilding(id: number): ClientBuilding | null {
+	getBuilding(id: number | undefined): ClientBuilding | null {
+		if (id == undefined) return null;
 		for (let building of this.buildings) if (building.id === id) return building;
 		console.error(`BUILDING NOT FOUND: ${id}`);
 		return null;
