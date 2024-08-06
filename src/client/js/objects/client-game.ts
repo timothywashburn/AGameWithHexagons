@@ -13,6 +13,7 @@ import ClientPlayer from './client-player';
 import ClientBuilding from './client-building';
 import {init} from '../../../server/controllers/authentication';
 import ClientElement from './client-element';
+import {keyword} from 'chalk';
 import {getTroopType} from '../../../shared/enums/unit-enums';
 import ClientMeleeTroop from './units/client-melee-troop';
 import {getClientTroopConstructor} from '../../client-register';
@@ -25,10 +26,10 @@ export class ClientGame {
 	public startTime: number;
 	public resources: any;
 
-	public players: ClientPlayer[];
-	public tiles: ClientTile[];
-	public troops: ClientTroop[];
-	public buildings: ClientBuilding[];
+	public players: ClientPlayer[] = [];
+	public tiles: ClientTile[] = [];
+	public troops: ClientTroop[] = [];
+	public buildings: ClientBuilding[] = [];
 
 	public frame: number = 1;
 	public renderTimes: number[] = [];
@@ -40,11 +41,6 @@ export class ClientGame {
 		this.startTime = Date.now();
 
 		this.setupDebug();
-
-		this.players = [];
-		this.tiles = [];
-		this.troops = [];
-		this.buildings = [];
 
 		this.initGame(initData);
 
@@ -92,16 +88,20 @@ export class ClientGame {
 			});
 		};
 
+		// snapshot.troops.forEach(snapshot => {
+		// 	let troop = this.troops.find(troop => troop.id === snapshot.id);
+		// 	if (troop) {
+		// 		troop.updateTroop(snapshot);
+		// 	} else {
+		// 		this.troops.push(new ClientTroop(snapshot));
+		// 	}
+		// });
+
 		updateElement<ClientPlayer, PlayerSnapshot>(ClientPlayer, this.players, snapshot.players,
 			(player, snapshot) => player.updatePlayer(snapshot));
-		updateElement<ClientBuilding, BuildingSnapshot>(ClientBuilding, this.buildings, snapshot.buildings,
-			(building, snapshot) => building.updateBuilding(snapshot));
-		updateElement<ClientTile, TileSnapshot>(ClientTile, this.tiles, snapshot.tiles,
-			(tile, snapshot) => tile.updateTile(snapshot));
 
 		// updateElement<ClientTroop, TroopSnapshot>(ClientTroop, this.troops, snapshot.troops,
 		// 	(troop, snapshot) => troop.updateTroop(snapshot));
-
 		snapshot.troops.forEach(snapshot => {
 			console.log(snapshot);
 			let troop = this.troops.find(troop => troop.id === snapshot.id);
@@ -113,6 +113,11 @@ export class ClientGame {
 				new TroopConstructor(snapshot);
 			}
 		});
+		updateElement<ClientBuilding, BuildingSnapshot>(ClientBuilding, this.buildings, snapshot.buildings,
+			(building, snapshot) => building.updateBuilding(snapshot));
+
+		updateElement<ClientTile, TileSnapshot>(ClientTile, this.tiles, snapshot.tiles,
+			(tile, snapshot) => tile.updateTile(snapshot));
 	}
 
 	startRender() {

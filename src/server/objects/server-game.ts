@@ -11,7 +11,7 @@ import PacketClientGameSnapshot from '../../shared/packets/client/packet-client-
 import {cli} from 'webpack';
 import ServerPlayer from './server-player';
 
-let nextID = 0;
+let nextID = 1;
 
 export default class ServerGame {
     public static gameList: ServerGame[] = [];

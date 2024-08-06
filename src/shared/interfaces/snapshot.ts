@@ -24,11 +24,9 @@ export interface TileSnapshot extends ElementSnapshot {
 
 export interface TroopSnapshot extends ElementSnapshot {
     typeID: number,
-    ownerID: number,
-    parentTileID: number,
+    ownerID: number
 }
 
 export interface BuildingSnapshot extends ElementSnapshot {
-    ownerID: number,
-    parentTileID: number
+    ownerID: number
 }

@@ -4,7 +4,7 @@ import ServerBuilding from './server-building';
 import {TileSnapshot} from '../../shared/interfaces/snapshot';
 import ServerGame from './server-game';
 
-let nextID = 0;
+let nextID = 1;
 
 export default class ServerTile {
     public game: ServerGame;
