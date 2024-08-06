@@ -47,8 +47,7 @@ export default class ClientTile extends ClientElement {
 
 	updateTile(tileSnapshot: TileSnapshot) {
 		this.color = tileSnapshot.color;
-		// console.log(`tile at (${this.x}, ${this.y}) has troop ${tileSnapshot.troopID}`);
-		// TODO: fix
+		// TODO: make it possible for troops to be removed
 		if (tileSnapshot.troopID) this.troop = getGame().getTroop(tileSnapshot.troopID);
 		if (tileSnapshot.buildingID) this.building = getGame().getBuilding(tileSnapshot.buildingID);
 	}

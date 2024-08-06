@@ -13,6 +13,7 @@ import ClientPlayer from './client-player';
 import ClientBuilding from './client-building';
 import {init} from '../../../server/authentication';
 import ClientElement from './client-element';
+import {keyword} from 'chalk';
 
 let game: ClientGame;
 
@@ -84,14 +85,24 @@ export class ClientGame {
 			});
 		};
 
+		// snapshot.troops.forEach(snapshot => {
+		// 	let troop = this.troops.find(troop => troop.id === snapshot.id);
+		// 	if (troop) {
+		// 		troop.updateTroop(snapshot);
+		// 	} else {
+		// 		this.troops.push(new ClientTroop(snapshot));
+		// 	}
+		// });
+
 		updateElement<ClientPlayer, PlayerSnapshot>(ClientPlayer, this.players, snapshot.players,
 			(player, snapshot) => player.updatePlayer(snapshot));
-		updateElement<ClientTile, TileSnapshot>(ClientTile, this.tiles, snapshot.tiles,
-			(tile, snapshot) => tile.updateTile(snapshot));
+
 		updateElement<ClientTroop, TroopSnapshot>(ClientTroop, this.troops, snapshot.troops,
 			(troop, snapshot) => troop.updateTroop(snapshot));
 		updateElement<ClientBuilding, BuildingSnapshot>(ClientBuilding, this.buildings, snapshot.buildings,
 			(building, snapshot) => building.updateBuilding(snapshot));
+		updateElement<ClientTile, TileSnapshot>(ClientTile, this.tiles, snapshot.tiles,
+			(tile, snapshot) => tile.updateTile(snapshot));
 	}
 
 	startRender() {
@@ -138,17 +149,7 @@ export class ClientGame {
 	}
 
 	getTroop(id: number): ClientTroop | null {
-		console.log(`searching for id ${id}`)
-		console.log(typeof this.troops);
-		for (let i = 0; i < this.troops.length; i++) {
-			let troop = this.troops[i];
-			console.log(`compare item ${troop.id} to id ${id}`);
-			if (troop.id === id) return troop;
-		}
-		// for (let troop of this.troops) {
-		// 	console.log(`compare item ${troop.id} to id ${id}`);
-		// 	if (troop.id === id) return troop;
-		// }
+		for (let troop of this.troops) if (troop.id === id) return troop;
 		console.error(`TROOP NOT FOUND: ${id}`);
 		return null;
 	}

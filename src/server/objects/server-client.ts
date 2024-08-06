@@ -51,7 +51,8 @@ export default class ServerClient {
 
 			if (packet.packetTypeID === ServerPacketID.SPAWN.id) {
 				let packetServerSpawnUnit = packet as PacketServerSpawnUnit;
-				new ServerTroop(this.game!, this, this.game!.getTile(packetServerSpawnUnit.tileID)!);
+				let parentTile = this.game!.getTile(packetServerSpawnUnit.tileID)!;
+				parentTile.troop = new ServerTroop(this.game!, this);
 				this.game?.sendServerSnapshot();
 			}
 		});

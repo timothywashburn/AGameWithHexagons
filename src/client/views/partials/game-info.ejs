@@ -2,9 +2,9 @@
 	<div class="row justify-content-center">
 		<div class="col-lg-4">
 			<% let games = data.games; %>
-			<% for (let gameID in games) { %>
-				<% let gameData = games[gameID]; %>
-				<div class="card mb-3 gameLobby" id="<%= gameID %>">
+			<% for (let index in games) { %>
+				<% let gameData = games[index]; %>
+				<div class="card mb-3 gameLobby" id="<%= gameData.id %>">
 					<div class="card-body">
 						<div class="d-flex justify-content-between">
 							<h5 class="card-title"><%= gameData.name %></h5>
