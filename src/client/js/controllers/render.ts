@@ -1,8 +1,15 @@
 import { getGame } from '../objects/client-game';
 import PacketServerChat from '../../../shared/packets/server/packet-server-chat';
-import {clientSocket} from './connection';
+import { clientSocket } from './connection';
 import PacketServerSpawnUnit from '../../../shared/packets/server/packet-server-spawn-unit';
-import {cli} from 'webpack';
+import { cli } from 'webpack';
+import {
+	setSidebarInfoBuilding,
+	setSidebarInfoTile,
+	setSidebarInfoTroop,
+	showSidebarToggles,
+	toggleSidebar,
+} from '../misc/ui';
 
 const canvas = document.getElementById('gameCanvas') as HTMLCanvasElement;
 const ctx = canvas.getContext('2d')!;
@@ -26,7 +33,7 @@ let mouseX;
 let mouseY;
 
 export function prepareFrame() {
-	if(canvas.width !== window.innerWidth || canvas.height !== window.innerWidth) {
+	if (canvas.width !== window.innerWidth || canvas.height !== window.innerWidth) {
 		canvas.width = window.innerWidth;
 		canvas.height = window.innerHeight;
 	}
@@ -37,14 +44,18 @@ export function prepareFrame() {
 	ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
 }
 
-canvas.addEventListener('wheel', event => {
-	const delta = Math.sign(event.deltaY) * -1;
+canvas.addEventListener(
+	'wheel',
+	(event) => {
+		const delta = Math.sign(event.deltaY) * -1;
 
-	cameraZoom *= 1 + delta * SCROLL_SENSITIVITY;
-	cameraZoom = Math.max(Math.min(cameraZoom, MAX_ZOOM), MIN_ZOOM);
-}, {passive: true});
+		cameraZoom *= 1 + delta * SCROLL_SENSITIVITY;
+		cameraZoom = Math.max(Math.min(cameraZoom, MAX_ZOOM), MIN_ZOOM);
+	},
+	{ passive: true },
+);
 
-canvas.addEventListener('mousedown', event => {
+canvas.addEventListener('mousedown', (event) => {
 	if (event.button === 1) {
 		cameraX = 0;
 		cameraY = 0;
@@ -60,9 +71,9 @@ canvas.addEventListener('mousedown', event => {
 	}
 });
 
-canvas.addEventListener('mouseup', event => {
+canvas.addEventListener('mouseup', (event) => {
 	if (event.button === 0) {
-		if(!isDragging) stationaryClick(event);
+		if (!isDragging) stationaryClick(event);
 		isMouseDown = false;
 		isDragging = false;
 	}
@@ -70,30 +81,27 @@ canvas.addEventListener('mouseup', event => {
 
 const stationaryClick = (event: MouseEvent) => {
 	let clickedTile = getTile(event.clientX, event.clientY);
-	if (getGame().selectedTile == clickedTile) {
-		getGame().selectedTile = null;
+	let game = getGame();
+	if (game.selectedTile == clickedTile) {
+		game.selectedTile = null;
 
 		// hide sidebar
 		document.getElementById('sidebar')!.style.display = 'none';
 	} else if (clickedTile != null) {
-		getGame().selectedTile = clickedTile;
+		game.selectedTile = clickedTile;
 
 		// activate sidebar
 		document.getElementById('sidebar')!.style.display = 'block';
-		document.getElementById('sidebar-tile')!.style.display = 'block';
-		document.getElementById('sidebar-troop')!.style.display = 'none';
-		document.getElementById('sidebar-building')!.style.display = 'none';
+		if (game.selectedTile.troop != null) toggleSidebar('troop');
+		else if (game.selectedTile.building != null) toggleSidebar('building');
+		else toggleSidebar('tile');
 
 		// activate proper toggle buttons based on tile occupants
-		// document.getElementById('toggle-tile')!.style.display = 'block';
-		// if (clickedTile.troop != null) document.getElementById('toggle-troop')!.style.display = 'block';
-		// else document.getElementById('toggle-troop')!.style.display = 'none';
-		// if (clickedTile.building != null) document.getElementById('toggle-building')!.style.display = 'block';
-		// else document.getElementById('toggle-building')!.style.display = 'none';
+		showSidebarToggles(game.selectedTile);
 	}
-}
+};
 
-canvas.addEventListener('mousemove', event => {
+canvas.addEventListener('mousemove', (event) => {
 	mouseX = event.clientX;
 	mouseY = event.clientY;
 
@@ -130,4 +138,4 @@ const getTile = (canvasX: number, canvasY: number) => {
 			return tile;
 		}
 	}
-}
+};

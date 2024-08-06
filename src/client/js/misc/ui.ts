@@ -1,11 +1,12 @@
-import PacketServerChat from "../../../shared/packets/server/packet-server-chat";
-import { clientSocket } from "../controllers/connection";
+import PacketServerChat from '../../../shared/packets/server/packet-server-chat';
+import { clientSocket } from '../controllers/connection';
 import PacketServerSpawnUnit from '../../../shared/packets/server/packet-server-spawn-unit';
 import { getGame } from '../objects/client-game';
+import ClientTile from '../objects/client-tile';
 
-document.getElementById('chatSend')!.addEventListener('click', function() {
+document.getElementById('chatSend')!.addEventListener('click', function () {
 	const chatInput = document.getElementById('chatInput') as HTMLInputElement;
-	if(chatInput.value === '') return;
+	if (chatInput.value === '') return;
 
 	let packet = new PacketServerChat(chatInput.value);
 	packet.sendToServer(clientSocket);
@@ -13,7 +14,7 @@ document.getElementById('chatSend')!.addEventListener('click', function() {
 	chatInput.value = '';
 });
 
-document.getElementById('chatInput')!.addEventListener('keypress', function(event) {
+document.getElementById('chatInput')!.addEventListener('keypress', function (event) {
 	if (event.key === 'Enter') {
 		event.preventDefault(); // Prevent the default action (form submission)
 		document.getElementById('chatSend')!.click();
@@ -27,34 +28,67 @@ document.addEventListener('keypress', function (e) {
 	}
 });
 
-document.getElementById('spawn-troop1')!.addEventListener('click', function() {
+document.getElementById('toggle-tile')!.addEventListener('click', function () {
+	let game = getGame();
+	if (game.selectedTile != null) {
+		toggleSidebar('tile');
+	}
+});
+
+document.getElementById('toggle-troop')!.addEventListener('click', function () {
+	let game = getGame();
+	if (game.selectedTile != null && game.selectedTile.troop != null) {
+		toggleSidebar('troop');
+	}
+});
+
+document.getElementById('toggle-building')!.addEventListener('click', function () {
+	let game = getGame();
+	if (game.selectedTile != null && game.selectedTile.building != null) {
+		toggleSidebar('building');
+	}
+});
+
+document.getElementById('spawn-troop1')!.addEventListener('click', function () {
 	let packet = new PacketServerSpawnUnit(0, getGame().selectedTile!.id);
 	packet.sendToServer(clientSocket);
+	// TODO: wait until this packet is received
+	toggleSidebar('troop');
+});
+
+export function toggleSidebar(sidebar: 'tile' | 'troop' | 'building') {
 	document.getElementById('sidebar-tile')!.style.display = 'none';
-	document.getElementById('sidebar-troop')!.style.display = 'block';
-});
+	document.getElementById('sidebar-troop')!.style.display = 'none';
+	document.getElementById('sidebar-building')!.style.display = 'none';
 
-// TODO: create centralized method for toggling between troop and tile sidebars, may need a client-ui class\
-document.getElementById('toggle-tile')!.addEventListener('click', function() {
-	if (getGame().selectedTile != null) {
-		document.getElementById('sidebar-tile')!.style.display = 'block';
-		document.getElementById('sidebar-troop')!.style.display = 'none';
-		document.getElementById('sidebar-building')!.style.display = 'none';
-	}
-});
+	document.getElementById(`sidebar-${sidebar}`)!.style.display = 'block';
 
-document.getElementById('toggle-troop')!.addEventListener('click', function() {
-	if (getGame().selectedTile != null && getGame().selectedTile!.troop != null) {
-		document.getElementById('sidebar-troop')!.style.display = 'block';
-		document.getElementById('sidebar-tile')!.style.display = 'none';
-		document.getElementById('sidebar-building')!.style.display = 'none';
-	}
-});
+	if (sidebar === 'tile') setSidebarInfoTile();
+	else if (sidebar === 'troop') setSidebarInfoTroop();
+	else if (sidebar === 'building') setSidebarInfoBuilding();
+}
 
-document.getElementById('toggle-building')!.addEventListener('click', function() {
-	if (getGame().selectedTile != null && getGame().selectedTile!.building != null) {
-		document.getElementById('sidebar-building')!.style.display = 'block';
-		document.getElementById('sidebar-tile')!.style.display = 'none';
-		document.getElementById('sidebar-troop')!.style.display = 'none';
-	}
-});
+export function showSidebarToggles(tile: ClientTile) {
+	document.getElementById('toggle-tile')!.style.display = 'block';
+
+	if (tile.troop != null) document.getElementById('toggle-troop')!.style.display = 'block';
+	else document.getElementById('toggle-troop')!.style.display = 'none';
+
+	if (tile.building != null) document.getElementById('toggle-building')!.style.display = 'block';
+	else document.getElementById('toggle-building')!.style.display = 'none';
+}
+
+export function setSidebarInfoTile() {
+	let game = getGame();
+	document.getElementById('tile-name')!.innerText = `Tile ${game.selectedTile!.id}`;
+}
+
+export function setSidebarInfoTroop() {
+	let game = getGame();
+	document.getElementById('troop-name')!.innerText = `Troop ${game.selectedTile!.troop!.id}`;
+}
+
+export function setSidebarInfoBuilding() {
+	let game = getGame();
+	document.getElementById('building-name')!.innerText = `Building ${game.selectedTile!.building!.id}`;
+}
