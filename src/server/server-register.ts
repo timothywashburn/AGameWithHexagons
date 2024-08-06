@@ -13,9 +13,5 @@ const serverTroopConstructorMap: {
 type ServerTroopConstructor = new (initData: ServerTroopInitData) => ServerTroop;
 
 export const getServerTroopConstructor = (type: TroopType): ServerTroopConstructor => {
-	console.log("type")
-	console.log(type);
-	console.log(serverTroopConstructorMap)
-	console.log(serverTroopConstructorMap[type])
 	return serverTroopConstructorMap[type];
 };

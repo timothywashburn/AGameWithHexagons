@@ -1,3 +1,5 @@
+import {TroopType} from '../enums/unit-enums';
+
 export interface ElementSnapshot {
     id: number
 }
@@ -23,7 +25,7 @@ export interface TileSnapshot extends ElementSnapshot {
 }
 
 export interface TroopSnapshot extends ElementSnapshot {
-    typeID: number,
+    type: TroopType,
     ownerID: number
 }
 

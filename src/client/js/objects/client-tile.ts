@@ -43,6 +43,8 @@ export default class ClientTile extends ClientElement {
 		}
 
 		this.updateTile(tileSnapshot);
+
+		getGame().tiles.push(this);
 	}
 
 	updateTile(tileSnapshot: TileSnapshot) {

@@ -72,52 +72,42 @@ export class ClientGame {
 			"goo": 0,
 		}
 
-		const updateElement = <T extends ClientElement, S extends ElementSnapshot>(
-			constructor: new (snapshot: S) => T,
-			gameElements: T[],
-			elementSnapshotList: S[],
-			updateMethod: (element: T, snapshot: S) => void
-		) => {
-			elementSnapshotList.forEach((snapshot: S) => {
-				let element = gameElements.find(element => element['id'] === snapshot['id']);
-				if (element) {
-					updateMethod(element, snapshot);
-				} else {
-					gameElements.push(new constructor(snapshot));
-				}
-			});
-		};
+		snapshot.players.forEach(snapshot => {
+			let player = this.players.find(player => player.id === snapshot.id);
+			if (player) {
+				player.updatePlayer(snapshot);
+			} else {
+				new ClientPlayer(snapshot);
+			}
+		});
 
-		// snapshot.troops.forEach(snapshot => {
-		// 	let troop = this.troops.find(troop => troop.id === snapshot.id);
-		// 	if (troop) {
-		// 		troop.updateTroop(snapshot);
-		// 	} else {
-		// 		this.troops.push(new ClientTroop(snapshot));
-		// 	}
-		// });
-
-		updateElement<ClientPlayer, PlayerSnapshot>(ClientPlayer, this.players, snapshot.players,
-			(player, snapshot) => player.updatePlayer(snapshot));
-
-		// updateElement<ClientTroop, TroopSnapshot>(ClientTroop, this.troops, snapshot.troops,
-		// 	(troop, snapshot) => troop.updateTroop(snapshot));
 		snapshot.troops.forEach(snapshot => {
-			console.log(snapshot);
 			let troop = this.troops.find(troop => troop.id === snapshot.id);
 			if (troop) {
 				troop.updateTroop(snapshot);
 			} else {
-				let troopType = getTroopType(snapshot.typeID);
-				let TroopConstructor = getClientTroopConstructor(troopType);
+				let TroopConstructor = getClientTroopConstructor(snapshot.type);
 				new TroopConstructor(snapshot);
 			}
 		});
-		updateElement<ClientBuilding, BuildingSnapshot>(ClientBuilding, this.buildings, snapshot.buildings,
-			(building, snapshot) => building.updateBuilding(snapshot));
 
-		updateElement<ClientTile, TileSnapshot>(ClientTile, this.tiles, snapshot.tiles,
-			(tile, snapshot) => tile.updateTile(snapshot));
+		snapshot.buildings.forEach(snapshot => {
+			let building = this.buildings.find(building => building.id === snapshot.id);
+			if (building) {
+				building.updateBuilding(snapshot);
+			} else {
+				new ClientBuilding(snapshot);
+			}
+		});
+
+		snapshot.tiles.forEach(snapshot => {
+			let tile = this.tiles.find(tile => tile.id === snapshot.id);
+			if (tile) {
+				tile.updateTile(snapshot);
+			} else {
+				new ClientTile(snapshot);
+			}
+		});
 	}
 
 	startRender() {

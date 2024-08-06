@@ -9,6 +9,8 @@ export default class ClientPlayer extends ClientElement {
 		super(playerSnapshot.id);
 
 		this.updatePlayer(playerSnapshot);
+
+		getGame().players.push(this);
 	}
 
 	updatePlayer(playerSnapshot: PlayerSnapshot) {

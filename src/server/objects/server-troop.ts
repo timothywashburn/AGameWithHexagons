@@ -26,7 +26,7 @@ export default abstract class ServerTroop {
 	getTroopSnapshot(client: ServerClient): TroopSnapshot {
 		return {
 			id: this.id,
-			typeID: this.type,
+			type: this.type,
 			ownerID: this.owner.getID()
 		}
 	}
@@ -34,6 +34,5 @@ export default abstract class ServerTroop {
 
 export interface ServerTroopInitData {
 	game: ServerGame,
-	owner: ServerClient,
-	parentTile: ServerTile
+	owner: ServerClient
 }

@@ -1,6 +1,6 @@
 export enum TroopType {
-    MELEE,
-    RANGED
+    MELEE = "MELEE",
+    RANGED = "RANGED"
 }
 
 export function getTroopType(index: number): TroopType {

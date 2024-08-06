@@ -83,7 +83,6 @@ const stationaryClick = (event: MouseEvent) => {
 		document.getElementById('sidebar-tile')!.style.display = 'block';
 		document.getElementById('sidebar-troop')!.style.display = 'none';
 		document.getElementById('sidebar-building')!.style.display = 'none';
-		console.log(`${clickedTile.id} has troop ${clickedTile.troop}`);
 
 		// activate proper toggle buttons based on tile occupants
 		// document.getElementById('toggle-tile')!.style.display = 'block';
