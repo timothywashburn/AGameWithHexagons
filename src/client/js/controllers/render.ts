@@ -3,6 +3,13 @@ import PacketServerChat from '../../../shared/packets/server/packet-server-chat'
 import {clientSocket} from './connection';
 import PacketServerSpawnUnit from '../../../shared/packets/server/packet-server-spawn-unit';
 import {cli} from 'webpack';
+import {
+	setSidebarInfoBuilding,
+	setSidebarInfoTile,
+	setSidebarInfoTroop,
+	showSidebarToggles,
+	toggleSidebar
+} from '../misc/ui';
 
 const canvas = document.getElementById('gameCanvas') as HTMLCanvasElement;
 const ctx = canvas.getContext('2d')!;
@@ -70,27 +77,23 @@ canvas.addEventListener('mouseup', event => {
 
 const stationaryClick = (event: MouseEvent) => {
 	let clickedTile = getTile(event.clientX, event.clientY);
-	if (getGame().selectedTile == clickedTile) {
-		getGame().selectedTile = null;
+	let game = getGame();
+	if (game.selectedTile == clickedTile) {
+		game.selectedTile = null;
 
 		// hide sidebar
 		document.getElementById('sidebar')!.style.display = 'none';
 	} else if (clickedTile != null) {
-		getGame().selectedTile = clickedTile;
+		game.selectedTile = clickedTile;
 
 		// activate sidebar
 		document.getElementById('sidebar')!.style.display = 'block';
-		document.getElementById('sidebar-tile')!.style.display = 'block';
-		document.getElementById('sidebar-troop')!.style.display = 'none';
-		document.getElementById('sidebar-building')!.style.display = 'none';
-		console.log(`${clickedTile.id} has troop ${clickedTile.troop}`);
+		if (game.selectedTile.troop != null) toggleSidebar('troop');
+		else if (game.selectedTile.building != null) toggleSidebar('building');
+		else toggleSidebar('tile');
 
 		// activate proper toggle buttons based on tile occupants
-		// document.getElementById('toggle-tile')!.style.display = 'block';
-		// if (clickedTile.troop != null) document.getElementById('toggle-troop')!.style.display = 'block';
-		// else document.getElementById('toggle-troop')!.style.display = 'none';
-		// if (clickedTile.building != null) document.getElementById('toggle-building')!.style.display = 'block';
-		// else document.getElementById('toggle-building')!.style.display = 'none';
+		showSidebarToggles(game.selectedTile);
 	}
 }
 
