@@ -19,7 +19,7 @@ clientSocket.on('connect', () => {
 	const intervalID = setInterval(() => {
 		if (!devConfig) return;
 		clearInterval(intervalID);
-		if (devConfig.autoJoin) joinGame(0, (window as any).gameData.socketID);
+		if (devConfig.autoJoin) joinGame(1, (window as any).gameData.socketID);
 	}, 10);
 });
 
