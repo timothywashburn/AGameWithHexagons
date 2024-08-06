@@ -1,12 +1,12 @@
-import {Socket} from 'socket.io';
+import { Socket } from 'socket.io';
 import ServerClient from '../../../server/objects/server-client';
-import Packet, {PacketDestination} from './packet';
-import {cli} from 'webpack';
+import Packet, { PacketDestination } from './packet';
+import { cli } from 'webpack';
 
-export default class ClientPacket extends Packet {
+export default abstract class ClientPacket extends Packet {
 	public clients: ServerClient[] = [];
 
-	constructor(id: number) {
+	protected constructor(id: number) {
 		super(id, PacketDestination.CLIENT_BOUND);
 	}
 

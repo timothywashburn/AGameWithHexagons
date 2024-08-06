@@ -51,9 +51,10 @@ document.getElementById('toggle-building')!.addEventListener('click', function (
 
 document.getElementById('spawn-troop1')!.addEventListener('click', function () {
 	let packet = new PacketServerSpawnUnit(0, getGame().selectedTile!.id);
-	packet.sendToServer(clientSocket);
-	// TODO: wait until this packet is received
-	toggleSidebar('troop');
+	packet.sendToServer(clientSocket).then((response) => {
+		if (!response.success) return;
+		toggleSidebar('troop');
+	});
 });
 
 export function toggleSidebar(sidebar: 'tile' | 'troop' | 'building') {

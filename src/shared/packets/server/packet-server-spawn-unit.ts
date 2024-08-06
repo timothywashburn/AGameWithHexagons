@@ -1,14 +1,19 @@
 import { ServerPacketID } from '../base/packet';
 import ServerPacket from '../base/server-packet';
+import ReplyableServerPacket from '../base/replyable-server-packet';
 
-export default class PacketServerSpawnUnit extends ServerPacket {
-    public troopTypeID: number;
-    public tileID: number;
+export interface PacketServerSpawnUnitReply {
+	success: boolean;
+}
 
-    constructor(troopTypeID: number, tileID: number) {
-        super(ServerPacketID.SPAWN.id);
+export default class PacketServerSpawnUnit extends ReplyableServerPacket<PacketServerSpawnUnitReply> {
+	public troopTypeID: number;
+	public tileID: number;
 
-        this.troopTypeID = troopTypeID;
-        this.tileID = tileID;
-    }
-};
+	constructor(troopTypeID: number, tileID: number) {
+		super(ServerPacketID.SPAWN.id);
+
+		this.troopTypeID = troopTypeID;
+		this.tileID = tileID;
+	}
+}

@@ -1,15 +1,20 @@
-import {Socket} from "socket.io";
-import Packet, {PacketDestination, ServerPacketID} from '../../shared/packets/base/packet';
+import { Socket } from 'socket.io';
+import Packet, { PacketDestination, ServerPacketID } from '../../shared/packets/base/packet';
 import PacketServerChat from '../../shared/packets/server/packet-server-chat';
 import ServerGame from './server-game';
 import PacketClientChat from '../../shared/packets/client/packet-client-chat';
-import {generateUsername} from 'unique-username-generator';
-import PacketServerSpawnUnit from '../../shared/packets/server/packet-server-spawn-unit';
-import ServerTroop, {ServerTroopInitData} from './server-troop';
+import { generateUsername } from 'unique-username-generator';
+import PacketServerSpawnUnit, {
+	PacketServerSpawnUnitReply,
+} from '../../shared/packets/server/packet-server-spawn-unit';
+import ServerTroop, { ServerTroopInitData } from './server-troop';
 import ServerMeleeTroop from './units/server-melee-troop';
-import {getTroopType, TroopType} from '../../shared/enums/unit-enums';
-import {init} from '../controllers/authentication';
-import {getServerTroopConstructor} from '../server-register';
+import { getTroopType, TroopType } from '../../shared/enums/unit-enums';
+import { init } from '../controllers/authentication';
+import { getServerTroopConstructor } from '../server-register';
+import { getPackedSettings } from 'http2';
+import ResponsePacket from '../../shared/packets/base/response-packet';
+import { cli } from 'webpack';
 
 let nextID = -1;
 
@@ -28,11 +33,11 @@ export default class ServerClient {
 
 		this.socket = socket;
 		this.isAuthenticated = false;
-		this.profile = new UserProfile(nextID--, generateUsername("", 3, 20));
+		this.profile = new UserProfile(nextID--, generateUsername('', 3, 20));
 
 		socket.on('disconnect', () => {
 			if (this.game) this.game.clientManager.disconnectClient(this);
-			ServerClient.clientList = ServerClient.clientList.filter(client => client !== this);
+			ServerClient.clientList = ServerClient.clientList.filter((client) => client !== this);
 		});
 
 		socket.on('packet', (packet: Packet) => {
@@ -45,9 +50,9 @@ export default class ServerClient {
 				let message = packetServerChat.message;
 				let responsePacket = new PacketClientChat(this.profile.userID, message);
 
-				this.getGame().clientManager.clients.forEach((client: ServerClient) => {
-					responsePacket.addClient(client);
-				});
+				this.getGame().clientManager.clients.forEach((client: ServerClient) =>
+					responsePacket.addClient(client),
+				);
 
 				responsePacket.sendToClients();
 			}
@@ -58,12 +63,16 @@ export default class ServerClient {
 				let troopType = getTroopType(packetServerSpawnUnit.troopTypeID);
 				let initData: ServerTroopInitData = {
 					game: this.getGame(),
-					owner: this
+					owner: this,
 				};
 				let TroopConstructor = getServerTroopConstructor(troopType);
 				parentTile.troop = new TroopConstructor(initData);
 
 				this.getGame().sendServerSnapshot();
+
+				new ResponsePacket<PacketServerSpawnUnitReply>(packetServerSpawnUnit.packetID, {
+					success: true,
+				}).replyToClient(this);
 			}
 		});
 	}

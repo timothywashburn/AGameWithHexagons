@@ -1,12 +1,12 @@
 import ServerTile from './server-tile';
 import ServerClient from './server-client';
-import {TroopSnapshot} from '../../shared/interfaces/snapshot';
+import { TroopSnapshot } from '../../shared/interfaces/snapshot';
 import ServerGame from './server-game';
-import {TroopType} from '../../shared/enums/unit-enums';
+import { TroopType } from '../../shared/enums/unit-enums';
 import ServerMeleeTroop from './units/server-melee-troop';
 import ServerRangedTroop from './units/server-ranged-troop';
 
-let nextID = 1;
+let nextID = 0;
 
 export default abstract class ServerTroop {
 	public id: number;
@@ -27,12 +27,12 @@ export default abstract class ServerTroop {
 		return {
 			id: this.id,
 			type: this.type,
-			ownerID: this.owner.getID()
-		}
+			ownerID: this.owner.getID(),
+		};
 	}
 }
 
 export interface ServerTroopInitData {
-	game: ServerGame,
-	owner: ServerClient
+	game: ServerGame;
+	owner: ServerClient;
 }

@@ -1,9 +1,9 @@
 import ServerGame from './server-game';
 import ServerClient from './server-client';
 import ServerTile from './server-tile';
-import {BuildingSnapshot, TroopSnapshot} from '../../shared/interfaces/snapshot';
+import { BuildingSnapshot, TroopSnapshot } from '../../shared/interfaces/snapshot';
 
-let nextID = 1;
+let nextID = 0;
 
 export default class ServerBuilding {
 	public id: number;
@@ -21,7 +21,7 @@ export default class ServerBuilding {
 	getBuildingSnapshot(client: ServerClient): BuildingSnapshot {
 		return {
 			id: this.id,
-			ownerID: this.owner.getID()
-		}
+			ownerID: this.owner.getID(),
+		};
 	}
 }
