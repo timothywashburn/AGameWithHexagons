@@ -12,7 +12,6 @@ let radius = 20;
 
 export default class ClientTroop extends ClientElement {
 	public owner: ClientPlayer;
-	public parentTile: ClientTile;
 
 	public sprite = new Image();
 
@@ -26,17 +25,16 @@ export default class ClientTroop extends ClientElement {
 
 	updateTroop(troopSnapshot: TroopSnapshot) {
 		this.owner = ClientPlayer.getClient(troopSnapshot.ownerID)!;
-		this.parentTile = this.getParentTile(troopSnapshot.parentTileID);
 	}
 
 	renderTroop() {
 		ctx.save();
-		ctx.drawImage(this.sprite, this.parentTile.canvasX! - radius, this.parentTile.canvasY! - radius, radius * 2, radius * 2);
+		ctx.drawImage(this.sprite, this.getParentTile().canvasX! - radius, this.getParentTile().canvasY! - radius, radius * 2, radius * 2);
 		ctx.restore();
 	}
 
-	getParentTile(parentTileID: number): ClientTile {
-		return getGame().tiles.find(tile => tile.id === parentTileID)!;
+	getParentTile(): ClientTile {
+		return getGame().tiles.find(tile => tile.troop === this)!;
 	}
 
 	async prepareSprite() {

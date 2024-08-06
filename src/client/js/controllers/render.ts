@@ -3,6 +3,13 @@ import PacketServerChat from '../../../shared/packets/server/packet-server-chat'
 import {clientSocket} from './connection';
 import PacketServerSpawnUnit from '../../../shared/packets/server/packet-server-spawn-unit';
 import {cli} from 'webpack';
+import {
+	setSidebarInfoBuilding,
+	setSidebarInfoTile,
+	setSidebarInfoTroop,
+	showSidebarToggles,
+	toggleSidebar
+} from '../misc/ui';
 
 const canvas = document.getElementById('gameCanvas') as HTMLCanvasElement;
 const ctx = canvas.getContext('2d')!;
@@ -70,20 +77,23 @@ canvas.addEventListener('mouseup', event => {
 
 const stationaryClick = (event: MouseEvent) => {
 	let clickedTile = getTile(event.clientX, event.clientY);
-	if (getGame().selectedTile == clickedTile) {
-		getGame().selectedTile = null;
+	let game = getGame();
+	if (game.selectedTile == clickedTile) {
+		game.selectedTile = null;
 
 		// hide sidebar
-		document.getElementById('sidebar-tile')!.style.display = 'none';
-		document.getElementById('sidebar-troop')!.style.display = 'none';
-		document.getElementById('sidebar-tile')!.style.setProperty('--content-display', 'none');
+		document.getElementById('sidebar')!.style.display = 'none';
 	} else if (clickedTile != null) {
-		getGame().selectedTile = clickedTile;
+		game.selectedTile = clickedTile;
 
 		// activate sidebar
-		document.getElementById('sidebar-tile')!.style.display = 'block';
-		document.getElementById('sidebar-troop')!.style.display = 'none';
-		document.getElementById('sidebar-tile')!.style.setProperty('--content-display', 'tile');
+		document.getElementById('sidebar')!.style.display = 'block';
+		if (game.selectedTile.troop != null) toggleSidebar('troop');
+		else if (game.selectedTile.building != null) toggleSidebar('building');
+		else toggleSidebar('tile');
+
+		// activate proper toggle buttons based on tile occupants
+		showSidebarToggles(game.selectedTile);
 	}
 }
 
