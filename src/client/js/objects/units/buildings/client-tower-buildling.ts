@@ -1,7 +1,5 @@
-import ClientTroop from '../../client-troop';
-import { BuildingSnapshot, TroopSnapshot } from '../../../../../shared/interfaces/snapshot';
-import { BuildingType, getTroopType, TroopType } from '../../../../../shared/enums/unit-enums';
-import { getGame } from '../../client-game';
+import { BuildingSnapshot } from '../../../../../shared/interfaces/snapshot';
+import { BuildingType } from '../../../../../shared/enums/unit-enums';
 import ClientBuilding from '../../client-building';
 
 export default class ClientTowerBuilding extends ClientBuilding {

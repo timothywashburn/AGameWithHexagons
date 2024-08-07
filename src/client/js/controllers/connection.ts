@@ -1,18 +1,14 @@
-import { ClientPacketID, PacketDestination, getPacketName } from '../../../shared/packets/base/packet';
+import Packet, { ClientPacketID, getPacketName, PacketDestination } from '../../../shared/packets/base/packet';
 import { AnnouncementType, AnnouncementTypeData } from '../../../shared/enums/misc-enums';
 import { io } from 'socket.io-client';
 import { devConfig, joinGame } from '../pages/play';
-import { getGame } from '../objects/client-game';
-import { ClientGame } from '../objects/client-game';
-import Packet from '../../../shared/packets/base/packet';
+import { ClientGame, getGame } from '../objects/client-game';
 import PacketClientAnnouncement from '../../../shared/packets/client/packet-client-announcement';
 import PacketClientGameInit from '../../../shared/packets/client/packet-client-game-init';
 import PacketClientGameSnapshot from '../../../shared/packets/client/packet-client-game-snapshot';
 import PacketClientPlayerListInfo from '../../../shared/packets/client/packet-client-player-list-info';
 import PacketClientChat from '../../../shared/packets/client/packet-client-chat';
 import { UserProfile } from '../../../server/objects/server-client';
-import ResponsePacket from '../../../shared/packets/base/response-packet';
-import test from 'node:test';
 
 export const clientSocket = (io as any).connect();
 

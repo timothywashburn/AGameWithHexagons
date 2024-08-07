@@ -4,11 +4,8 @@ import ServerTile from './server-tile';
 import ServerTroop from './server-troop';
 import { GameSnapshot } from '../../shared/interfaces/snapshot';
 import ConnectionManager from '../controllers/connection-manager';
-import { AnnouncementType } from '../../shared/enums/misc-enums';
 import ServerBuilding from './server-building';
-import PacketClientGameInit from '../../shared/packets/client/packet-client-game-init';
 import PacketClientGameSnapshot from '../../shared/packets/client/packet-client-game-snapshot';
-import { cli } from 'webpack';
 import ServerPlayer from './server-player';
 
 let nextID = 0;

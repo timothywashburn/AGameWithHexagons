@@ -1,5 +1,5 @@
-import {PlayerSnapshot} from '../../../shared/interfaces/snapshot';
-import {getGame} from './client-game';
+import { PlayerSnapshot } from '../../../shared/interfaces/snapshot';
+import { getGame } from './client-game';
 import ClientElement from './client-element';
 
 export default class ClientPlayer extends ClientElement {

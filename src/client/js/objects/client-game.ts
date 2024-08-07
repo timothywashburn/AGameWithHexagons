@@ -3,19 +3,13 @@ import ClientTile from './client-tile';
 import ClientTroop from './client-troop';
 import {
 	BuildingSnapshot,
-	ElementSnapshot,
+	GameSnapshot,
 	PlayerSnapshot,
 	TileSnapshot,
 	TroopSnapshot,
 } from '../../../shared/interfaces/snapshot';
-import { GameSnapshot } from '../../../shared/interfaces/snapshot';
 import ClientPlayer from './client-player';
 import ClientBuilding from './client-building';
-import { init } from '../../../server/controllers/authentication';
-import ClientElement from './client-element';
-import { keyword } from 'chalk';
-import { getTroopType } from '../../../shared/enums/unit-enums';
-import ClientMeleeTroop from './units/troops/client-melee-troop';
 import { getClientBuildingConstructor, getClientTroopConstructor } from '../../client-register';
 
 let game: ClientGame;

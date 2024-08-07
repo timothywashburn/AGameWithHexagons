@@ -17,108 +17,107 @@
 
 </head>
 <body>
-    <%-include('../partials/nav')%>
+<%- include('../partials/nav') %>
 
 
-
-    <div class="login-wrapper">
-        <div class="login-container">
-            <h2>Login</h2>
-            <form id="loginForm">
-                <div class="info-field form-group">
-                    <label for="username">Username</label>
-                    <input type="text" id="username" class="form-control" name="username" required>
-                </div>
-                <div class="info-field form-group">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" class="form-control" name="password" required>
-                </div>
-
-                <p id="loginError"></p>
-
-                <button type="submit" class="login-btn" id="loginBtn">Login</button>
-            </form>
-
-            <div class="forgot">
-                <p><a href="/forgot">Forgot Password or Username?</a></p>
+<div class="login-wrapper">
+    <div class="login-container">
+        <h2>Login</h2>
+        <form id="loginForm">
+            <div class="info-field form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" class="form-control" name="username" required>
+            </div>
+            <div class="info-field form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" class="form-control" name="password" required>
             </div>
 
-            <div class="register">
-                <p>Don't have an account? <a href="/register">Register</a></p>
-            </div>
+            <p id="loginError"></p>
+
+            <button type="submit" class="login-btn" id="loginBtn">Login</button>
+        </form>
+
+        <div class="forgot">
+            <p><a href="/forgot">Forgot Password or Username?</a></p>
+        </div>
+
+        <div class="register">
+            <p>Don't have an account? <a href="/register">Register</a></p>
         </div>
     </div>
+</div>
 
-    <style>
-        body {
-            background-color: #f0f0f0;
-            margin: 0;
-        }
+<style>
+    body {
+        background-color: #f0f0f0;
+        margin: 0;
+    }
 
-        .login-wrapper {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 60vh;
-        }
+    .login-wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 60vh;
+    }
 
-        .login-container {
-            font-family: Arial, sans-serif;
-            background-color: white;
-            padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);
-            width: 300px;
-        }
+    .login-container {
+        font-family: Arial, sans-serif;
+        background-color: white;
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1);
+        width: 300px;
+    }
 
-        .form-group {
-            margin-bottom: 10px;
+    .form-group {
+        margin-bottom: 10px;
 
-        }
+    }
 
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-        }
+    .form-group label {
+        display: block;
+        margin-bottom: 5px;
+    }
 
-        .form-group input {
-            width: 100%;
-            max-width: 280px;
-            padding: 10px;
-            border-radius: 5px;
-            border: 1px solid #cccccc;
-        }
+    .form-group input {
+        width: 100%;
+        max-width: 280px;
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid #cccccc;
+    }
 
-        .login-btn {
-            width: 100%;
-            padding: 10px;
-            border: none;
-            border-radius: 5px;
-            background-color: #2d7df6;
-            color: white;
-            cursor: pointer;
-        }
+    .login-btn {
+        width: 100%;
+        padding: 10px;
+        border: none;
+        border-radius: 5px;
+        background-color: #2d7df6;
+        color: white;
+        cursor: pointer;
+    }
 
-        .register {
-            margin-top: 30px;
-            text-align: center;
-        }
+    .register {
+        margin-top: 30px;
+        text-align: center;
+    }
 
-        .forgot {
-            margin-top: 20px;
-            text-align: center;
-        }
+    .forgot {
+        margin-top: 20px;
+        text-align: center;
+    }
 
-        .login-btn:active {
-            background-color: #1a5ad6;
-        }
+    .login-btn:active {
+        background-color: #1a5ad6;
+    }
 
-        #loginError {
-            height: 20px;
-            color: red;
-        }
-    </style>
+    #loginError {
+        height: 20px;
+        color: red;
+    }
+</style>
 
-    <script src="login.js"></script>
+<script src="login.js"></script>
 </body>
 </html>

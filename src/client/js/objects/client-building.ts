@@ -1,8 +1,8 @@
-import { BuildingSnapshot, ElementSnapshot, TroopSnapshot } from '../../../shared/interfaces/snapshot';
+import { BuildingSnapshot } from '../../../shared/interfaces/snapshot';
 import ClientPlayer from './client-player';
 import ClientElement from './client-element';
 import { getGame } from './client-game';
-import { BuildingType, TroopType } from '../../../shared/enums/unit-enums';
+import { BuildingType } from '../../../shared/enums/unit-enums';
 import ClientTile from './client-tile';
 
 const canvas = document.getElementById('gameCanvas') as HTMLCanvasElement;

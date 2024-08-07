@@ -1,6 +1,4 @@
-import {Server, Socket} from 'socket.io';
 import ServerClient from '../../../server/objects/server-client';
-import {NameChangeResponseData} from '../../enums/misc-enums';
 
 export default class Packet {
 	public clients: ServerClient[] = [];
@@ -32,7 +30,7 @@ export enum PacketDestination {
 }
 
 interface PacketData {
-	id: number
+	id: number;
 }
 
 export const ClientPacketID: Readonly<{ [key: string]: PacketData }> = Object.freeze({

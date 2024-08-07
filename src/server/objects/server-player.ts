@@ -1,8 +1,7 @@
 import ServerGame from './server-game';
-import {TeamColor} from '../../shared/enums/misc-enums';
-import {PlayerSnapshot} from '../../shared/interfaces/snapshot';
+import { TeamColor } from '../../shared/enums/misc-enums';
+import { PlayerSnapshot } from '../../shared/interfaces/snapshot';
 import ServerClient from './server-client';
-import {cli} from 'webpack';
 
 let nextColor = 0;
 

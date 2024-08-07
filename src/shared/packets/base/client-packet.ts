@@ -1,7 +1,5 @@
-import { Socket } from 'socket.io';
 import ServerClient from '../../../server/objects/server-client';
 import Packet, { PacketDestination } from './packet';
-import { cli } from 'webpack';
 
 export default abstract class ClientPacket extends Packet {
 	public clients: ServerClient[] = [];

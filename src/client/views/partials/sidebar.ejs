@@ -1,198 +1,264 @@
 <div class="container sidebar" id="sidebar" style="display: none">
-	<div class="row" style="height: 100%">
-		<div class="col-1" id="toggles">
-			<div class="row" id="toggle-tile">
-				<p>Tile</p>
-			</div>
-			<div class="row" id="toggle-troop">
-				<p>Trp</p>
-			</div>
-			<div class="row" id="toggle-building">
-				<p>Bld</p>
-			</div>
-		</div>
-		<div class="col-3" id="sidebar-info">
-			<div id="sidebar-tile" style="display: none">
-				<h2 id="tile-name">Tile Information</h2>
-				<p>[PICTURE HERE]</p>
-				<p><strong>Biome:</strong> Grassland</p>
-				<p><strong>Tile Resources:</strong></p>
-				<ul>
-					<li>Goo: 0/0</li>
-					<li>Special: 0/0</li>
-				</ul>
-				<p><strong>Spawning Options:</strong></p>
-				<table>
-					<tr>
-						<th>Troop</th>
-						<th>Building</th>
-					</tr>
-					<tr>
-						<td><button id="spawn-troop1">TestTroop</button></td>
-						<td><button id="spawn-building1">B1</button></td>
-					</tr>
-					<tr>
-						<td><button id="spawn-troop2">A2</button></td>
-						<td><button id="spawn-building2">B2</button></td>
-					</tr>
-					<tr>
-						<td><button id="spawn-troop3">A3</button></td>
-						<td><button id="spawn-building3">B3</button></td>
-					</tr>
-					<tr>
-						<td><button id="spawn-troop4">A4</button></td>
-						<td><button id="spawn-building4">B4</button></td>
-					</tr>
-					<tr>
-						<td><button id="spawn-troop5">A5</button></td>
-						<td><button id="spawn-building5">B5</button></td>
-					</tr>
-					<tr>
-						<td><button id="spawn-troop6">A6</button></td>
-						<td><button id="spawn-building6">B6</button></td>
-					</tr>
-				</table>
-				<p><strong>Advanced Options:</strong></p>
-			</div>
-			<div id="sidebar-troop" style="display: none">
-				<h2 id="troop-name">Troop Information</h2>
-				<p>[PICTURE HERE]</p>
-				<p><strong>Troop Stats:</strong></p>
-				<ul>
-					<li>Health: 0/0</li>
-					<li>Damage: 0/0</li>
-					<li>Speed: 0/0</li>
-					<li>Range: 0/0</li>
-					<li>Agility: 0/0</li>
-					<li>Capacity: 0/0</li>
-				</ul>
-				<p><strong>Upgrades:</strong></p>
-				<table>
-					<tr>
-						<td><button>A1</button></td>
-						<td><button>B1</button></td>
-					</tr>
-					<tr>
-						<td><button>A2</button></td>
-						<td><button>B2</button></td>
-					</tr>
-				</table>
-				<p><strong>Other Actions:</strong></p>
-				<table>
-					<tr>
-						<td><button>A1</button></td>
-						<td><button>B1</button></td>
-					</tr>
-					<tr>
-						<td><button>A2</button></td>
-						<td><button>B2</button></td>
-					</tr>
-				</table>
-				<p><strong>Advanced Options:</strong></p>
-			</div>
-			<div id="sidebar-building" style="display: none">
-				<h2 id="building-name">Building Information</h2>
-				<p>[PICTURE HERE]</p>
-				<p><strong>Building Stats:</strong></p>
-				<ul>
-					<li>Health: 0/0</li>
-					<li>Damage: 0/0</li>
-					<li>Range: 0/0</li>
-					<li>Agility: 0/0</li>
-					<li>Capacity: 0/0</li>
-				</ul>
-				<p><strong>Upgrades:</strong></p>
-				<table>
-					<tr>
-						<td><button>A1</button></td>
-						<td><button>B1</button></td>
-					</tr>
-					<tr>
-						<td><button>A2</button></td>
-						<td><button>B2</button></td>
-					</tr>
-				</table>
-				<p><strong>Other Actions:</strong></p>
-				<table>
-					<tr>
-						<td><button>A1</button></td>
-						<td><button>B1</button></td>
-					</tr>
-					<tr>
-						<td><button>A2</button></td>
-						<td><button>B2</button></td>
-					</tr>
-				</table>
-				<p><strong>Advanced Options:</strong></p>
-			</div>
-		</div>
-	</div>
+    <div class="row" style="height: 100%">
+        <div class="col-1" id="toggles">
+            <div class="row" id="toggle-tile">
+                <p>Tile</p>
+            </div>
+            <div class="row" id="toggle-troop">
+                <p>Trp</p>
+            </div>
+            <div class="row" id="toggle-building">
+                <p>Bld</p>
+            </div>
+        </div>
+        <div class="col-3" id="sidebar-info">
+            <div id="sidebar-tile" style="display: none">
+                <h2 id="tile-name">Tile Information</h2>
+                <p>[PICTURE HERE]</p>
+                <p><strong>Biome:</strong> Grassland</p>
+                <p><strong>Tile Resources:</strong></p>
+                <ul>
+                    <li>Goo: 0/0</li>
+                    <li>Special: 0/0</li>
+                </ul>
+                <p><strong>Spawning Options:</strong></p>
+                <table>
+                    <tr>
+                        <th>Troop</th>
+                        <th>Building</th>
+                    </tr>
+                    <tr>
+                        <td>
+                            <button id="spawn-troop1">TestTroop</button>
+                        </td>
+                        <td>
+                            <button id="spawn-building1">B1</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <button id="spawn-troop2">A2</button>
+                        </td>
+                        <td>
+                            <button id="spawn-building2">B2</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <button id="spawn-troop3">A3</button>
+                        </td>
+                        <td>
+                            <button id="spawn-building3">B3</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <button id="spawn-troop4">A4</button>
+                        </td>
+                        <td>
+                            <button id="spawn-building4">B4</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <button id="spawn-troop5">A5</button>
+                        </td>
+                        <td>
+                            <button id="spawn-building5">B5</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <button id="spawn-troop6">A6</button>
+                        </td>
+                        <td>
+                            <button id="spawn-building6">B6</button>
+                        </td>
+                    </tr>
+                </table>
+                <p><strong>Advanced Options:</strong></p>
+            </div>
+            <div id="sidebar-troop" style="display: none">
+                <h2 id="troop-name">Troop Information</h2>
+                <p>[PICTURE HERE]</p>
+                <p><strong>Troop Stats:</strong></p>
+                <ul>
+                    <li>Health: 0/0</li>
+                    <li>Damage: 0/0</li>
+                    <li>Speed: 0/0</li>
+                    <li>Range: 0/0</li>
+                    <li>Agility: 0/0</li>
+                    <li>Capacity: 0/0</li>
+                </ul>
+                <p><strong>Upgrades:</strong></p>
+                <table>
+                    <tr>
+                        <td>
+                            <button>A1</button>
+                        </td>
+                        <td>
+                            <button>B1</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <button>A2</button>
+                        </td>
+                        <td>
+                            <button>B2</button>
+                        </td>
+                    </tr>
+                </table>
+                <p><strong>Other Actions:</strong></p>
+                <table>
+                    <tr>
+                        <td>
+                            <button>A1</button>
+                        </td>
+                        <td>
+                            <button>B1</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <button>A2</button>
+                        </td>
+                        <td>
+                            <button>B2</button>
+                        </td>
+                    </tr>
+                </table>
+                <p><strong>Advanced Options:</strong></p>
+            </div>
+            <div id="sidebar-building" style="display: none">
+                <h2 id="building-name">Building Information</h2>
+                <p>[PICTURE HERE]</p>
+                <p><strong>Building Stats:</strong></p>
+                <ul>
+                    <li>Health: 0/0</li>
+                    <li>Damage: 0/0</li>
+                    <li>Range: 0/0</li>
+                    <li>Agility: 0/0</li>
+                    <li>Capacity: 0/0</li>
+                </ul>
+                <p><strong>Upgrades:</strong></p>
+                <table>
+                    <tr>
+                        <td>
+                            <button>A1</button>
+                        </td>
+                        <td>
+                            <button>B1</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <button>A2</button>
+                        </td>
+                        <td>
+                            <button>B2</button>
+                        </td>
+                    </tr>
+                </table>
+                <p><strong>Other Actions:</strong></p>
+                <table>
+                    <tr>
+                        <td>
+                            <button>A1</button>
+                        </td>
+                        <td>
+                            <button>B1</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <button>A2</button>
+                        </td>
+                        <td>
+                            <button>B2</button>
+                        </td>
+                    </tr>
+                </table>
+                <p><strong>Advanced Options:</strong></p>
+            </div>
+        </div>
+    </div>
 </div>
 
 <style>
-	body {
-		font-family: Arial, sans-serif;
-		margin: 0;
-		padding: 0;
-	}
-	.sidebar {
-		width: 350px;
-		position: fixed;
-		top: 0;
-		right: 0; /* Aligns the sidebar to the right side */
-		height: 100%;
-	}
-	.sidebar h2 {
-		font-size: 1.5em;
-		margin-bottom: 20px;
-	}
-	.sidebar p {
-		margin-bottom: 10px;
-		line-height: 1.5;
-	}
-	#toggles {
-		height: 100%;
-		width: 15%;
-	}
-	#toggles > div {
-		display: block;
-		aspect-ratio: 1 / 1;
-		text-align: center;
-		vertical-align: middle;
-		background-color: #f4f4f4;
-		border-left: 1px solid #ccc;
-		border-bottom: 1px solid #ccc;
-	}
-	#sidebar-info {
-		height: 100%;
-		width: 85%;
-		padding: 20px;
-		background-color: #f4f4f4;
-		border-left: 1px solid #ccc;
-	}
-	#sidebar-info button {
-		width: 100%;
-		padding: 10px;
-		margin-bottom: 10px;
-		border: none;
-		background-color: #007bff;
-		color: white;
-		font-size: 1em;
-		cursor: pointer;
-		border-radius: 5px;
-	}
-	#sidebar-info button:hover {
-		background-color: #0056b3;
-	}
-	#sidebar-info table {
-		width: 100%;
-		margin-left: auto;
-		margin-right: auto;
-		margin-bottom: 10px;
-	}
-	#sidebar-info td, th {
-		width: 50%;
-		padding: 0px 5px 0px 5px;
-		text-align: center;
-	}
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+    }
+
+    .sidebar {
+        width: 350px;
+        position: fixed;
+        top: 0;
+        right: 0; /* Aligns the sidebar to the right side */
+        height: 100%;
+    }
+
+    .sidebar h2 {
+        font-size: 1.5em;
+        margin-bottom: 20px;
+    }
+
+    .sidebar p {
+        margin-bottom: 10px;
+        line-height: 1.5;
+    }
+
+    #toggles {
+        height: 100%;
+        width: 15%;
+    }
+
+    #toggles > div {
+        display: block;
+        aspect-ratio: 1 / 1;
+        text-align: center;
+        vertical-align: middle;
+        background-color: #f4f4f4;
+        border-left: 1px solid #ccc;
+        border-bottom: 1px solid #ccc;
+    }
+
+    #sidebar-info {
+        height: 100%;
+        width: 85%;
+        padding: 20px;
+        background-color: #f4f4f4;
+        border-left: 1px solid #ccc;
+    }
+
+    #sidebar-info button {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 10px;
+        border: none;
+        background-color: #007bff;
+        color: white;
+        font-size: 1em;
+        cursor: pointer;
+        border-radius: 5px;
+    }
+
+    #sidebar-info button:hover {
+        background-color: #0056b3;
+    }
+
+    #sidebar-info table {
+        width: 100%;
+        margin-left: auto;
+        margin-right: auto;
+        margin-bottom: 10px;
+    }
+
+    #sidebar-info td, th {
+        width: 50%;
+        padding: 0px 5px 0px 5px;
+        text-align: center;
+    }
 </style>

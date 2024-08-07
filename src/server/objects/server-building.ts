@@ -1,7 +1,7 @@
 import ServerGame from './server-game';
 import ServerClient from './server-client';
 import { BuildingSnapshot } from '../../shared/interfaces/snapshot';
-import { BuildingType, TroopType } from '../../shared/enums/unit-enums';
+import { BuildingType } from '../../shared/enums/unit-enums';
 
 let nextID = 0;
 

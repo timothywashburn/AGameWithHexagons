@@ -1,15 +1,5 @@
 import { getGame } from '../objects/client-game';
-import PacketServerChat from '../../../shared/packets/server/packet-server-chat';
-import { clientSocket } from './connection';
-import PacketServerSpawnUnit from '../../../shared/packets/server/packet-server-spawn-unit';
-import { cli } from 'webpack';
-import {
-	setSidebarInfoBuilding,
-	setSidebarInfoTile,
-	setSidebarInfoTroop,
-	showSidebarToggles,
-	toggleSidebar,
-} from '../misc/ui';
+import { showSidebarToggles, toggleSidebar } from '../misc/ui';
 
 const canvas = document.getElementById('gameCanvas') as HTMLCanvasElement;
 const ctx = canvas.getContext('2d')!;

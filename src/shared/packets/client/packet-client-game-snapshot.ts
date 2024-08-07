@@ -1,5 +1,5 @@
-import Packet, { PacketDestination, ClientPacketID } from '../base/packet';
-import {GameSnapshot} from '../../interfaces/snapshot';
+import { ClientPacketID } from '../base/packet';
+import { GameSnapshot } from '../../interfaces/snapshot';
 import ClientPacket from '../base/client-packet';
 
 export default class PacketClientGameSnapshot extends ClientPacket {
@@ -10,4 +10,4 @@ export default class PacketClientGameSnapshot extends ClientPacket {
 
 		this.snapshot = snapshot;
 	}
-};
+}

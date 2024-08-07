@@ -1,5 +1,5 @@
-import Packet, { PacketDestination, ClientPacketID } from '../base/packet';
-import {UserProfile} from '../../../server/objects/server-client';
+import { ClientPacketID } from '../base/packet';
+import { UserProfile } from '../../../server/objects/server-client';
 import ClientPacket from '../base/client-packet';
 
 export default class PacketClientPlayerListInfo extends ClientPacket {
@@ -10,4 +10,4 @@ export default class PacketClientPlayerListInfo extends ClientPacket {
 
 		this.playerListInfo = playerListInfo;
 	}
-};
+}

@@ -7,14 +7,10 @@ import { generateUsername } from 'unique-username-generator';
 import PacketServerSpawnUnit, {
 	PacketServerSpawnUnitReply,
 } from '../../shared/packets/server/packet-server-spawn-unit';
-import ServerTroop, { ServerTroopInitData } from './server-troop';
-import ServerMeleeTroop from './units/troops/server-melee-troop';
-import { BuildingType, getTroopType, TroopType } from '../../shared/enums/unit-enums';
-import { init } from '../controllers/authentication';
+import { ServerTroopInitData } from './server-troop';
+import { BuildingType, TroopType } from '../../shared/enums/unit-enums';
 import { getServerBuildingConstructor, getServerTroopConstructor } from '../server-register';
-import { getPackedSettings } from 'http2';
 import ResponsePacket from '../../shared/packets/base/response-packet';
-import { cli } from 'webpack';
 import { ServerBuildingInitData } from './server-building';
 
 let nextID = -1;

@@ -1,4 +1,4 @@
-import Packet, { PacketDestination, ClientPacketID } from '../base/packet';
+import { ClientPacketID } from '../base/packet';
 import ClientPacket from '../base/client-packet';
 
 export default class PacketClientAnnouncement extends ClientPacket {
@@ -11,4 +11,4 @@ export default class PacketClientAnnouncement extends ClientPacket {
 		this.clientID = clientID;
 		this.announcementID = announcementID;
 	}
-};
+}

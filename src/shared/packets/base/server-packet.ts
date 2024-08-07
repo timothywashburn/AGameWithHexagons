@@ -1,8 +1,7 @@
-import Packet, {PacketDestination} from './packet';
-import {Socket} from 'socket.io';
+import Packet, { PacketDestination } from './packet';
+import { Socket } from 'socket.io';
 
 export default class ServerPacket extends Packet {
-
 	constructor(packetTypeID: number) {
 		super(packetTypeID, PacketDestination.SERVER_BOUND);
 	}

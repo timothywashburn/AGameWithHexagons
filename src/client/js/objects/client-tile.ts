@@ -1,15 +1,13 @@
-import {TileSnapshot} from '../../../shared/interfaces/snapshot';
-import ServerTroop from '../../../server/objects/server-troop';
-import ServerBuilding from '../../../server/objects/server-building';
+import { TileSnapshot } from '../../../shared/interfaces/snapshot';
 import ClientTroop from './client-troop';
 import ClientBuilding from './client-building';
-import {getGame} from './client-game';
+import { getGame } from './client-game';
 import ClientElement from './client-element';
 
 const canvas = document.getElementById('gameCanvas') as HTMLCanvasElement;
 const ctx = canvas.getContext('2d')!;
 
-let apothem = 30
+let apothem = 30;
 let radius = apothem / Math.cos(Math.PI / 6);
 
 const hexagon = new Image();
@@ -38,7 +36,7 @@ export default class ClientTile extends ClientElement {
 		this.x = tileSnapshot.x;
 		this.y = tileSnapshot.y;
 
-		if((this.x + this.y) % 2 !== 0) {
+		if ((this.x + this.y) % 2 !== 0) {
 			throw new Error(`Tile at ${this.x}, ${this.y} is not valid`);
 		}
 
@@ -59,9 +57,9 @@ export default class ClientTile extends ClientElement {
 
 		this.path = new Path2D();
 		for (let i = 0; i < 6; i++) {
-			let pointX = this.canvasX + radius * Math.cos(Math.PI / 3 * i + Math.PI / 6);
-			let pointY = this.canvasY + radius * Math.sin(Math.PI / 3 * i + Math.PI / 6);
-			if(i === 0) {
+			let pointX = this.canvasX + radius * Math.cos((Math.PI / 3) * i + Math.PI / 6);
+			let pointY = this.canvasY + radius * Math.sin((Math.PI / 3) * i + Math.PI / 6);
+			if (i === 0) {
 				this.path.moveTo(pointX, pointY);
 			} else this.path.lineTo(pointX, pointY);
 		}

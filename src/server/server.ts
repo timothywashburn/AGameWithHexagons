@@ -1,26 +1,23 @@
-import {Socket, Server} from "socket.io";
+import { Server, Socket } from 'socket.io';
 import * as http from 'http';
 
 import path from 'path';
-import express from 'express';
+import express, { Request, Response } from 'express';
 import fs from 'fs';
 import chalk from 'chalk';
 import webpack from 'webpack';
 import webpackDevMiddleware from 'webpack-dev-middleware';
-
-const app = express();
-
 import * as endpoints from './api/api-endpoints';
 import webpackConfig from '../../webpack.dev';
 import * as authentication from './controllers/authentication';
 import config from '../../config.json';
 import { isDev } from './misc/utils';
-
-const viewsDir = `${__dirname}/../client/views`;
-
-import { Request, Response } from 'express';
 import ServerClient from './objects/server-client';
 import ServerGame from './objects/server-game';
+
+const app = express();
+
+const viewsDir = `${__dirname}/../client/views`;
 
 app.set('view engine', 'ejs');
 app.set('views', viewsDir);
@@ -29,14 +26,16 @@ const validateConfig = () => {
 	const configPath = path.join(__dirname, '../../config.json');
 	const exampleConfigPath = path.join(__dirname, '../../config.example.json');
 	if (!fs.existsSync(configPath)) {
-		console.error('config.json not found. Please copy config.example.json to config.json and fill in the required values');
+		console.error(
+			'config.json not found. Please copy config.example.json to config.json and fill in the required values',
+		);
 		process.exit(1);
 	}
 
 	const config = require(configPath);
 	const exampleConfig = require(exampleConfigPath);
 
-// Function to check for missing keys, including nested keys
+	// Function to check for missing keys, including nested keys
 	const checkMissingKeys = (example: any, actual: any, prefix = '') => {
 		Object.keys(example).forEach((key) => {
 			const fullKey = prefix ? `${prefix}.${key}` : key;
@@ -51,9 +50,9 @@ const validateConfig = () => {
 				process.exit(1);
 			}
 		});
-	}
+	};
 	checkMissingKeys(exampleConfig, config);
-}
+};
 validateConfig();
 
 if (isDev) {
