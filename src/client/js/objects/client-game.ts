@@ -1,8 +1,16 @@
-import { prepareFrame } from '../render';
-import ClientTile from './client-tile'
+import { prepareFrame } from '../controllers/render';
+import ClientTile from './client-tile';
 import ClientTroop from './client-troop';
-import GameInitData, {TileInitData, TroopInitData} from '../../../shared/interfaces/init-data';
-import GameSnapshot from '../../../shared/interfaces/snapshot';
+import {
+	BuildingSnapshot,
+	GameSnapshot,
+	PlayerSnapshot,
+	TileSnapshot,
+	TroopSnapshot,
+} from '../../../shared/interfaces/snapshot';
+import ClientPlayer from './client-player';
+import ClientBuilding from './client-building';
+import { getClientBuildingConstructor, getClientTroopConstructor } from '../../client-register';
 
 let game: ClientGame;
 
@@ -11,24 +19,24 @@ export const getGame = () => game;
 export class ClientGame {
 	public startTime: number;
 	public resources: any;
-	public tiles: ClientTile[];
-	public troops: ClientTroop[];
-	public buildings: any[];
+
+	public players: ClientPlayer[] = [];
+	public tiles: ClientTile[] = [];
+	public troops: ClientTroop[] = [];
+	public buildings: ClientBuilding[] = [];
 
 	public frame: number = 1;
 	public renderTimes: number[] = [];
 
-	constructor(initData: GameInitData) {
+	public selectedTile: ClientTile | null = null;
+
+	constructor(initData: GameSnapshot) {
 		game = this;
 		this.startTime = Date.now();
 
 		this.setupDebug();
 
-		this.tiles = [];
-		this.troops = [];
-		this.buildings = [];
-
-		this.loadGame(initData);
+		this.initGame(initData);
 
 		console.log('starting game render');
 		this.startRender();
@@ -41,31 +49,60 @@ export class ClientGame {
 			this.renderTimes.splice(0, this.renderTimes.length - frameRate * 10);
 			let MSPT = +(this.renderTimes.reduce((a, b) => a + b) / this.renderTimes.length).toFixed(2);
 			let maxLoad = 1000 / frameRate;
-			let currentLoad = MSPT / maxLoad * 100;
+			let currentLoad = (MSPT / maxLoad) * 100;
 			console.log(`${MSPT} ms (${currentLoad.toFixed(1)}% load) per tick (${frameRate} fps)`);
 		}, 5000);
 
-		console.log("debugging enabled");
+		console.log('debugging enabled');
 	}
 
-	loadGame(initData: GameInitData) {
-		// console.log("initData");
-		// console.log(initData);
-
-		this.resources = {
-			"energy": 0,
-			"goo": 0,
-		}
-
-		this.tiles = initData.tiles.map((tileInitData: TileInitData) => new ClientTile(tileInitData));
-		this.troops = initData.troops.map((troopInitData: TroopInitData) => new ClientTroop(troopInitData));
+	initGame(gameSnapshot: GameSnapshot) {
+		this.updateGame(gameSnapshot);
 	}
 
 	updateGame(snapshot: GameSnapshot) {
-		// console.log("snapshot");
-		// console.log(snapshot);
+		this.resources = {
+			energy: 0,
+			goo: 0,
+		};
 
-		// this.tiles.forEach(tile => tile.updateTile(snapshot.tiles.find((testTile: ClientTile) => testTile.id === tile.id)));
+		snapshot.players.forEach((snapshot: PlayerSnapshot) => {
+			let player = this.players.find((player) => player.id === snapshot.id);
+			if (player) {
+				player.updatePlayer(snapshot);
+			} else {
+				new ClientPlayer(snapshot);
+			}
+		});
+
+		snapshot.troops.forEach((snapshot: TroopSnapshot) => {
+			let troop = this.troops.find((troop) => troop.id === snapshot.id);
+			if (troop) {
+				troop.updateTroop(snapshot);
+			} else {
+				let TroopConstructor = getClientTroopConstructor(snapshot.type);
+				new TroopConstructor(snapshot);
+			}
+		});
+
+		snapshot.buildings.forEach((snapshot: BuildingSnapshot) => {
+			let building = this.buildings.find((building) => building.id === snapshot.id);
+			if (building) {
+				building.updateBuilding(snapshot);
+			} else {
+				let BuildingConstructor = getClientBuildingConstructor(snapshot.type);
+				new BuildingConstructor(snapshot);
+			}
+		});
+
+		snapshot.tiles.forEach((snapshot: TileSnapshot) => {
+			let tile = this.tiles.find((tile) => tile.id === snapshot.id);
+			if (tile) {
+				tile.updateTile(snapshot);
+			} else {
+				new ClientTile(snapshot);
+			}
+		});
 	}
 
 	startRender() {
@@ -85,8 +122,9 @@ export class ClientGame {
 			prepareFrame();
 
 			// Render tiles
-			this.tiles.forEach(tile => tile.renderTile());
-			this.troops.forEach(troop => troop.renderTroop());
+			this.tiles.forEach((tile) => tile.renderTile());
+			this.troops.forEach((troop) => troop.renderTroop());
+			this.buildings.forEach((building) => building.renderBuilding());
 
 			const finalRenderTime = window.performance.now() - renderStartTime;
 			this.renderTimes.push(finalRenderTime);
@@ -97,5 +135,33 @@ export class ClientGame {
 
 		// await new Promise(resolve => setTimeout(resolve, 1000));
 		requestAnimationFrame(() => this.tick());
+	}
+
+	getPlayer(id: number | undefined): ClientPlayer | null {
+		if (id == undefined) return null;
+		for (let player of this.players) if (player.id === id) return player;
+		console.error(`PLAYER NOT FOUND: ${id}`);
+		return null;
+	}
+
+	getTile(id: number | undefined): ClientTile | null {
+		if (id == undefined) return null;
+		for (let tile of this.tiles) if (tile.id === id) return tile;
+		console.error(`TILE NOT FOUND: ${id}`);
+		return null;
+	}
+
+	getTroop(id: number | undefined): ClientTroop | null {
+		if (id == undefined) return null;
+		for (let troop of this.troops) if (troop.id === id) return troop;
+		console.error(`TROOP NOT FOUND: ${id}`);
+		return null;
+	}
+
+	getBuilding(id: number | undefined): ClientBuilding | null {
+		if (id == undefined) return null;
+		for (let building of this.buildings) if (building.id === id) return building;
+		console.error(`BUILDING NOT FOUND: ${id}`);
+		return null;
 	}
 }

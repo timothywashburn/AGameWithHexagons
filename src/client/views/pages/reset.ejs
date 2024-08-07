@@ -17,94 +17,93 @@
 
 </head>
 <body>
-    <%-include('../partials/nav')%>
+<%- include('../partials/nav') %>
 
 
+<div class="reset-wrapper">
+    <div class="reset-container">
+        <h2>Reset Password</h2>
+        <form id="resetForm">
+            <div class="input-group">
+                <label for="username">New Password</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <div class="input-group">
+                <label for="password">Confirm Password</label>
+                <input type="password" id="confirm-password" name="confirm-password" required>
+            </div>
 
-    <div class="reset-wrapper">
-        <div class="reset-container">
-            <h2>Reset Password</h2>
-            <form id="resetForm">
-                <div class="input-group">
-                    <label for="username">New Password</label>
-                    <input type="password" id="password" name="password" required>
-                </div>
-                <div class="input-group">
-                    <label for="password">Confirm Password</label>
-                    <input type="password" id="confirm-password" name="confirm-password" required>
-                </div>
+            <p id="resetError"></p>
 
-                <p id="resetError"></p>
-
-                <button type="submit" class="reset-btn danger" id="resetBtn">Reset</button>
-            </form>
-        </div>
+            <button type="submit" class="reset-btn danger" id="resetBtn">Reset</button>
+        </form>
     </div>
+</div>
 
-    <style>
-        body {
-            background-color: #f0f0f0;
-            margin: 0;
-        }
+<style>
+    body {
+        background-color: #f0f0f0;
+        margin: 0;
+    }
 
-        .reset-wrapper {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 60vh;
-        }
+    .reset-wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 60vh;
+    }
 
-        .reset-container {
-            font-family: Arial, sans-serif;
-            background-color: white;
-            padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);
-            width: 400px;
-        }
+    .reset-container {
+        font-family: Arial, sans-serif;
+        background-color: white;
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1);
+        width: 400px;
+    }
 
-        .input-group {
-            margin-bottom: 10px;
-        }
+    .input-group {
+        margin-bottom: 10px;
+    }
 
-        .input-group label {
-            display: block;
-            margin-bottom: 5px;
-        }
+    .input-group label {
+        display: block;
+        margin-bottom: 5px;
+    }
 
-        .input-group input {
-            width: 100%;
-            padding: 10px;
-            border-radius: 5px;
-            border: 1px solid #cccccc;
-        }
+    .input-group input {
+        width: 100%;
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid #cccccc;
+    }
 
-        .reset-btn {
-            width: 100%;
-            padding: 10px;
-            border: none;
-            border-radius: 5px;
-            background-color: #2d7df6;
-            color: white;
-            cursor: pointer;
-        }
+    .reset-btn {
+        width: 100%;
+        padding: 10px;
+        border: none;
+        border-radius: 5px;
+        background-color: #2d7df6;
+        color: white;
+        cursor: pointer;
+    }
 
-        .register {
-            margin-top: 20px;
-            text-align: center;
-        }
+    .register {
+        margin-top: 20px;
+        text-align: center;
+    }
 
-        .reset-btn:active {
-            background-color: #1a5ad6;
-        }
+    .reset-btn:active {
+        background-color: #1a5ad6;
+    }
 
-        #resetError {
-            height: 20px;
-            color: red;
-            visibility: hidden;
-        }
-    </style>
+    #resetError {
+        height: 20px;
+        color: red;
+        visibility: hidden;
+    }
+</style>
 
-    <script src="reset.js"></script>
+<script src="reset.js"></script>
 </body>
 </html>

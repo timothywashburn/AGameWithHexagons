@@ -1,104 +1,105 @@
-import {Server} from "http";
-import ServerClient from "./server-client";
-import ServerTile from "./server-tile";
-import ServerTroop from "./server-troop";
-import GameInitData from '../../shared/interfaces/init-data';
-import GameClientManager from '../controllers/game-client-manager';
-import {AnnouncementType} from '../../shared/enums';
+import { Server } from 'http';
+import ServerClient from './server-client';
+import ServerTile from './server-tile';
+import ServerTroop from './server-troop';
+import { GameSnapshot } from '../../shared/interfaces/snapshot';
+import ConnectionManager from '../controllers/connection-manager';
+import ServerBuilding from './server-building';
+import PacketClientGameSnapshot from '../../shared/packets/client/packet-client-game-snapshot';
+import ServerPlayer from './server-player';
 
 let nextID = 0;
 
 export default class ServerGame {
-    public static gameList: ServerGame[] = [];
+	public static gameList: ServerGame[] = [];
 
-    public id: number;
+	public id: number;
+	public clientManager: ConnectionManager;
+	public readonly startTime: number = Date.now();
 
-    public clientManager: GameClientManager;
+	public players: ServerPlayer[] = [];
+	public tiles: ServerTile[] = [];
+	public troops: ServerTroop[] = [];
+	public buildings: ServerBuilding[] = [];
 
-    public readonly startTime: number = Date.now();
+	public readonly boardSize: number;
 
-    public tiles: ServerTile[] = [];
-    public troops: ServerTroop[] = [];
+	constructor(httpServer: Server, boardSize: number) {
+		this.id = nextID++;
 
-    public readonly boardSize: number;
+		this.clientManager = new ConnectionManager(this);
 
-    constructor(httpServer: Server, boardSize: number) {
-        this.id = nextID++;
+		this.boardSize = boardSize;
 
-        this.clientManager = new GameClientManager(this);
+		this.generateTiles();
 
-        this.boardSize = boardSize;
+		ServerGame.gameList.push(this);
+	}
 
-        this.generateTiles();
+	getName() {
+		return `Game ${ServerGame.gameList.indexOf(this) + 1}`;
+	}
 
-        ServerGame.gameList.push(this);
-    }
+	isJoinable() {
+		return this.clientManager.clients.length < this.clientManager.maxPlayers;
+	}
 
-    getName() {
-        return `Game ${ServerGame.gameList.indexOf(this) + 1}`;
-    }
+	generateTiles() {
+		for (let row = -this.boardSize + 1; row < this.boardSize; row++) {
+			for (
+				let column = Math.abs(row) - (this.boardSize - 1) * 2;
+				column <= -Math.abs(row) + (this.boardSize - 1) * 2;
+				column += 2
+			) {
+				new ServerTile(this, column, row);
+			}
+		}
 
-    isJoinable() {
-        return this.clientManager.clients.length < this.clientManager.maxPlayers;
-    }
+		// let testTile = new ServerTile(0, 0);
+		// this.troops.push(new ServerTroop(11, testTile));
+		// this.tiles.push(testTile);
+		//
+		// this.tiles.push(new ServerTile(-4, 0));
+		// this.tiles.push(new ServerTile(-6, 0));
+		// this.tiles.push(new ServerTile(-5, -1));
+		// this.tiles.push(new ServerTile(-5, 0)); //This tile should Error
+	}
 
-    generateTiles() {
-        // for (let row = -this.boardSize + 1; row < this.boardSize; row++) {
-        // 	for (let column = Math.abs(row) - (this.boardSize - 1) * 2; column <= -Math.abs(row) + (this.boardSize - 1) * 2; column += 2) {
-        //         let tile = new ServerTile(column, row);
-        //         if (!this.tileIsValid(tile)) {
-        //             continue;
-        //         }
-        // 		this.tiles.push(tile);
-        // 	}
-        // }
+	getFullGameSnapshot(client: ServerClient): GameSnapshot {
+		return {
+			isAuthenticated: client.isAuthenticated,
+			players: this.players.map((player) => player.getPlayerSnapshot(client)),
+			tiles: this.tiles.map((tile) => tile.getTileSnapshot(client)),
+			troops: this.troops.map((troop) => troop.getTroopSnapshot(client)),
+			buildings: this.buildings.map((building) => building.getBuildingSnapshot(client)),
+		};
+	}
 
-        let testTile = new ServerTile(0, 0);
-        this.troops.push(new ServerTroop(11, testTile));
-        this.tiles.push(testTile);
+	sendServerSnapshot() {
+		this.clientManager.clients.forEach((client) => this.sendSnapshot(client));
+	}
 
-        this.tiles.push(new ServerTile(-4, 0));
-        this.tiles.push(new ServerTile(-6, 0));
-        this.tiles.push(new ServerTile(-5, -1));
-        // this.tiles.push(new ServerTile(-5, 0)); //This tile should Error
-    }
+	sendSnapshot(client: ServerClient) {
+		let packet = new PacketClientGameSnapshot(this.getFullGameSnapshot(client));
+		packet.addClient(client);
+		packet.sendToClients();
+	}
 
-    getClientInitData(client: ServerClient): GameInitData {
-        return {
-            isAuthenticated: client.isAuthenticated,
-            tiles: this.tiles.map(tile => tile.getClientTileData(client)),
-            troops: this.troops.map(troop => troop.getClientTroopData(client))
-        }
-    }
+	getPlayer(id: number): ServerPlayer | null {
+		for (let player of this.players) if (player.id === id) return player;
+		console.error(`PLAYER NOT FOUND: ${id}`);
+		return null;
+	}
 
-    getSnapshotData(client: ServerClient) {
-        // return {
-        //     tiles: this.tiles
-        // }
-    }
+	getTile(id: number): ServerTile | null {
+		for (let game of this.tiles) if (game.id === id) return game;
+		console.error(`TILE NOT FOUND: ${id}`);
+		return null;
+	}
 
-    sendSnapshot(client: ServerClient) {
-        // let packet = new PacketClientGameSnapshot(this.getClientInitData(client));
-        // packet.addClient(client);
-        // packet.send();
-    }
-
-    tileIsValid(tile: ServerTile) {
-        return (tile.x + tile.y) % 2 === 0;
-    }
-
-    addPlayer() {
-    }
-
-    removePlayer(client: ServerClient) {
-        this.clientManager.clients = this.clientManager.clients.filter((testClient: ServerClient) => testClient !== client);
-
-        this.clientManager.sendAlert(client, AnnouncementType.GAME_LEAVE);
-        this.clientManager.updatePlayerList();
-    }
-
-    static getGame(id: number): ServerGame {
-        for (let game of ServerGame.gameList) if (game.id === id) return game;
-        throw new Error("Game not found");
-    }
+	static getGame(id: number): ServerGame | null {
+		for (let game of ServerGame.gameList) if (game.id === id) return game;
+		console.error(`GAME NOT FOUND: ${id}`);
+		return null;
+	}
 }

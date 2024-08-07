@@ -1,35 +1,34 @@
 import '../objects/client-game';
 import '../controllers/connection';
-import '../misc/ui'
+import '../misc/ui';
 import '../../../shared/packets/base/packet';
-import { ToastMessage } from '../../../shared/enums';
-import { showToast } from "../controllers/toast";
-import { Modal } from "bootstrap";
+import { ToastMessage } from '../../../shared/enums/misc-enums';
+import { showToast } from '../controllers/toast';
+import { Modal } from 'bootstrap';
 
-(window as any).gameData = {}
+(window as any).gameData = {};
 
-window.onload = function() {
+window.onload = function () {
 	if (!localStorage.token) return;
 
 	fetch('/api/account', {
 		method: 'GET',
 		headers: {
-			'Authorization': 'Bearer ' + localStorage.token
-		}
+			Authorization: 'Bearer ' + localStorage.token,
+		},
 	})
-		.then(response => response.json())
-		.then(data => {
+		.then((response) => response.json())
+		.then((data) => {
 			if (!data.success) return;
 
 			if (data.info.email === null) {
 				showToast(ToastMessage.NO_EMAIL_WARN.message, ToastMessage.NO_EMAIL_WARN.color);
-			} else if(data.info.email_verified.data[0] === 0) {
+			} else if (data.info.email_verified.data[0] === 0) {
 				showToast(ToastMessage.UNVERIFIED_EMAIL_WARN.message, ToastMessage.UNVERIFIED_EMAIL_WARN.color);
-
 			}
 		})
-		.catch(error => console.error(error));
-}
+		.catch((error) => console.error(error));
+};
 
 export interface DevConfig {
 	autoJoin: boolean;
@@ -41,12 +40,12 @@ export let devConfig: DevConfig;
 
 function updateGames() {
 	let headers = new Headers();
-	headers.append("Authorization", "Bearer " + localStorage.token);
+	headers.append('Authorization', 'Bearer ' + localStorage.token);
 
 	let requestOptions: RequestInit = {
 		method: 'GET',
 		headers: headers as HeadersInit,
-		redirect: 'follow'
+		redirect: 'follow',
 	};
 
 	fetch('/api/gamedata', requestOptions)
@@ -78,12 +77,12 @@ function updateGames() {
 
 export function joinGame(gameID: number, socketID: number) {
 	let headers = new Headers();
-	headers.append("Authorization", "Bearer " + localStorage.token);
+	headers.append('Authorization', 'Bearer ' + localStorage.token);
 
 	let requestOptions: RequestInit = {
 		method: 'GET',
 		headers: headers as HeadersInit,
-		redirect: 'follow'
+		redirect: 'follow',
 	};
 
 	let url = '/api/join';
@@ -105,7 +104,7 @@ export function joinGame(gameID: number, socketID: number) {
 
 updateGames();
 
-document.getElementById('guestBtn')!.addEventListener('click', function() {
+document.getElementById('guestBtn')!.addEventListener('click', function () {
 	let modal = document.getElementById('promptModal')!;
 	modal.classList.remove('show');
 	modal.style.display = 'none';
@@ -116,10 +115,10 @@ document.getElementById('guestBtn')!.addEventListener('click', function() {
 	}
 });
 
-document.getElementById('registerBtn')!.addEventListener('click', function() {
+document.getElementById('registerBtn')!.addEventListener('click', function () {
 	window.location.href = '/register';
 });
 
-document.getElementById('loginBtn')!.addEventListener('click', function() {
+document.getElementById('loginBtn')!.addEventListener('click', function () {
 	window.location.href = '/login';
 });

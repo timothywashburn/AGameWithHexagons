@@ -1,25 +1,35 @@
-import ServerTile from './server-tile';
 import ServerClient from './server-client';
-import {TroopInitData} from '../../shared/interfaces/init-data';
+import { TroopSnapshot } from '../../shared/interfaces/snapshot';
+import ServerGame from './server-game';
+import { TroopType } from '../../shared/enums/unit-enums';
 
 let nextID = 0;
 
-export default class ServerTroop {
+export default abstract class ServerTroop {
 	public id: number;
-	public ownerID: number;
-	public parentTile: ServerTile;
+	public type: TroopType;
+	public game: ServerGame;
+	public owner: ServerClient;
 
-	constructor(ownerID: number, parentTile: ServerTile) {
+	protected constructor(type: TroopType, initData: ServerTroopInitData) {
 		this.id = nextID++;
-		this.ownerID = ownerID;
-		this.parentTile = parentTile;
+		this.type = type;
+		this.game = initData.game;
+		this.owner = initData.owner;
+
+		this.game.troops.push(this);
 	}
 
-	getClientTroopData(client: ServerClient): TroopInitData {
+	getTroopSnapshot(client: ServerClient): TroopSnapshot {
 		return {
 			id: this.id,
-			ownerID: this.ownerID,
-			parentTileID: this.parentTile.id
-		}
+			type: this.type,
+			ownerID: this.owner.getID(),
+		};
 	}
+}
+
+export interface ServerTroopInitData {
+	game: ServerGame;
+	owner: ServerClient;
 }

@@ -1,9 +1,13 @@
-import {TileInitData} from '../../../shared/interfaces/init-data';
+import { TileSnapshot } from '../../../shared/interfaces/snapshot';
+import ClientTroop from './client-troop';
+import ClientBuilding from './client-building';
+import { getGame } from './client-game';
+import ClientElement from './client-element';
 
 const canvas = document.getElementById('gameCanvas') as HTMLCanvasElement;
 const ctx = canvas.getContext('2d')!;
 
-let apothem = 30
+let apothem = 30;
 let radius = apothem / Math.cos(Math.PI / 6);
 
 const hexagon = new Image();
@@ -13,57 +17,49 @@ hexagon.src = 'images/hexagon.svg';
 hexagonSelected.src = 'images/hexagon-selected.svg';
 hexagonHover.src = 'images/hexagon-hover.svg';
 
-export default class ClientTile {
-
-	public id: number;
-	public coordinateX: number;
-	public coordinateY: number;
+export default class ClientTile extends ClientElement {
+	public x: number;
+	public y: number;
 
 	public color: string;
-	// public occupant: Troop;
-	// public terrainType: string;
-	// public resourceType: string;
-	// public isObscured: boolean;
+	public troop: ClientTroop | null = null;
+	public building: ClientBuilding | null = null;
 
-	public isSelected: boolean;
-	public isHovered: boolean;
+	public isHovered: boolean = false;
 
 	public canvasX: number | undefined;
 	public canvasY: number | undefined;
 	public path: Path2D | undefined;
 
-	constructor(tileData: TileInitData) {
-		this.id = tileData.id;
-		this.coordinateX = tileData.x;
-		this.coordinateY = tileData.y;
+	constructor(tileSnapshot: TileSnapshot) {
+		super(tileSnapshot.id);
+		this.x = tileSnapshot.x;
+		this.y = tileSnapshot.y;
 
-		if((this.coordinateX + this.coordinateY) % 2 !== 0) {
-			throw new Error(`Tile at ${this.coordinateX}, ${this.coordinateY} is not valid`);
+		if ((this.x + this.y) % 2 !== 0) {
+			throw new Error(`Tile at ${this.x}, ${this.y} is not valid`);
 		}
 
-		this.color = tileData.color;
-		// this.occupant = occupant;
-		// this.terrainType = terrainType;
-		// this.resourceType = resourceType;
-		// this.isObscured = isObscured;
+		this.updateTile(tileSnapshot);
 
-		this.isSelected = false;
-		this.isHovered = false;
+		getGame().tiles.push(this);
 	}
 
-	updateTile(find: any) {
-		//
+	updateTile(tileSnapshot: TileSnapshot) {
+		this.color = tileSnapshot.color;
+		this.troop = getGame().getTroop(tileSnapshot.troopID);
+		this.building = getGame().getBuilding(tileSnapshot.buildingID);
 	}
 
 	renderTile() {
-		this.canvasX = canvas.width / 2 + this.coordinateX * apothem;
-		this.canvasY = canvas.height / 2 - this.coordinateY * radius * (1 + Math.sin(Math.PI / 6));
+		this.canvasX = canvas.width / 2 + this.x * apothem;
+		this.canvasY = canvas.height / 2 - this.y * radius * (1 + Math.sin(Math.PI / 6));
 
 		this.path = new Path2D();
 		for (let i = 0; i < 6; i++) {
-			let pointX = this.canvasX + radius * Math.cos(Math.PI / 3 * i + Math.PI / 6);
-			let pointY = this.canvasY + radius * Math.sin(Math.PI / 3 * i + Math.PI / 6);
-			if(i === 0) {
+			let pointX = this.canvasX + radius * Math.cos((Math.PI / 3) * i + Math.PI / 6);
+			let pointY = this.canvasY + radius * Math.sin((Math.PI / 3) * i + Math.PI / 6);
+			if (i === 0) {
 				this.path.moveTo(pointX, pointY);
 			} else this.path.lineTo(pointX, pointY);
 		}
@@ -82,7 +78,7 @@ export default class ClientTile {
 	}
 
 	getImage() {
-		if (this.isSelected) return hexagonSelected;
+		if (getGame().selectedTile == this) return hexagonSelected;
 		if (this.isHovered) return hexagonHover;
 		return hexagon;
 	}

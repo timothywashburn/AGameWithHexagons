@@ -1,72 +1,73 @@
 <nav class="navbar navbar-expand-lg bg-body-tertiary">
-	<div class="container-fluid">
-		<a class="navbar-brand" href="/">Home</a>
-		<div class="collapse navbar-collapse" id="navbarSupportedContent">
-			<ul class="navbar-nav me-auto mb-2 mb-lg-0">
-				<li class="nav-item">
-					<a class="nav-link<%= typeof current !== 'undefined' && current === 'play' ? ' active disabled' : '' %>" aria-current="page" href="/play">Play</a>
-				</li>
-			</ul>
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/">Home</a>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link<%= typeof current !== 'undefined' && current === 'play' ? ' active disabled' : ''; %>"
+                       aria-current="page" href="/play">Play</a>
+                </li>
+            </ul>
 
-			<ul class="navbar-nav ml-auto">
-				<li class="nav-item">
-					<a class="nav-link logout-link" href="/account">
-						<img class="navbar-icon" src="/images/account.svg" alt="Account">
-					</a>
-				</li>
-			</ul>
-		</div>
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link logout-link" href="/account">
+                        <img class="navbar-icon" src="/images/account.svg" alt="Account">
+                    </a>
+                </li>
+            </ul>
+        </div>
 
-		<div id="toast" class="toast">This is a toast message.</div>
-	</div>
+        <div id="toast" class="toast">This is a toast message.</div>
+    </div>
 </nav>
 
 <style>
-	@keyframes slideInDown {
-		0% {
-			top: -100px;
-		}
-		100% {
-			top: 0;
-		}
-	}
+    @keyframes slideInDown {
+        0% {
+            top: -100px;
+        }
+        100% {
+            top: 0;
+        }
+    }
 
-	@keyframes slideOutUp {
-		100% {
-			top: -100px;
-		}
-	}
+    @keyframes slideOutUp {
+        100% {
+            top: -100px;
+        }
+    }
 
-	.navbar-icon {
-		max-height: 25px;
-		width: auto;
-	}
+    .navbar-icon {
+        max-height: 25px;
+        width: auto;
+    }
 
-	.toast {
-		visibility: hidden;
-		min-width: 100%;
-		margin-left: 0;
-		color: #fff;
-		text-align: center;
-		border-radius: 2px;
-		padding: 10px;
-		position: fixed;
-		z-index: 1;
-		left: 0;
-		font-size: 20px;
-		background-color: #333;
-		opacity: 0;
-		transition: opacity 0.5s, visibility 0.5s;
-		top: -100px;
-		animation: slideOutUp 0.5s;
-		height: 60px;
-	}
+    .toast {
+        visibility: hidden;
+        min-width: 100%;
+        margin-left: 0;
+        color: #fff;
+        text-align: center;
+        border-radius: 2px;
+        padding: 10px;
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        font-size: 20px;
+        background-color: #333;
+        opacity: 0;
+        transition: opacity 0.5s, visibility 0.5s;
+        top: -100px;
+        animation: slideOutUp 0.5s;
+        height: 60px;
+    }
 
-	.toast.show {
-		visibility: visible;
-		opacity: 1;
-		top: 0;
-		animation: slideInDown 0.5s forwards;
-	}
+    .toast.show {
+        visibility: visible;
+        opacity: 1;
+        top: 0;
+        animation: slideInDown 0.5s forwards;
+    }
 </style>
 

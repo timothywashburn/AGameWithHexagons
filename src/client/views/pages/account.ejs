@@ -17,7 +17,7 @@
 </head>
 <body>
 
-<%-include('../partials/nav')%>
+<%- include('../partials/nav') %>
 <div class="modal" id="promptModal" tabindex="-1" aria-labelledby="promptModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -31,7 +31,8 @@
                         <input type="text" class="form-control" id="placeholder" required>
                         <label for="placeholder-confirm">Confirm Placeholder</label>
                         <input type="text" class="form-control" id="placeholder-confirm" required>
-                        <p id="error-message" style="color: red; height: 1em;"></p> <!-- Reserve space for the error message -->
+                        <p id="error-message" style="color: red; height: 1em;"></p>
+                        <!-- Reserve space for the error message -->
                         <div class="d-flex justify-content-between" id="buttonContainer">
                             <button type="submit" class="btn btn-success" id="confirmBtn">Confirm</button>
                             <button type="button" class="btn btn-danger" id="cancelBtn">Cancel</button>
@@ -78,7 +79,8 @@
             <div class="input-group mb-3">
                 <input type="password" class="form-control" id="old-password" required>
                 <div class="input-group-append">
-                    <button class="btn btn-outline-secondary" type="submit" id="change-password">Change Password</button>
+                    <button class="btn btn-outline-secondary" type="submit" id="change-password">Change Password
+                    </button>
                 </div>
             </div>
         </div>
@@ -104,7 +106,6 @@
 </div>
 
 
-
 <style>
     body {
         background-color: #f0f0f0;
@@ -115,7 +116,7 @@
         width: 600px;
         padding: 20px;
         border: 1px solid #ccc;
-        box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);
+        box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1);
         background-color: white;
         border-radius: 5px;
         margin: 60px auto 0;

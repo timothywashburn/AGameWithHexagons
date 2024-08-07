@@ -1,9 +1,4 @@
 {
-	"watch": [
-		"src/server",
-		"src/shared",
-		"config.json",
-		"tsconfig.json"
-	],
+	"watch": ["src/server", "src/shared", "config.json", "tsconfig.json"],
 	"exec": "npx ts-node"
 }

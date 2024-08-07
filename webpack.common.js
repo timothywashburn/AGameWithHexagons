@@ -19,8 +19,8 @@ export default {
 			{
 				test: /\.ts$/,
 				exclude: /node_modules/,
-				use: 'ts-loader'
-			}
+				use: 'ts-loader',
+			},
 			// {
 			// 	test: /\.ts$/,
 			// 	exclude: /node_modules/,

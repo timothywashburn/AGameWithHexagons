@@ -1,12 +1,11 @@
-import {Socket} from 'socket.io';
 import ServerClient from '../../../server/objects/server-client';
-import Packet, {PacketType} from './packet';
+import Packet, { PacketDestination } from './packet';
 
-export default class ClientPacket extends Packet {
+export default abstract class ClientPacket extends Packet {
 	public clients: ServerClient[] = [];
 
-	constructor(id: number) {
-		super(id, PacketType.CLIENT_BOUND);
+	protected constructor(id: number) {
+		super(id, PacketDestination.CLIENT_BOUND);
 	}
 
 	addClient(client: ServerClient) {
@@ -15,6 +14,7 @@ export default class ClientPacket extends Packet {
 
 	sendToClients() {
 		this.clients.forEach((client) => {
+			if (!client.isConnected) return;
 			let packetData = { ...this };
 			packetData.clients = [];
 			client.socket.emit('packet', packetData);

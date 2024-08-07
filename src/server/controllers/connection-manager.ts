@@ -2,14 +2,14 @@ import PacketClientGameInit from '../../shared/packets/client/packet-client-game
 import PacketClientPlayerListInfo from '../../shared/packets/client/packet-client-player-list-info';
 import PacketClientAnnouncement from '../../shared/packets/client/packet-client-announcement';
 import ServerClient from '../objects/server-client';
-import {AnnouncementTypeData, TeamColor} from '../../shared/enums';
+import { AnnouncementType, AnnouncementTypeData } from '../../shared/enums/misc-enums';
 import ServerGame from '../objects/server-game';
-import { AnnouncementType } from '../../shared/enums';
+import ServerPlayer from '../objects/server-player';
 
-export default class GameClientManager {
-	public clients: ServerClient[] = [];
-	public teamColors: typeof TeamColor[] = []
+export default class ConnectionManager {
 	public readonly game: ServerGame;
+
+	public clients: ServerClient[] = [];
 	public maxPlayers: number;
 
 	constructor(game: ServerGame) {
@@ -18,18 +18,34 @@ export default class GameClientManager {
 		this.maxPlayers = 8;
 	}
 
-	async addClientToGame(client: ServerClient) {
+	async connectClient(client: ServerClient) {
 		this.clients.push(client);
-		client.game = this.game;
+		client.setGame(this.game);
 
-		let packet = new PacketClientGameInit(this.game.getClientInitData(client));
+		let foundPlayer = false;
+		for (let player of this.game.players) {
+			if (player.id != client.getID()) continue;
+			foundPlayer = true;
+			player.client = client;
+			break;
+		}
+		if (!foundPlayer) {
+			new ServerPlayer(this.game, client);
+		}
+
+		let packet = new PacketClientGameInit(this.game.getFullGameSnapshot(client));
 		packet.addClient(client);
 		await packet.sendToClients();
 
-		this.game.sendSnapshot(client);
-
 		this.updatePlayerList();
 		this.sendAlert(client, AnnouncementType.GAME_JOIN);
+	}
+
+	disconnectClient(client: ServerClient) {
+		this.clients = this.clients.filter((testClient: ServerClient) => testClient !== client);
+
+		this.sendAlert(client, AnnouncementType.GAME_LEAVE);
+		this.updatePlayerList();
 	}
 
 	updatePlayerList() {
