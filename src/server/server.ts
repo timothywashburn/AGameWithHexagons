@@ -80,19 +80,10 @@ app.get('/', (req: Request, res: Response) => {
 	res.render('pages/index');
 });
 
-app.get('/api/:endpoint', (req: Request, res: Response) => {
+app.get('/api/:endpoint', async (req: Request, res: Response) => {
 	let endpoint = req.params.endpoint.toLowerCase();
 
-	handleEndpoint(req, res);
-
-	// if (typeof (endpoints as any)[endpoint] === 'function') {
-	// 	(endpoints as any)[endpoint](req, res);
-	// } else {
-	// 	res.status(404).json({
-	// 		success: false,
-	// 		error: 'Endpoint not found',
-	// 	});
-	// }
+	await handleEndpoint(req, res);
 });
 
 app.use('/images', express.static(path.join(__dirname, '../client/images')));
