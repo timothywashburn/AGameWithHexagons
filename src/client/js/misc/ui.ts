@@ -62,7 +62,7 @@ document.getElementById('spawn-building1')!.addEventListener('click', function (
 	let packet = new PacketServerSpawnUnit('building', BuildingType.TOWER, getGame().selectedTile!.id);
 	packet.sendToServer(clientSocket).then((response) => {
 		if (!response.success) return;
-		toggleSidebar('troop');
+		toggleSidebar('building');
 	});
 });
 
@@ -72,6 +72,7 @@ export function toggleSidebar(sidebar: 'tile' | 'troop' | 'building') {
 	document.getElementById('sidebar-building')!.style.display = 'none';
 
 	document.getElementById(`sidebar-${sidebar}`)!.style.display = 'block';
+	showSidebarToggles(getGame().selectedTile!);
 
 	if (sidebar === 'tile') setSidebarInfoTile();
 	else if (sidebar === 'troop') setSidebarInfoTroop();
