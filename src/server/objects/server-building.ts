@@ -1,19 +1,21 @@
 import ServerGame from './server-game';
 import ServerClient from './server-client';
-import ServerTile from './server-tile';
-import { BuildingSnapshot, TroopSnapshot } from '../../shared/interfaces/snapshot';
+import { BuildingSnapshot } from '../../shared/interfaces/snapshot';
+import { BuildingType, TroopType } from '../../shared/enums/unit-enums';
 
 let nextID = 0;
 
 export default class ServerBuilding {
 	public id: number;
+	public type: BuildingType;
 	public game: ServerGame;
 	public owner: ServerClient;
 
-	constructor(game: ServerGame, owner: ServerClient) {
+	constructor(type: BuildingType, initData: ServerBuildingInitData) {
 		this.id = nextID++;
-		this.game = game;
-		this.owner = owner;
+		this.type = type;
+		this.game = initData.game;
+		this.owner = initData.owner;
 
 		this.game.buildings.push(this);
 	}
@@ -21,7 +23,13 @@ export default class ServerBuilding {
 	getBuildingSnapshot(client: ServerClient): BuildingSnapshot {
 		return {
 			id: this.id,
+			type: this.type,
 			ownerID: this.owner.getID(),
 		};
 	}
+}
+
+export interface ServerBuildingInitData {
+	game: ServerGame;
+	owner: ServerClient;
 }

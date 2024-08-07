@@ -3,8 +3,8 @@ import ServerClient from './server-client';
 import { TroopSnapshot } from '../../shared/interfaces/snapshot';
 import ServerGame from './server-game';
 import { TroopType } from '../../shared/enums/unit-enums';
-import ServerMeleeTroop from './units/server-melee-troop';
-import ServerRangedTroop from './units/server-ranged-troop';
+import ServerMeleeTroop from './units/troops/server-melee-troop';
+import ServerRangedTroop from './units/troops/server-ranged-troop';
 
 let nextID = 0;
 

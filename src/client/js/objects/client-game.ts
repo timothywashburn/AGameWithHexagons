@@ -1,22 +1,22 @@
 import { prepareFrame } from '../controllers/render';
-import ClientTile from './client-tile'
+import ClientTile from './client-tile';
 import ClientTroop from './client-troop';
 import {
 	BuildingSnapshot,
 	ElementSnapshot,
 	PlayerSnapshot,
 	TileSnapshot,
-	TroopSnapshot
+	TroopSnapshot,
 } from '../../../shared/interfaces/snapshot';
-import {GameSnapshot} from '../../../shared/interfaces/snapshot';
+import { GameSnapshot } from '../../../shared/interfaces/snapshot';
 import ClientPlayer from './client-player';
 import ClientBuilding from './client-building';
-import {init} from '../../../server/controllers/authentication';
+import { init } from '../../../server/controllers/authentication';
 import ClientElement from './client-element';
-import {keyword} from 'chalk';
-import {getTroopType} from '../../../shared/enums/unit-enums';
-import ClientMeleeTroop from './units/client-melee-troop';
-import {getClientTroopConstructor} from '../../client-register';
+import { keyword } from 'chalk';
+import { getTroopType } from '../../../shared/enums/unit-enums';
+import ClientMeleeTroop from './units/troops/client-melee-troop';
+import { getClientBuildingConstructor, getClientTroopConstructor } from '../../client-register';
 
 let game: ClientGame;
 
@@ -55,11 +55,11 @@ export class ClientGame {
 			this.renderTimes.splice(0, this.renderTimes.length - frameRate * 10);
 			let MSPT = +(this.renderTimes.reduce((a, b) => a + b) / this.renderTimes.length).toFixed(2);
 			let maxLoad = 1000 / frameRate;
-			let currentLoad = MSPT / maxLoad * 100;
+			let currentLoad = (MSPT / maxLoad) * 100;
 			console.log(`${MSPT} ms (${currentLoad.toFixed(1)}% load) per tick (${frameRate} fps)`);
 		}, 5000);
 
-		console.log("debugging enabled");
+		console.log('debugging enabled');
 	}
 
 	initGame(gameSnapshot: GameSnapshot) {
@@ -68,12 +68,12 @@ export class ClientGame {
 
 	updateGame(snapshot: GameSnapshot) {
 		this.resources = {
-			"energy": 0,
-			"goo": 0,
-		}
+			energy: 0,
+			goo: 0,
+		};
 
-		snapshot.players.forEach(snapshot => {
-			let player = this.players.find(player => player.id === snapshot.id);
+		snapshot.players.forEach((snapshot: PlayerSnapshot) => {
+			let player = this.players.find((player) => player.id === snapshot.id);
 			if (player) {
 				player.updatePlayer(snapshot);
 			} else {
@@ -81,8 +81,8 @@ export class ClientGame {
 			}
 		});
 
-		snapshot.troops.forEach(snapshot => {
-			let troop = this.troops.find(troop => troop.id === snapshot.id);
+		snapshot.troops.forEach((snapshot: TroopSnapshot) => {
+			let troop = this.troops.find((troop) => troop.id === snapshot.id);
 			if (troop) {
 				troop.updateTroop(snapshot);
 			} else {
@@ -91,17 +91,18 @@ export class ClientGame {
 			}
 		});
 
-		snapshot.buildings.forEach(snapshot => {
-			let building = this.buildings.find(building => building.id === snapshot.id);
+		snapshot.buildings.forEach((snapshot: BuildingSnapshot) => {
+			let building = this.buildings.find((building) => building.id === snapshot.id);
 			if (building) {
 				building.updateBuilding(snapshot);
 			} else {
-				new ClientBuilding(snapshot);
+				let BuildingConstructor = getClientBuildingConstructor(snapshot.type);
+				new BuildingConstructor(snapshot);
 			}
 		});
 
-		snapshot.tiles.forEach(snapshot => {
-			let tile = this.tiles.find(tile => tile.id === snapshot.id);
+		snapshot.tiles.forEach((snapshot: TileSnapshot) => {
+			let tile = this.tiles.find((tile) => tile.id === snapshot.id);
 			if (tile) {
 				tile.updateTile(snapshot);
 			} else {
@@ -127,8 +128,9 @@ export class ClientGame {
 			prepareFrame();
 
 			// Render tiles
-			this.tiles.forEach(tile => tile.renderTile());
-			this.troops.forEach(troop => troop.renderTroop());
+			this.tiles.forEach((tile) => tile.renderTile());
+			this.troops.forEach((troop) => troop.renderTroop());
+			this.buildings.forEach((building) => building.renderBuilding());
 
 			const finalRenderTime = window.performance.now() - renderStartTime;
 			this.renderTimes.push(finalRenderTime);

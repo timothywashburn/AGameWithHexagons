@@ -3,6 +3,7 @@ import { clientSocket } from '../controllers/connection';
 import PacketServerSpawnUnit from '../../../shared/packets/server/packet-server-spawn-unit';
 import { getGame } from '../objects/client-game';
 import ClientTile from '../objects/client-tile';
+import { BuildingType, TroopType } from '../../../shared/enums/unit-enums';
 
 document.getElementById('chatSend')!.addEventListener('click', function () {
 	const chatInput = document.getElementById('chatInput') as HTMLInputElement;
@@ -50,7 +51,15 @@ document.getElementById('toggle-building')!.addEventListener('click', function (
 });
 
 document.getElementById('spawn-troop1')!.addEventListener('click', function () {
-	let packet = new PacketServerSpawnUnit(0, getGame().selectedTile!.id);
+	let packet = new PacketServerSpawnUnit('troop', TroopType.MELEE, getGame().selectedTile!.id);
+	packet.sendToServer(clientSocket).then((response) => {
+		if (!response.success) return;
+		toggleSidebar('troop');
+	});
+});
+
+document.getElementById('spawn-building1')!.addEventListener('click', function () {
+	let packet = new PacketServerSpawnUnit('building', BuildingType.TOWER, getGame().selectedTile!.id);
 	packet.sendToServer(clientSocket).then((response) => {
 		if (!response.success) return;
 		toggleSidebar('troop');

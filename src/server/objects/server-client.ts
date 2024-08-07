@@ -8,13 +8,14 @@ import PacketServerSpawnUnit, {
 	PacketServerSpawnUnitReply,
 } from '../../shared/packets/server/packet-server-spawn-unit';
 import ServerTroop, { ServerTroopInitData } from './server-troop';
-import ServerMeleeTroop from './units/server-melee-troop';
-import { getTroopType, TroopType } from '../../shared/enums/unit-enums';
+import ServerMeleeTroop from './units/troops/server-melee-troop';
+import { BuildingType, getTroopType, TroopType } from '../../shared/enums/unit-enums';
 import { init } from '../controllers/authentication';
-import { getServerTroopConstructor } from '../server-register';
+import { getServerBuildingConstructor, getServerTroopConstructor } from '../server-register';
 import { getPackedSettings } from 'http2';
 import ResponsePacket from '../../shared/packets/base/response-packet';
 import { cli } from 'webpack';
+import { ServerBuildingInitData } from './server-building';
 
 let nextID = -1;
 
@@ -60,13 +61,24 @@ export default class ServerClient {
 			if (packet.packetTypeID === ServerPacketID.SPAWN.id) {
 				let packetServerSpawnUnit = packet as PacketServerSpawnUnit;
 				let parentTile = this.getGame().getTile(packetServerSpawnUnit.tileID)!;
-				let troopType = getTroopType(packetServerSpawnUnit.troopTypeID);
-				let initData: ServerTroopInitData = {
-					game: this.getGame(),
-					owner: this,
-				};
-				let TroopConstructor = getServerTroopConstructor(troopType);
-				parentTile.troop = new TroopConstructor(initData);
+
+				if (packetServerSpawnUnit.category === 'troop') {
+					let troopType = packetServerSpawnUnit.type as TroopType;
+					let initData: ServerTroopInitData = {
+						game: this.getGame(),
+						owner: this,
+					};
+					let TroopConstructor = getServerTroopConstructor(troopType);
+					parentTile.troop = new TroopConstructor(initData);
+				} else if (packetServerSpawnUnit.category === 'building') {
+					let buildingType = packetServerSpawnUnit.type as BuildingType;
+					let initData: ServerBuildingInitData = {
+						game: this.getGame(),
+						owner: this,
+					};
+					let BuildingConstructor = getServerBuildingConstructor(buildingType);
+					parentTile.building = new BuildingConstructor(initData);
+				}
 
 				this.getGame().sendServerSnapshot();
 

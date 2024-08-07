@@ -1,15 +1,9 @@
-import {getGame} from './client-game'
-import ClientTile from "./client-tile";
-import {TroopSnapshot} from '../../../shared/interfaces/snapshot';
+import { getGame } from './client-game';
+import ClientTile from './client-tile';
+import { TroopSnapshot } from '../../../shared/interfaces/snapshot';
 import ClientPlayer from './client-player';
-import {Client} from 'node-mailjet';
 import ClientElement from './client-element';
-import {getTroopType, TroopType} from '../../../shared/enums/unit-enums';
-import ClientMeleeTroop from './units/client-melee-troop';
-import ServerMeleeTroop from '../../../server/objects/units/server-melee-troop';
-import ClientRangedTroop from './units/client-ranged-troop';
-import ServerRangedTroop from '../../../server/objects/units/server-ranged-troop';
-import ServerTroop, {ServerTroopInitData} from '../../../server/objects/server-troop';
+import { TroopType } from '../../../shared/enums/unit-enums';
 
 const canvas = document.getElementById('gameCanvas') as HTMLCanvasElement;
 const ctx = canvas.getContext('2d')!;
@@ -41,12 +35,18 @@ export default abstract class ClientTroop extends ClientElement {
 
 	renderTroop() {
 		ctx.save();
-		ctx.drawImage(this.sprite, this.getParentTile().canvasX! - radius, this.getParentTile().canvasY! - radius, radius * 2, radius * 2);
+		ctx.drawImage(
+			this.sprite,
+			this.getParentTile().canvasX! - radius,
+			this.getParentTile().canvasY! - radius,
+			radius * 2,
+			radius * 2,
+		);
 		ctx.restore();
 	}
 
 	getParentTile(): ClientTile {
-		return getGame().tiles.find(tile => tile.troop === this)!;
+		return getGame().tiles.find((tile) => tile.troop === this)!;
 	}
 
 	async prepareSprite() {
