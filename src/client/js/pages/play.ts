@@ -67,6 +67,7 @@ function updateGames() {
 			});
 
 			let modalElement = document.getElementById('promptModal')!;
+
 			if (!data.authenticated) {
 				let modal = new Modal(modalElement);
 				modal.show();

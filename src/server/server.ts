@@ -7,13 +7,14 @@ import fs from 'fs';
 import chalk from 'chalk';
 import webpack from 'webpack';
 import webpackDevMiddleware from 'webpack-dev-middleware';
-import * as endpoints from './api/api-endpoints';
+import * as endpoints from './api/endpoint';
 import webpackConfig from '../../webpack.dev';
 import * as authentication from './controllers/authentication';
 import config from '../../config.json';
 import { isDev } from './misc/utils';
 import ServerClient from './objects/server-client';
 import ServerGame from './objects/server-game';
+import {handleEndpoint} from "./api/endpoint";
 
 const app = express();
 
@@ -79,17 +80,10 @@ app.get('/', (req: Request, res: Response) => {
 	res.render('pages/index');
 });
 
-app.get('/api/:endpoint', (req: Request, res: Response) => {
+app.get('/api/:endpoint', async (req: Request, res: Response) => {
 	let endpoint = req.params.endpoint.toLowerCase();
 
-	if (typeof (endpoints as any)[endpoint] === 'function') {
-		(endpoints as any)[endpoint](req, res);
-	} else {
-		res.status(404).json({
-			success: false,
-			error: 'Endpoint not found',
-		});
-	}
+	await handleEndpoint(req, res);
 });
 
 app.use('/images', express.static(path.join(__dirname, '../client/images')));

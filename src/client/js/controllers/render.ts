@@ -85,9 +85,6 @@ const stationaryClick = (event: MouseEvent) => {
 		if (game.selectedTile.troop != null) toggleSidebar('troop');
 		else if (game.selectedTile.building != null) toggleSidebar('building');
 		else toggleSidebar('tile');
-
-		// activate proper toggle buttons based on tile occupants
-		showSidebarToggles(game.selectedTile);
 	}
 };
 
