@@ -16,9 +16,9 @@ export default abstract class ClientTroop extends ClientElement {
 
 	public sprite = new Image();
 
-	protected constructor(type: TroopType, troopSnapshot: TroopSnapshot) {
+	protected constructor(troopSnapshot: TroopSnapshot) {
 		super(troopSnapshot.id);
-		this.type = type;
+		this.type = troopSnapshot.type;
 
 		this.updateTroop(troopSnapshot);
 

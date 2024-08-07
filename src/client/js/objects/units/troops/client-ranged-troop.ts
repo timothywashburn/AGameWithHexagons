@@ -4,7 +4,7 @@ import { TroopType } from '../../../../../shared/enums/unit-enums';
 
 export default class ClientRangedTroop extends ClientTroop {
 	constructor(troopSnapshot: TroopSnapshot) {
-		super(TroopType.RANGED, troopSnapshot);
+		super(troopSnapshot);
 	}
 
 	getImageName(): string {
