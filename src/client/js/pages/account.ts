@@ -18,7 +18,7 @@ window.onload = function() {
     })
         .then(response => response.json())
         .then(data => {
-            if (!data.success) window.location.href = '/login';
+            if (data.success !== undefined && !data.success) window.location.href = '/login';
 
             setupButtons();
 
@@ -119,37 +119,6 @@ function setupButtons() {
                 console.error(error);
             });
     });
-}
-
-document.getElementById('placeholderForm')!.addEventListener('submit', function(e) {
-    e.preventDefault();
-
-    let confirmButton = document.getElementById('confirmBtn')!;
-    confirmButton.addEventListener('click', function() {
-        let modalTitle = document.getElementById('promptModalLabel')!.textContent;
-
-        if (modalTitle === 'Change Email') {
-            let email = (document.getElementById('email') as HTMLInputElement).value;
-            let confirm = (document.getElementById('email-confirm') as HTMLInputElement).value;
-
-            if (email !== confirm) {
-                showError('Emails do not match');
-                return;
-            }
-
-            changeEmail(email);
-        } else if (modalTitle === 'Change Username') {
-            let username = (document.getElementById('username') as HTMLInputElement).value;
-            let confirm = (document.getElementById('username-confirm') as HTMLInputElement).value;
-
-            if (username !== confirm) {
-                showError('Usernames do not match');
-                return;
-            }
-
-            changeUsername(username);
-        }
-    });
 
     let cancelButton = document.getElementById('cancelBtn')!;
     cancelButton.addEventListener('click', function() {
@@ -169,25 +138,50 @@ document.getElementById('placeholderForm')!.addEventListener('submit', function(
             backdrops[i].parentNode!.removeChild(backdrops[i]);
         }
     });
+}
+
+document.getElementById('placeholderForm')!.addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    let modalTitle = document.getElementById('promptModalLabel')!.textContent;
+
+    if (modalTitle === 'Change Email') {
+        let email = (document.getElementById('email') as HTMLInputElement).value;
+        let confirm = (document.getElementById('email-confirm') as HTMLInputElement).value;
+
+        if (email !== confirm) {
+            showError('Emails do not match');
+            return;
+        }
+
+        changeEmail(email);
+    } else if (modalTitle === 'Change Username') {
+        let username = (document.getElementById('username') as HTMLInputElement).value;
+        let confirm = (document.getElementById('username-confirm') as HTMLInputElement).value;
+
+        if (username !== confirm) {
+            showError('Usernames do not match');
+            return;
+        }
+
+        changeUsername(username);
+    }
 });
 
 document.getElementById('changePasswordForm')!.addEventListener('submit', function(e) {
     e.preventDefault();
 
-    let changePasswordButton = document.getElementById('change-password') as HTMLInputElement;
-    changePasswordButton.onclick = function() {
-        let oldPassword = (document.getElementById('old-password') as HTMLInputElement).value;
-        let newPassword = (document.getElementById('new-password') as HTMLInputElement).value;
-        let confirm = (document.getElementById('confirm-new-password') as HTMLInputElement).value;
+    let oldPassword = (document.getElementById('old-password') as HTMLInputElement).value;
+    let newPassword = (document.getElementById('new-password') as HTMLInputElement).value;
+    let confirm = (document.getElementById('confirm-new-password') as HTMLInputElement).value;
 
-        if (newPassword !== confirm) {
-            resetErrors();
-            showPasswordError('Passwords do not match', false);
-            return;
-        }
-
-        changePassword(oldPassword, confirm);
+    if (newPassword !== confirm) {
+        resetErrors();
+        showPasswordError('Passwords do not match', false);
+        return;
     }
+
+    changePassword(oldPassword, confirm);
 });
 
 function changeUsername(newUsername: string) {
@@ -202,6 +196,11 @@ function changeUsername(newUsername: string) {
         .then(response => response.json())
         .then(data => {
             resetErrors();
+
+            if(data.success !== undefined && !data.success) {
+                showError('Error changing username');
+                return;
+            }
 
             let error = Object.values(NameChangeResponse).find((error) => error.id === data.result) as NameChangeResponseData;
             console.log(error);
@@ -227,6 +226,11 @@ function changeEmail(newEmail: string) {
         .then(data => {
             resetErrors();
 
+            if(data.success !== undefined && !data.success) {
+                showError('Error changing email');
+                return;
+            }
+
             let error = Object.values(EmailChangeResponse).find((error) => error.id === data.result) as EmailChangeResponseData;
 
             if (error.id === EmailChangeResponse.SUCCESS.id) {
@@ -251,6 +255,11 @@ function changePassword(oldPassword: string, newPassword: string) {
             console.log(data);
 
             resetErrors();
+
+            if(data.success !== undefined && !data.success) {
+                showPasswordError('Error changing password', true);
+                return;
+            }
 
             let error = Object.values(PasswordChangeResponse).find((error) => error.id === data.result) as PasswordChangeResponseData;
             console.log(error);

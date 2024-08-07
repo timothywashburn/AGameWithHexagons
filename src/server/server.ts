@@ -10,7 +10,7 @@ import webpackDevMiddleware from 'webpack-dev-middleware';
 
 const app = express();
 
-import * as endpoints from './api/api-endpoints';
+import * as endpoints from './api/endpoint';
 import webpackConfig from '../../webpack.dev';
 import * as authentication from './authentication';
 import config from '../../config.json';
@@ -21,6 +21,7 @@ const viewsDir = `${__dirname}/../client/views`;
 import { Request, Response } from 'express';
 import ServerClient from './objects/server-client';
 import ServerGame from './objects/server-game';
+import {handleEndpoint} from "./api/endpoint";
 
 app.set('view engine', 'ejs');
 app.set('views', viewsDir);
@@ -83,14 +84,16 @@ app.get('/', (req: Request, res: Response) => {
 app.get('/api/:endpoint', (req: Request, res: Response) => {
 	let endpoint = req.params.endpoint.toLowerCase();
 
-	if (typeof (endpoints as any)[endpoint] === 'function') {
-		(endpoints as any)[endpoint](req, res);
-	} else {
-		res.status(404).json({
-			success: false,
-			error: 'Endpoint not found',
-		});
-	}
+	handleEndpoint(req, res);
+
+	// if (typeof (endpoints as any)[endpoint] === 'function') {
+	// 	(endpoints as any)[endpoint](req, res);
+	// } else {
+	// 	res.status(404).json({
+	// 		success: false,
+	// 		error: 'Endpoint not found',
+	// 	});
+	// }
 });
 
 app.use('/images', express.static(path.join(__dirname, '../client/images')));
