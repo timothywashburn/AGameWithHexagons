@@ -1,6 +1,6 @@
 import {Endpoint, endpoints} from "../endpoint";
-import * as auth from '../../authentication';
-import {RegistrationResponseData} from "../../../shared/enums";
+import * as auth from '../../controllers/authentication';
+import {RegistrationResponseData} from "../../../shared/enums/misc-enums";
 import {AuthData} from "../endpoint";
 
 class Register extends Endpoint {

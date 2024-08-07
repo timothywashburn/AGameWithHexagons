@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
 import {Request, Response} from "express";
-import * as auth from "../authentication";
+import * as auth from "../controllers/authentication";
 
 export const endpoints: Endpoint[] = [];
 

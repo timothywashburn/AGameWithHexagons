@@ -1,6 +1,6 @@
 import {Endpoint, endpoints} from "../endpoint";
 import {AuthData} from "../endpoint";
-import * as auth from "../../authentication";
+import * as auth from "../../controllers/authentication";
 
 class Account extends Endpoint {
 

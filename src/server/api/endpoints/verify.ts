@@ -1,8 +1,8 @@
 import {Endpoint, endpoints} from "../endpoint";
 import {AuthData} from "../endpoint";
-import * as auth from "../../authentication";
-import {ToastMessage} from "../../../shared/enums";
-import {validateUser} from "../../authentication";
+import * as auth from "../../controllers/authentication";
+import {ToastMessage} from "../../../shared/enums/misc-enums";
+import {validateUser} from "../../controllers/authentication";
 
 class Verify extends Endpoint {
 

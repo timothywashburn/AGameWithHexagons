@@ -2,7 +2,7 @@ import {Endpoint, endpoints} from "../endpoint";
 import ServerClient from "../../objects/server-client";
 import ServerGame from "../../objects/server-game";
 import {AuthData} from "../endpoint";
-import * as auth from "../../authentication";
+import * as auth from "../../controllers/authentication";
 
 class Join extends Endpoint {
 
@@ -47,7 +47,7 @@ class Join extends Endpoint {
             };
         }
 
-        return game.clientManager.addClientToGame(client)
+        return game.clientManager.connectClient(client)
             .then(e => {
                 return {
                     success: true

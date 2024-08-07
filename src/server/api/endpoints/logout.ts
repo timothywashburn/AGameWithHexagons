@@ -1,5 +1,5 @@
 import {Endpoint, endpoints} from "../endpoint";
-import * as auth from "../../authentication";
+import * as auth from "../../controllers/authentication";
 import {AuthData} from "../endpoint";
 
 class Logout extends Endpoint {

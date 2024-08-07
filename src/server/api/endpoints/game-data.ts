@@ -5,7 +5,7 @@ import config from "../../../../config.json";
 import fs from "fs";
 import * as ejs from "ejs";
 import { AuthData } from "../endpoint";
-import {validateUser} from "../../authentication";
+import {validateUser} from "../../controllers/authentication";
 
 class GameData extends Endpoint {
 

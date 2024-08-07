@@ -1,7 +1,7 @@
 import {Endpoint, endpoints} from "../endpoint";
 import {AuthData} from "../endpoint";
-import * as auth from "../../authentication";
-import {PasswordChangeResponse, PasswordChangeResponseData} from "../../../shared/enums";
+import * as auth from "../../controllers/authentication";
+import {PasswordChangeResponse, PasswordChangeResponseData} from "../../../shared/enums/misc-enums";
 
 class ResetPassword extends Endpoint {
 
