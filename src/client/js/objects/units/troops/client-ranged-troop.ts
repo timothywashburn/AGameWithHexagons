@@ -8,6 +8,6 @@ export default class ClientRangedTroop extends ClientTroop {
 	}
 
 	getImageName(): string {
-		return 'test';
+		return 'warn';
 	}
 }
