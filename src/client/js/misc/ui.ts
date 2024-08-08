@@ -3,7 +3,7 @@ import { clientSocket } from '../controllers/connection';
 import PacketServerSpawnUnit from '../../../shared/packets/server/packet-server-spawn-unit';
 import { getGame } from '../objects/client-game';
 import ClientTile from '../objects/client-tile';
-import {BuildingType, TroopType } from '../../../shared/enums/unit-enums';
+import { BuildingType, TroopType } from '../../../shared/enums/unit-enums';
 
 document.getElementById('chatSend')!.addEventListener('click', () => {
 	const chatInput = document.getElementById('chatInput') as HTMLInputElement;
@@ -61,7 +61,7 @@ export function populateSpawnButtons() {
 		newButton.appendChild(document.createTextNode(capitalizeFirstLetterOnly(troopName)));
 		newButton.id = `spawn-troop-${troopName.toLowerCase()}`;
 
-		newButton.addEventListener('click', function() {
+		newButton.addEventListener('click', function () {
 			let packet = new PacketServerSpawnUnit('troop', Object.values(TroopType)[i], getGame().selectedTile!.id);
 			packet.sendToServer(clientSocket).then((response) => {
 				if (!response.success) return;
@@ -78,8 +78,12 @@ export function populateSpawnButtons() {
 		newButton.appendChild(document.createTextNode(capitalizeFirstLetterOnly(buildingName)));
 		newButton.id = `spawn-building-${buildingName.toLowerCase()}`;
 
-		newButton.addEventListener('click', function() {
-			let packet = new PacketServerSpawnUnit('building', Object.values(BuildingType)[i], getGame().selectedTile!.id);
+		newButton.addEventListener('click', function () {
+			let packet = new PacketServerSpawnUnit(
+				'building',
+				Object.values(BuildingType)[i],
+				getGame().selectedTile!.id,
+			);
 			packet.sendToServer(clientSocket).then((response) => {
 				if (!response.success) return;
 				toggleSidebar('building');
