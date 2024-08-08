@@ -1,5 +1,5 @@
 import { getGame } from '../objects/client-game';
-import { showSidebarToggles, toggleSidebar } from '../misc/ui';
+import { toggleSidebar } from '../misc/ui';
 
 const canvas = document.getElementById('gameCanvas') as HTMLCanvasElement;
 const ctx = canvas.getContext('2d')!;
@@ -75,12 +75,10 @@ const stationaryClick = (event: MouseEvent) => {
 	if (game.selectedTile == clickedTile) {
 		game.selectedTile = null;
 
-		// hide sidebar
 		document.getElementById('sidebar')!.style.display = 'none';
 	} else if (clickedTile != null) {
 		game.selectedTile = clickedTile;
 
-		// activate sidebar
 		document.getElementById('sidebar')!.style.display = 'block';
 		if (game.selectedTile.troop != null) toggleSidebar('troop');
 		else if (game.selectedTile.building != null) toggleSidebar('building');

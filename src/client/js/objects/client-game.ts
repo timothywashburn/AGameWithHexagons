@@ -11,6 +11,7 @@ import {
 import ClientPlayer from './client-player';
 import ClientBuilding from './client-building';
 import { getClientBuildingConstructor, getClientTroopConstructor } from '../../client-register';
+import { populateSpawnButtons } from '../misc/ui';
 
 let game: ClientGame;
 
@@ -40,6 +41,8 @@ export class ClientGame {
 
 		console.log('starting game render');
 		this.startRender();
+
+		populateSpawnButtons();
 	}
 
 	setupDebug() {
