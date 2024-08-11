@@ -50,6 +50,10 @@ document.getElementById('toggle-building')!.addEventListener('click', () => {
 	}
 });
 
+document.getElementById('end-turn-button')!.addEventListener('click', () => {
+	console.log('End Turn button clicked');
+});
+
 export function capitalizeFirstLetterOnly(string: string) {
 	return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
 }
