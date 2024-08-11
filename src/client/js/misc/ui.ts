@@ -65,7 +65,7 @@ export function populateSpawnButtons() {
 		newButton.appendChild(document.createTextNode(capitalizeFirstLetterOnly(troopName)));
 		newButton.id = `spawn-troop-${troopName.toLowerCase()}`;
 
-		newButton.addEventListener('click', function () {
+		newButton.addEventListener('click', () => {
 			let packet = new PacketServerSpawnUnit('troop', Object.values(TroopType)[i], getGame().selectedTile!.id);
 			packet.sendToServer(clientSocket).then((response) => {
 				if (!response.success) return;
@@ -82,7 +82,7 @@ export function populateSpawnButtons() {
 		newButton.appendChild(document.createTextNode(capitalizeFirstLetterOnly(buildingName)));
 		newButton.id = `spawn-building-${buildingName.toLowerCase()}`;
 
-		newButton.addEventListener('click', function () {
+		newButton.addEventListener('click', () => {
 			let packet = new PacketServerSpawnUnit(
 				'building',
 				Object.values(BuildingType)[i],
