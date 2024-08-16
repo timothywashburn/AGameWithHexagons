@@ -7,7 +7,8 @@
 		"build": "webpack --config webpack.prod.js",
 		"develop": "cross-env NODE_ENV=development nodemon src/server/server.ts",
 		"start": "cross-env NODE_ENV=production nodemon src/server/server.ts",
-		"lint": "lint-staged"
+		"lint": "lint-staged",
+		"postinstall": "husky install"
 	},
 	"lint-staged": {
 		"*.{js,ts,json,css,html,md,yaml,yml}": "prettier --write"
