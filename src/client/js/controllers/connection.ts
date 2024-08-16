@@ -84,5 +84,8 @@ clientSocket.on('packet', function (packet: Packet) {
 
 		chatMessages.appendChild(message);
 		chatMessages.scrollTop = chatMessages.scrollHeight;
+	} else if (packet.packetTypeID === ClientPacketID.TURN_START.id) {
+		const button = document.getElementById('end-turn-button') as HTMLButtonElement;
+		button.disabled = false;
 	}
 });

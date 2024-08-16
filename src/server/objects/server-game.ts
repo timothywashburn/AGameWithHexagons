@@ -7,6 +7,8 @@ import ConnectionManager from '../controllers/connection-manager';
 import ServerBuilding from './server-building';
 import PacketClientGameSnapshot from '../../shared/packets/client/packet-client-game-snapshot';
 import ServerPlayer from './server-player';
+import PacketClientTurnStart from '../../shared/packets/client/packet-client-turn-start';
+import { TurnType } from '../../shared/enums/gamestate-enums';
 
 let nextID = 0;
 
@@ -14,7 +16,7 @@ export default class ServerGame {
 	public static gameList: ServerGame[] = [];
 
 	public id: number;
-	public clientManager: ConnectionManager;
+	public connectionManager: ConnectionManager;
 	public readonly startTime: number = Date.now();
 
 	public players: ServerPlayer[] = [];
@@ -27,7 +29,7 @@ export default class ServerGame {
 	constructor(httpServer: Server, boardSize: number) {
 		this.id = nextID++;
 
-		this.clientManager = new ConnectionManager(this);
+		this.connectionManager = new ConnectionManager(this);
 
 		this.boardSize = boardSize;
 
@@ -36,12 +38,30 @@ export default class ServerGame {
 		ServerGame.gameList.push(this);
 	}
 
+	attemptEndTurn() {
+		if (this.connectionManager.waitingToEndTurn.length !== 0) return;
+		console.log('ending turn');
+		this.endTurn();
+	}
+
+	private endTurn() {
+		this.connectionManager.waitingToEndTurn = this.connectionManager.clients;
+		this.sendServerSnapshot();
+
+		setTimeout(() => {
+			// TODO: proper turn type selection
+			let packet = new PacketClientTurnStart(TurnType.DEVELOP);
+			this.connectionManager.clients.forEach((client) => packet.addClient(client));
+			packet.sendToClients();
+		}, 1000);
+	}
+
 	getName() {
 		return `Game ${ServerGame.gameList.indexOf(this) + 1}`;
 	}
 
 	isJoinable() {
-		return this.clientManager.clients.length < this.clientManager.maxPlayers;
+		return this.connectionManager.clients.length < this.connectionManager.maxPlayers;
 	}
 
 	generateTiles() {
@@ -76,7 +96,7 @@ export default class ServerGame {
 	}
 
 	sendServerSnapshot() {
-		this.clientManager.clients.forEach((client) => this.sendSnapshot(client));
+		this.connectionManager.clients.forEach((client) => this.sendSnapshot(client));
 	}
 
 	sendSnapshot(client: ServerClient) {

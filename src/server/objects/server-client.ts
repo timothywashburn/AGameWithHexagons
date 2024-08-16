@@ -12,6 +12,7 @@ import { BuildingType, TroopType } from '../../shared/enums/unit-enums';
 import { getServerBuildingConstructor, getServerTroopConstructor } from '../server-register';
 import ResponsePacket from '../../shared/packets/base/response-packet';
 import { ServerBuildingInitData } from './server-building';
+import PacketServerEndTurn from '../../shared/packets/server/packet-server-end-turn';
 
 let nextID = -1;
 
@@ -33,7 +34,7 @@ export default class ServerClient {
 		this.profile = new UserProfile(nextID--, generateUsername('', 3, 20));
 
 		socket.on('disconnect', () => {
-			if (this.game) this.game.clientManager.disconnectClient(this);
+			if (this.game) this.game.connectionManager.disconnectClient(this);
 			ServerClient.clientList = ServerClient.clientList.filter((client) => client !== this);
 		});
 
@@ -47,7 +48,7 @@ export default class ServerClient {
 				let message = packetServerChat.message;
 				let responsePacket = new PacketClientChat(this.profile.userID, message);
 
-				this.getGame().clientManager.clients.forEach((client: ServerClient) =>
+				this.getGame().connectionManager.clients.forEach((client: ServerClient) =>
 					responsePacket.addClient(client),
 				);
 
@@ -76,11 +77,21 @@ export default class ServerClient {
 					parentTile.building = new BuildingConstructor(initData);
 				}
 
-				this.getGame().sendServerSnapshot();
+				this.getGame().sendSnapshot(this);
 
 				new ResponsePacket<PacketServerSpawnUnitReply>(packetServerSpawnUnit.packetID, {
 					success: true,
 				}).replyToClient(this);
+			}
+
+			if (packet.packetTypeID === ServerPacketID.END_TURN.id) {
+				let packetEndTurn = packet as PacketServerEndTurn;
+
+				this.getGame().connectionManager.waitingToEndTurn =
+					this.getGame().connectionManager.waitingToEndTurn.filter((client) => client !== this);
+				this.getGame().attemptEndTurn();
+
+				new ResponsePacket(packetEndTurn.packetID).replyToClient(this);
 			}
 		});
 	}

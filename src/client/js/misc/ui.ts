@@ -4,6 +4,7 @@ import PacketServerSpawnUnit from '../../../shared/packets/server/packet-server-
 import { getGame } from '../objects/client-game';
 import ClientTile from '../objects/client-tile';
 import { BuildingType, TroopType } from '../../../shared/enums/unit-enums';
+import PacketServerEndTurn from '../../../shared/packets/server/packet-server-end-turn';
 
 document.getElementById('chatSend')!.addEventListener('click', () => {
 	const chatInput = document.getElementById('chatInput') as HTMLInputElement;
@@ -51,7 +52,11 @@ document.getElementById('toggle-building')!.addEventListener('click', () => {
 });
 
 document.getElementById('end-turn-button')!.addEventListener('click', () => {
-	console.log('End Turn button clicked');
+	let packet = new PacketServerEndTurn();
+	packet.sendToServer(clientSocket).then(() => {
+		const button = document.getElementById('end-turn-button') as HTMLButtonElement;
+		button.disabled = true;
+	});
 });
 
 export function capitalizeFirstLetterOnly(string: string) {

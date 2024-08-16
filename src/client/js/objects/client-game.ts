@@ -34,9 +34,7 @@ export class ClientGame {
 	constructor(initData: GameSnapshot) {
 		game = this;
 		this.startTime = Date.now();
-
 		this.setupDebug();
-
 		this.initGame(initData);
 
 		console.log('starting game render');
@@ -54,7 +52,7 @@ export class ClientGame {
 			let maxLoad = 1000 / frameRate;
 			let currentLoad = (MSPT / maxLoad) * 100;
 			console.log(`${MSPT} ms (${currentLoad.toFixed(1)}% load) per tick (${frameRate} fps)`);
-		}, 5000);
+		}, 10_000);
 
 		console.log('debugging enabled');
 	}

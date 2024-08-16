@@ -12,6 +12,8 @@ export default class ConnectionManager {
 	public clients: ServerClient[] = [];
 	public maxPlayers: number;
 
+	public waitingToEndTurn: ServerClient[] = [];
+
 	constructor(game: ServerGame) {
 		this.game = game;
 
@@ -53,18 +55,13 @@ export default class ConnectionManager {
 		for (let client of this.clients) playerListInfo.push(client.profile);
 
 		let packet = new PacketClientPlayerListInfo(playerListInfo);
-
 		this.clients.forEach((client) => packet.addClient(client));
 		packet.sendToClients();
 	}
 
 	sendAlert(client: ServerClient, announcementType: AnnouncementTypeData) {
 		let packet = new PacketClientAnnouncement(client.profile.userID, announcementType.id);
-
-		this.clients.forEach((client) => {
-			packet.addClient(client);
-		});
-
+		this.clients.forEach((client) => packet.addClient(client));
 		packet.sendToClients();
 	}
 }

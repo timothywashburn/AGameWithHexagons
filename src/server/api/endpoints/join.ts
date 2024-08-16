@@ -1,72 +1,72 @@
-import {Endpoint, endpoints} from "../endpoint";
-import ServerClient from "../../objects/server-client";
-import ServerGame from "../../objects/server-game";
-import {AuthData} from "../endpoint";
-import * as auth from "../../controllers/authentication";
+import { Endpoint, endpoints } from '../endpoint';
+import ServerClient from '../../objects/server-client';
+import ServerGame from '../../objects/server-game';
+import { AuthData } from '../endpoint';
+import * as auth from '../../controllers/authentication';
 
 class Join extends Endpoint {
+	getParameters(): string[] {
+		return ['gameID', 'socketID'];
+	}
 
-    getParameters(): string[] {
-        return ['gameID', 'socketID'];
-    }
+	async call(parameters: string[], authData: AuthData): Promise<string | object> {
+		const gameID = parseInt(parameters[0]);
+		const socketID = parameters[1];
 
-    async call(parameters: string[], authData: AuthData): Promise<string | object> {
+		let client = ServerClient.clientList.find((client: ServerClient) => client.socket.id === socketID);
+		if (!client) {
+			return {
+				success: false,
+				alert: false,
+				message: 'Could not find your client',
+			};
+		}
 
-        const gameID = parseInt(parameters[0]);
-        const socketID = parameters[1];
+		await auth.validateUser(authData.token, client);
 
-        let client = ServerClient.clientList.find((client: ServerClient) => client.socket.id === socketID);
-        if (!client) {
-            return {
-                success: false,
-                alert: false,
-                message: "Could not find your client"
-            };
-        }
+		let game = ServerGame.getGame(gameID);
+		if (!game) {
+			return {
+				success: false,
+				alert: false,
+				message: 'This is not a valid game',
+			};
+		} else if (
+			game.connectionManager.clients.find((testClient: ServerClient) => testClient.getID() === client!.getID())
+		) {
+			return {
+				success: false,
+				alert: true,
+				message: 'You are already in this game',
+			};
+		} else if (game.connectionManager.clients.length >= game.connectionManager.maxPlayers) {
+			return {
+				success: false,
+				alert: true,
+				message: 'This game is already full',
+			};
+		}
 
-        await auth.validateUser(authData.token, client);
+		return game.connectionManager
+			.connectClient(client)
+			.then((e) => {
+				return {
+					success: true,
+				};
+			})
+			.catch((error: unknown) => {
+				console.error('Error joining game');
+				console.error(error);
+				return {
+					success: false,
+					result: error,
+				};
+			});
+	}
 
-        let game = ServerGame.getGame(gameID);
-        if (!game) {
-            return {
-                success: false,
-                alert: false,
-                message: "This is not a valid game"
-            };
-        } else if (game.clientManager.clients.find((testClient: ServerClient) => testClient.getID() === client!.getID())) {
-            return {
-                success: false,
-                alert: true,
-                message: "You are already in this game"
-            };
-        } else if (game.clientManager.clients.length >= game.clientManager.maxPlayers) {
-            return {
-                success: false,
-                alert: true,
-                message: "This game is already full"
-            };
-        }
-
-        return game.clientManager.connectClient(client)
-            .then(e => {
-                return {
-                    success: true
-                };
-            })
-            .catch((error: unknown) => {
-                console.error('Error joining game');
-                console.error(error);
-                return {
-                    success: false,
-                    result: error,
-                };
-            });
-    }
-
-    requiresAuthentication(): boolean {
-        return false;
-    }
-
+	requiresAuthentication(): boolean {
+		return false;
+	}
 }
 
 endpoints.push(new Join());

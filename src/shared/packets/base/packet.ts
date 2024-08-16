@@ -39,9 +39,11 @@ export const ClientPacketID: Readonly<{ [key: string]: PacketData }> = Object.fr
 	PLAYER_LIST_INFO: { id: 0x04 },
 	CHAT: { id: 0x05 },
 	ANNOUNCEMENT: { id: 0x06 },
+	TURN_START: { id: 0x07 },
 });
 
 export const ServerPacketID: Readonly<{ [key: string]: PacketData }> = Object.freeze({
 	CHAT: { id: 0x01 },
 	SPAWN: { id: 0x02 },
+	END_TURN: { id: 0x03 },
 });
