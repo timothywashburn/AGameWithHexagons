@@ -9,6 +9,7 @@ import PacketClientGameSnapshot from '../../../shared/packets/client/packet-clie
 import PacketClientPlayerListInfo from '../../../shared/packets/client/packet-client-player-list-info';
 import PacketClientChat from '../../../shared/packets/client/packet-client-chat';
 import { UserProfile } from '../../../server/objects/server-client';
+import { updateTurnText } from '../misc/ui';
 
 export const clientSocket = (io as any).connect();
 
@@ -87,5 +88,6 @@ clientSocket.on('packet', function (packet: Packet) {
 	} else if (packet.packetTypeID === ClientPacketID.TURN_START.id) {
 		const button = document.getElementById('end-turn-button') as HTMLButtonElement;
 		button.disabled = false;
+		updateTurnText();
 	}
 });

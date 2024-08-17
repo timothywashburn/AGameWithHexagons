@@ -2,7 +2,7 @@ import { Server } from 'http';
 import ServerClient from './server-client';
 import ServerTile from './server-tile';
 import ServerTroop from './server-troop';
-import { GameSnapshot } from '../../shared/interfaces/snapshot';
+import { GameSnapshot, TurnInfo } from '../../shared/interfaces/snapshot';
 import ConnectionManager from '../controllers/connection-manager';
 import ServerBuilding from './server-building';
 import PacketClientGameSnapshot from '../../shared/packets/client/packet-client-game-snapshot';
@@ -25,6 +25,10 @@ export default class ServerGame {
 	public buildings: ServerBuilding[] = [];
 
 	public readonly boardSize: number;
+	public turnInfo: TurnInfo = {
+		turn: 1,
+		type: TurnType.DEVELOP,
+	};
 
 	constructor(httpServer: Server, boardSize: number) {
 		this.id = nextID++;
@@ -47,6 +51,8 @@ export default class ServerGame {
 	private endTurn() {
 		this.connectionManager.waitingToEndTurn = this.connectionManager.clients;
 		this.sendServerSnapshot();
+
+		this.turnInfo.turn++;
 
 		setTimeout(() => {
 			// TODO: proper turn type selection
@@ -88,6 +94,8 @@ export default class ServerGame {
 	getFullGameSnapshot(client: ServerClient): GameSnapshot {
 		return {
 			isAuthenticated: client.isAuthenticated,
+			turnInfo: this.turnInfo,
+			resources: client.resources,
 			players: this.players.map((player) => player.getPlayerSnapshot(client)),
 			tiles: this.tiles.map((tile) => tile.getTileSnapshot(client)),
 			troops: this.troops.map((troop) => troop.getTroopSnapshot(client)),

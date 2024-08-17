@@ -7,11 +7,12 @@ import {
 	PlayerSnapshot,
 	TileSnapshot,
 	TroopSnapshot,
+	TurnInfo,
 } from '../../../shared/interfaces/snapshot';
 import ClientPlayer from './client-player';
 import ClientBuilding from './client-building';
 import { getClientBuildingConstructor, getClientTroopConstructor } from '../../client-register';
-import { populateSpawnButtons } from '../misc/ui';
+import { populateSpawnButtons, updateTurnText } from '../misc/ui';
 
 let game: ClientGame;
 
@@ -28,6 +29,7 @@ export class ClientGame {
 
 	public frame: number = 1;
 	public renderTimes: number[] = [];
+	public turnInfo: TurnInfo;
 
 	public selectedTile: ClientTile | null = null;
 
@@ -41,6 +43,7 @@ export class ClientGame {
 		this.startRender();
 
 		populateSpawnButtons();
+		updateTurnText();
 	}
 
 	setupDebug() {
@@ -62,9 +65,11 @@ export class ClientGame {
 	}
 
 	updateGame(snapshot: GameSnapshot) {
+		this.turnInfo = snapshot.turnInfo;
+
 		this.resources = {
-			energy: 0,
-			goo: 0,
+			energy: snapshot.resources.energy,
+			goo: snapshot.resources.goo,
 		};
 
 		snapshot.players.forEach((snapshot: PlayerSnapshot) => {

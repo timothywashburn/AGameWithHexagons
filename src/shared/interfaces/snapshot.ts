@@ -1,4 +1,5 @@
 import { BuildingType, TroopType } from '../enums/unit-enums';
+import { TurnType } from '../enums/gamestate-enums';
 
 export interface ElementSnapshot {
 	id: number;
@@ -6,10 +7,22 @@ export interface ElementSnapshot {
 
 export interface GameSnapshot {
 	isAuthenticated: boolean;
+	turnInfo: TurnInfo;
+	resources: GameResources;
 	players: PlayerSnapshot[];
 	tiles: TileSnapshot[];
 	troops: TroopSnapshot[];
 	buildings: BuildingSnapshot[];
+}
+
+export interface TurnInfo {
+	turn: number;
+	type: TurnType;
+}
+
+export interface GameResources {
+	energy: number;
+	goo: number;
 }
 
 export interface PlayerSnapshot extends ElementSnapshot {

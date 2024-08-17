@@ -59,6 +59,11 @@ document.getElementById('end-turn-button')!.addEventListener('click', () => {
 	});
 });
 
+export function updateTurnText() {
+	const turnText = document.getElementById('turn-text') as HTMLInputElement;
+	turnText.textContent = `Turn ${getGame().turnInfo.turn}: Build`;
+}
+
 export function capitalizeFirstLetterOnly(string: string) {
 	return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
 }

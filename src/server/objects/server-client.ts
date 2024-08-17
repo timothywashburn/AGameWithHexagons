@@ -13,6 +13,7 @@ import { getServerBuildingConstructor, getServerTroopConstructor } from '../serv
 import ResponsePacket from '../../shared/packets/base/response-packet';
 import { ServerBuildingInitData } from './server-building';
 import PacketServerEndTurn from '../../shared/packets/server/packet-server-end-turn';
+import { GameResources } from '../../shared/interfaces/snapshot';
 
 let nextID = -1;
 
@@ -26,12 +27,19 @@ export default class ServerClient {
 	public isConnected: boolean = true;
 	public profile: UserProfile;
 
+	public resources: GameResources;
+
 	constructor(socket: Socket) {
 		ServerClient.clientList.push(this);
 
 		this.socket = socket;
 		this.isAuthenticated = false;
 		this.profile = new UserProfile(nextID--, generateUsername('', 3, 20));
+
+		this.resources = {
+			energy: 0,
+			goo: 0,
+		};
 
 		socket.on('disconnect', () => {
 			if (this.game) this.game.connectionManager.disconnectClient(this);
