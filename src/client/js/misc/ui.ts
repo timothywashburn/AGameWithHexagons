@@ -53,9 +53,17 @@ document.getElementById('toggle-building')!.addEventListener('click', () => {
 
 document.getElementById('end-turn-button')!.addEventListener('click', () => {
 	let packet = new PacketServerEndTurn();
-	packet.sendToServer(clientSocket).then(() => {
-		const button = document.getElementById('end-turn-button') as HTMLButtonElement;
-		button.disabled = true;
+
+	const button = document.getElementById('end-turn-button') as HTMLButtonElement;
+	button.disabled = true;
+
+	packet.sendToServer(clientSocket).then((reply) => {
+		if (reply.success) {
+			const turnText = document.getElementById('turn-text') as HTMLInputElement;
+			turnText.textContent = 'Waiting for Players';
+		} else {
+			button.disabled = false;
+		}
 	});
 });
 

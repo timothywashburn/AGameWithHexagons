@@ -5,7 +5,7 @@ export default class ResponsePacket<T> {
 	public responseID: number;
 	public replyData: T;
 
-	constructor(replyID: number, replyData: T = null as any) {
+	constructor(replyID: number, replyData: T) {
 		this.responseID = replyID;
 		this.replyData = replyData;
 	}

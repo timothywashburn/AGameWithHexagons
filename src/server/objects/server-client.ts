@@ -12,7 +12,7 @@ import { BuildingType, TroopType } from '../../shared/enums/unit-enums';
 import { getServerBuildingConstructor, getServerTroopConstructor } from '../server-register';
 import ResponsePacket from '../../shared/packets/base/response-packet';
 import { ServerBuildingInitData } from './server-building';
-import PacketServerEndTurn from '../../shared/packets/server/packet-server-end-turn';
+import PacketServerEndTurn, { PacketServerEndTurnReply } from '../../shared/packets/server/packet-server-end-turn';
 import { GameResources } from '../../shared/interfaces/snapshot';
 
 let nextID = -1;
@@ -99,7 +99,9 @@ export default class ServerClient {
 					this.getGame().connectionManager.waitingToEndTurn.filter((client) => client !== this);
 				this.getGame().attemptEndTurn();
 
-				new ResponsePacket(packetEndTurn.packetID).replyToClient(this);
+				new ResponsePacket<PacketServerEndTurnReply>(packetEndTurn.packetID, { success: true }).replyToClient(
+					this,
+				);
 			}
 		});
 	}
