@@ -1,5 +1,5 @@
 import { BuildingType, TroopType } from '../enums/unit-enums';
-import { TurnType } from '../enums/gamestate-enums';
+import { TurnType, TurnTypeData } from '../enums/gamestate-enums';
 
 export interface ElementSnapshot {
 	id: number;
@@ -17,7 +17,7 @@ export interface GameSnapshot {
 
 export interface TurnInfo {
 	turn: number;
-	type: TurnType;
+	type: TurnTypeData;
 }
 
 export interface GameResources {

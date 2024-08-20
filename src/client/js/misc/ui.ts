@@ -61,7 +61,7 @@ document.getElementById('end-turn-button')!.addEventListener('click', () => {
 
 export function updateTurnText() {
 	const turnText = document.getElementById('turn-text') as HTMLInputElement;
-	turnText.textContent = `Turn ${getGame().turnInfo.turn}: Build`;
+	turnText.textContent = `Turn ${getGame().turnInfo.turn}: ${getGame().turnInfo.type.text}`;
 }
 
 export function capitalizeFirstLetterOnly(string: string) {

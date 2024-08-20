@@ -65,7 +65,7 @@ export class ClientGame {
 	}
 
 	updateGame(snapshot: GameSnapshot) {
-		this.turnInfo = snapshot.turnInfo;
+		this.updateTurnInfo(snapshot.turnInfo);
 
 		this.resources = {
 			energy: snapshot.resources.energy,
@@ -109,6 +109,10 @@ export class ClientGame {
 				new ClientTile(snapshot);
 			}
 		});
+	}
+
+	updateTurnInfo(turnInfo: TurnInfo) {
+		this.turnInfo = turnInfo;
 	}
 
 	startRender() {

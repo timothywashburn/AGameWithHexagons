@@ -53,10 +53,10 @@ export default class ServerGame {
 		this.sendServerSnapshot();
 
 		this.turnInfo.turn++;
+		this.turnInfo.type = this.turnInfo.turn % 2 == 0 ? TurnType.SIEGE : TurnType.DEVELOP;
 
 		setTimeout(() => {
-			// TODO: proper turn type selection
-			let packet = new PacketClientTurnStart(TurnType.DEVELOP);
+			let packet = new PacketClientTurnStart(this.turnInfo);
 			this.connectionManager.clients.forEach((client) => packet.addClient(client));
 			packet.sendToClients();
 		}, 1000);

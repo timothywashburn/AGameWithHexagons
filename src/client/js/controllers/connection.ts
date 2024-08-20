@@ -10,6 +10,7 @@ import PacketClientPlayerListInfo from '../../../shared/packets/client/packet-cl
 import PacketClientChat from '../../../shared/packets/client/packet-client-chat';
 import { UserProfile } from '../../../server/objects/server-client';
 import { updateTurnText } from '../misc/ui';
+import PacketClientTurnStart from '../../../shared/packets/client/packet-client-turn-start';
 
 export const clientSocket = (io as any).connect();
 
@@ -86,6 +87,10 @@ clientSocket.on('packet', function (packet: Packet) {
 		chatMessages.appendChild(message);
 		chatMessages.scrollTop = chatMessages.scrollHeight;
 	} else if (packet.packetTypeID === ClientPacketID.TURN_START.id) {
+		let packetClientTurnStart = packet as PacketClientTurnStart;
+
+		getGame().updateTurnInfo(packetClientTurnStart.turnInfo);
+
 		const button = document.getElementById('end-turn-button') as HTMLButtonElement;
 		button.disabled = false;
 		updateTurnText();
