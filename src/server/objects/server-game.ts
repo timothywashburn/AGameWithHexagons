@@ -12,12 +12,13 @@ import { TurnType } from '../../shared/enums/gamestate-enums';
 import PacketClientPlayerListInfo from '../../shared/packets/client/packet-client-player-list-info';
 import PacketClientDev from '../../shared/packets/client/packet-client-dev';
 
-let nextID = 0;
+let gameID = 0;
 
 export default class ServerGame {
 	public static gameList: ServerGame[] = [];
 
 	public id: number;
+	private nextElementID: number = 0;
 	public connectionManager: ConnectionManager;
 	public isRunning: boolean = false;
 	public startTime: number;
@@ -32,8 +33,8 @@ export default class ServerGame {
 		type: TurnType.DEVELOP,
 	};
 
-	constructor(httpServer: Server) {
-		this.id = nextID++;
+	constructor() {
+		this.id = gameID++;
 
 		this.connectionManager = new ConnectionManager(this);
 
@@ -129,6 +130,10 @@ export default class ServerGame {
 
 	isJoinable() {
 		return this.connectionManager.clients.length < this.connectionManager.maxPlayers && !this.isRunning;
+	}
+
+	getNextID() {
+		return this.nextElementID++;
 	}
 
 	getPlayer(id: number): ServerPlayer | null {

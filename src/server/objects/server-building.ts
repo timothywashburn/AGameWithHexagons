@@ -3,8 +3,6 @@ import ServerClient from './server-client';
 import { BuildingSnapshot } from '../../shared/interfaces/snapshot';
 import { BuildingType } from '../../shared/enums/unit-enums';
 
-let nextID = 0;
-
 export default class ServerBuilding {
 	public id: number;
 	public type: BuildingType;
@@ -12,10 +10,10 @@ export default class ServerBuilding {
 	public owner: ServerClient;
 
 	constructor(type: BuildingType, initData: ServerBuildingInitData) {
-		this.id = nextID++;
 		this.type = type;
 		this.game = initData.game;
 		this.owner = initData.owner;
+		this.id = this.game.getNextID();
 
 		this.game.buildings.push(this);
 	}

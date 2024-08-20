@@ -100,11 +100,10 @@ app.get('/:page', (req: Request, res: Response) => {
 	}
 });
 
+let game = new ServerGame();
+let game2 = new ServerGame();
+
 const server = http.createServer(app);
-
-let game = new ServerGame(server);
-let game2 = new ServerGame(server);
-
 export const serverSocket = new Server(server);
 
 serverSocket.on('connection', (socket: Socket) => {

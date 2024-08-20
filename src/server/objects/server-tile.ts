@@ -4,8 +4,6 @@ import ServerBuilding from './server-building';
 import { TileSnapshot } from '../../shared/interfaces/snapshot';
 import ServerGame from './server-game';
 
-let nextID = 0;
-
 export default class ServerTile {
 	public game: ServerGame;
 
@@ -20,7 +18,7 @@ export default class ServerTile {
 	constructor(game: ServerGame, x: number, y: number) {
 		this.game = game;
 
-		this.id = nextID++;
+		this.id = this.game.getNextID();
 		this.x = x;
 		this.y = y;
 		this.color = getRBGAround(134, 44, 54, 40);
