@@ -14,6 +14,8 @@ import ResponsePacket from '../../shared/packets/base/response-packet';
 import { ServerBuildingInitData } from './server-building';
 import PacketServerEndTurn, { PacketServerEndTurnReply } from '../../shared/packets/server/packet-server-end-turn';
 import { GameResources } from '../../shared/interfaces/snapshot';
+import PacketServerDev from '../../shared/packets/server/packet-server-dev';
+import { isDev } from '../misc/utils';
 
 let nextID = -1;
 
@@ -49,7 +51,16 @@ export default class ServerClient {
 		socket.on('packet', (packet: Packet) => {
 			if (packet.packetDestination !== PacketDestination.SERVER_BOUND) return;
 
-			if (packet.packetTypeID === ServerPacketID.CHAT.id) {
+			if (packet.packetTypeID === ServerPacketID.DEV.id && isDev) {
+				let packetServerDev = packet as PacketServerDev;
+
+				if (packetServerDev.data.action) {
+					let action = packetServerDev.data.action;
+					if (action === 'START_GAME') {
+						this.game?.start();
+					}
+				}
+			} else if (packet.packetTypeID === ServerPacketID.CHAT.id) {
 				let packetServerChat = packet as PacketServerChat;
 
 				console.log(`Receiving chat message from client ${this.getID()}: ${packetServerChat.message}`);
@@ -63,7 +74,7 @@ export default class ServerClient {
 				responsePacket.sendToClients();
 			}
 
-			if (packet.packetTypeID === ServerPacketID.SPAWN.id) {
+			if (packet.packetTypeID === ServerPacketID.SPAWN.id && this.getGame().isRunning) {
 				let packetServerSpawnUnit = packet as PacketServerSpawnUnit;
 				let parentTile = this.getGame().getTile(packetServerSpawnUnit.tileID)!;
 
@@ -95,13 +106,17 @@ export default class ServerClient {
 			if (packet.packetTypeID === ServerPacketID.END_TURN.id) {
 				let packetEndTurn = packet as PacketServerEndTurn;
 
-				this.getGame().connectionManager.waitingToEndTurn =
-					this.getGame().connectionManager.waitingToEndTurn.filter((client) => client !== this);
-				this.getGame().attemptEndTurn();
+				let success = false;
+				if (this.getGame().isRunning) {
+					success = true;
+					this.getGame().connectionManager.waitingToEndTurn =
+						this.getGame().connectionManager.waitingToEndTurn.filter((client) => client !== this);
+					this.getGame().attemptEndTurn();
+				}
 
-				new ResponsePacket<PacketServerEndTurnReply>(packetEndTurn.packetID, { success: true }).replyToClient(
-					this,
-				);
+				new ResponsePacket<PacketServerEndTurnReply>(packetEndTurn.packetID, {
+					success: success,
+				}).replyToClient(this);
 			}
 		});
 	}

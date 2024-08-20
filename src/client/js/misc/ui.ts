@@ -5,6 +5,7 @@ import { getGame } from '../objects/client-game';
 import ClientTile from '../objects/client-tile';
 import { BuildingType, TroopType } from '../../../shared/enums/unit-enums';
 import PacketServerEndTurn from '../../../shared/packets/server/packet-server-end-turn';
+import PacketServerDev from '../../../shared/packets/server/packet-server-dev';
 
 document.getElementById('chatSend')!.addEventListener('click', () => {
 	const chatInput = document.getElementById('chatInput') as HTMLInputElement;
@@ -65,6 +66,17 @@ document.getElementById('end-turn-button')!.addEventListener('click', () => {
 			button.disabled = false;
 		}
 	});
+});
+
+document.getElementById('start-game-button')!.addEventListener('click', () => {
+	let packet = new PacketServerDev({
+		action: 'START_GAME',
+	});
+
+	packet.sendToServer(clientSocket);
+
+	const button = document.getElementById('start-game-button') as HTMLButtonElement;
+	button.style.display = 'none';
 });
 
 export function updateTurnText() {

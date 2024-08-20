@@ -32,7 +32,7 @@ class Join extends Endpoint {
 				message: 'This is not a valid game',
 			};
 		} else if (
-			game.connectionManager.clients.find((testClient: ServerClient) => testClient.getID() === client!.getID())
+			game.connectionManager.clients.find((testClient: ServerClient) => testClient.getID() === client.getID())
 		) {
 			return {
 				success: false,

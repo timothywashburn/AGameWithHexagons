@@ -65,6 +65,11 @@ export class ClientGame {
 	}
 
 	updateGame(snapshot: GameSnapshot) {
+		if (!snapshot.isRunning) {
+			let button = document.getElementById('start-game-button') as HTMLButtonElement;
+			button.style.display = 'block';
+		}
+
 		this.updateTurnInfo(snapshot.turnInfo);
 
 		this.resources = {

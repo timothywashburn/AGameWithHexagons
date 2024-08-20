@@ -6,6 +6,7 @@ export interface ElementSnapshot {
 }
 
 export interface GameSnapshot {
+	isRunning: boolean;
 	isAuthenticated: boolean;
 	turnInfo: TurnInfo;
 	resources: GameResources;

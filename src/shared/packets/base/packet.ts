@@ -34,6 +34,7 @@ interface PacketData {
 }
 
 export const ClientPacketID: Readonly<{ [key: string]: PacketData }> = Object.freeze({
+	DEV: { id: 0x00 },
 	GAME_INIT: { id: 0x01 },
 	GAME_SNAPSHOT: { id: 0x02 },
 	PLAYER_LIST_INFO: { id: 0x04 },
@@ -43,6 +44,7 @@ export const ClientPacketID: Readonly<{ [key: string]: PacketData }> = Object.fr
 });
 
 export const ServerPacketID: Readonly<{ [key: string]: PacketData }> = Object.freeze({
+	DEV: { id: 0x00 },
 	CHAT: { id: 0x01 },
 	SPAWN: { id: 0x02 },
 	END_TURN: { id: 0x03 },

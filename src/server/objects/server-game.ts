@@ -9,6 +9,8 @@ import PacketClientGameSnapshot from '../../shared/packets/client/packet-client-
 import ServerPlayer from './server-player';
 import PacketClientTurnStart from '../../shared/packets/client/packet-client-turn-start';
 import { TurnType } from '../../shared/enums/gamestate-enums';
+import PacketClientPlayerListInfo from '../../shared/packets/client/packet-client-player-list-info';
+import PacketClientDev from '../../shared/packets/client/packet-client-dev';
 
 let nextID = 0;
 
@@ -17,29 +19,88 @@ export default class ServerGame {
 
 	public id: number;
 	public connectionManager: ConnectionManager;
-	public readonly startTime: number = Date.now();
+	public isRunning: boolean = false;
+	public startTime: number;
 
 	public players: ServerPlayer[] = [];
 	public tiles: ServerTile[] = [];
 	public troops: ServerTroop[] = [];
 	public buildings: ServerBuilding[] = [];
 
-	public readonly boardSize: number;
 	public turnInfo: TurnInfo = {
 		turn: 1,
 		type: TurnType.DEVELOP,
 	};
 
-	constructor(httpServer: Server, boardSize: number) {
+	constructor(httpServer: Server) {
 		this.id = nextID++;
 
 		this.connectionManager = new ConnectionManager(this);
 
-		this.boardSize = boardSize;
-
 		this.generateTiles();
 
 		ServerGame.gameList.push(this);
+	}
+
+	start() {
+		if (this.isRunning) {
+			console.error('The game is already running');
+			return;
+		}
+
+		this.isRunning = true;
+		this.startTime = Date.now();
+
+		this.connectionManager.waitingToEndTurn = this.connectionManager.clients;
+
+		let packet = new PacketClientDev({ action: 'HIDE_START_GAME_BUTTON' });
+		this.connectionManager.clients.forEach((client) => packet.addClient(client));
+		packet.sendToClients();
+	}
+
+	generateTiles() {
+		let boardSize = 5;
+		for (let row = -boardSize + 1; row < boardSize; row++) {
+			for (
+				let column = Math.abs(row) - (boardSize - 1) * 2;
+				column <= -Math.abs(row) + (boardSize - 1) * 2;
+				column += 2
+			) {
+				new ServerTile(this, column, row);
+			}
+		}
+
+		// let testTile = new ServerTile(0, 0);
+		// this.troops.push(new ServerTroop(11, testTile));
+		// this.tiles.push(testTile);
+		//
+		// this.tiles.push(new ServerTile(-4, 0));
+		// this.tiles.push(new ServerTile(-6, 0));
+		// this.tiles.push(new ServerTile(-5, -1));
+		// this.tiles.push(new ServerTile(-5, 0)); //This tile should Error
+	}
+
+	getFullGameSnapshot(client: ServerClient): GameSnapshot {
+		return {
+			isRunning: this.isRunning,
+			isAuthenticated: client.isAuthenticated,
+			turnInfo: this.turnInfo,
+			resources: client.resources,
+			players: this.players.map((player) => player.getPlayerSnapshot(client)),
+			tiles: this.tiles.map((tile) => tile.getTileSnapshot(client)),
+			troops: this.troops.map((troop) => troop.getTroopSnapshot(client)),
+			buildings: this.buildings.map((building) => building.getBuildingSnapshot(client)),
+		};
+	}
+
+	sendServerSnapshot() {
+		this.connectionManager.clients.forEach((client) => this.sendSnapshot(client));
+	}
+
+	sendSnapshot(client: ServerClient) {
+		let packet = new PacketClientGameSnapshot(this.getFullGameSnapshot(client));
+		packet.addClient(client);
+		packet.sendToClients();
 	}
 
 	attemptEndTurn() {
@@ -67,50 +128,7 @@ export default class ServerGame {
 	}
 
 	isJoinable() {
-		return this.connectionManager.clients.length < this.connectionManager.maxPlayers;
-	}
-
-	generateTiles() {
-		for (let row = -this.boardSize + 1; row < this.boardSize; row++) {
-			for (
-				let column = Math.abs(row) - (this.boardSize - 1) * 2;
-				column <= -Math.abs(row) + (this.boardSize - 1) * 2;
-				column += 2
-			) {
-				new ServerTile(this, column, row);
-			}
-		}
-
-		// let testTile = new ServerTile(0, 0);
-		// this.troops.push(new ServerTroop(11, testTile));
-		// this.tiles.push(testTile);
-		//
-		// this.tiles.push(new ServerTile(-4, 0));
-		// this.tiles.push(new ServerTile(-6, 0));
-		// this.tiles.push(new ServerTile(-5, -1));
-		// this.tiles.push(new ServerTile(-5, 0)); //This tile should Error
-	}
-
-	getFullGameSnapshot(client: ServerClient): GameSnapshot {
-		return {
-			isAuthenticated: client.isAuthenticated,
-			turnInfo: this.turnInfo,
-			resources: client.resources,
-			players: this.players.map((player) => player.getPlayerSnapshot(client)),
-			tiles: this.tiles.map((tile) => tile.getTileSnapshot(client)),
-			troops: this.troops.map((troop) => troop.getTroopSnapshot(client)),
-			buildings: this.buildings.map((building) => building.getBuildingSnapshot(client)),
-		};
-	}
-
-	sendServerSnapshot() {
-		this.connectionManager.clients.forEach((client) => this.sendSnapshot(client));
-	}
-
-	sendSnapshot(client: ServerClient) {
-		let packet = new PacketClientGameSnapshot(this.getFullGameSnapshot(client));
-		packet.addClient(client);
-		packet.sendToClients();
+		return this.connectionManager.clients.length < this.connectionManager.maxPlayers && !this.isRunning;
 	}
 
 	getPlayer(id: number): ServerPlayer | null {

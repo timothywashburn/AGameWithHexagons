@@ -11,6 +11,8 @@ import PacketClientChat from '../../../shared/packets/client/packet-client-chat'
 import { UserProfile } from '../../../server/objects/server-client';
 import { updateTurnText } from '../misc/ui';
 import PacketClientTurnStart from '../../../shared/packets/client/packet-client-turn-start';
+import PacketClientDev from '../../../shared/packets/client/packet-client-dev';
+import { isDev } from '../../../server/misc/utils';
 
 export const clientSocket = (io as any).connect();
 
@@ -27,7 +29,17 @@ clientSocket.on('packet', function (packet: Packet) {
 	if (packet.packetDestination !== PacketDestination.CLIENT_BOUND) return;
 	console.log(`receiving packet: ` + getPacketName(packet.packetTypeID));
 
-	if (packet.packetTypeID === ClientPacketID.GAME_INIT.id) {
+	if (packet.packetTypeID === ClientPacketID.DEV.id && isDev) {
+		let packetClientDev = packet as PacketClientDev;
+
+		if (packetClientDev.data.action) {
+			let action = packetClientDev.data.action;
+			if (action == 'HIDE_START_GAME_BUTTON') {
+				const button = document.getElementById('start-game-button') as HTMLButtonElement;
+				button.style.display = 'none';
+			}
+		}
+	} else if (packet.packetTypeID === ClientPacketID.GAME_INIT.id) {
 		let packetClientGameInit = packet as PacketClientGameInit;
 
 		(window as any).gameData.initData = packetClientGameInit.initData;

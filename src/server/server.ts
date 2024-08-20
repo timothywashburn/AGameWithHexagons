@@ -14,7 +14,7 @@ import config from '../../config.json';
 import { isDev } from './misc/utils';
 import ServerClient from './objects/server-client';
 import ServerGame from './objects/server-game';
-import {handleEndpoint} from "./api/endpoint";
+import { handleEndpoint } from './api/endpoint';
 
 const app = express();
 
@@ -102,8 +102,8 @@ app.get('/:page', (req: Request, res: Response) => {
 
 const server = http.createServer(app);
 
-let game = new ServerGame(server, 5);
-let game2 = new ServerGame(server, 5);
+let game = new ServerGame(server);
+let game2 = new ServerGame(server);
 
 export const serverSocket = new Server(server);
 
