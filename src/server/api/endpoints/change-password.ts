@@ -2,6 +2,8 @@ import {Endpoint, endpoints} from "../endpoint";
 import {AuthData} from "../endpoint";
 import * as auth from "../../controllers/authentication";
 import {PasswordChangeResponse, PasswordChangeResponseData} from "../../../shared/enums/misc-enums";
+import {hashPassword, verifyPassword, verifyToken} from "../../controllers/authentication";
+import {runQuery} from "../../controllers/sql";
 
 class ChangePassword extends Endpoint {
 
@@ -14,7 +16,7 @@ class ChangePassword extends Endpoint {
         let oldPassword = parameters[0];
         let newPassword = parameters[1];
 
-       return auth.changePassword(authData.token, oldPassword, newPassword)
+       return changePassword(authData.token, oldPassword, newPassword)
         .then(async (result: PasswordChangeResponseData) => {
             return {
                 result: result.id
@@ -33,6 +35,26 @@ class ChangePassword extends Endpoint {
         return true;
     }
 
+}
+
+export async function changePassword(token: string, oldPassword: string | null, newPassword: string, requireOld = true): Promise<PasswordChangeResponseData> {
+    try {
+        const decoded = verifyToken(token);
+
+        if (requireOld) {
+            const result = await runQuery<any[]>('SELECT password FROM accounts WHERE id = ?', [decoded.userId]);
+            if (!(await verifyPassword(oldPassword!, result[0].password))) {
+                return PasswordChangeResponse.PASSWORD_INCORRECT;
+            }
+        }
+
+        const hash = await hashPassword(newPassword);
+        await runQuery('UPDATE accounts SET password = ? WHERE id = ?', [hash, decoded.userId]);
+
+        return PasswordChangeResponse.SUCCESS;
+    } catch {
+        return PasswordChangeResponse.ERROR;
+    }
 }
 
 endpoints.push(new ChangePassword());

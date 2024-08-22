@@ -9,7 +9,7 @@ import webpack from 'webpack';
 import webpackDevMiddleware from 'webpack-dev-middleware';
 import * as endpoints from './api/endpoint';
 import webpackConfig from '../../webpack.dev';
-import * as authentication from './controllers/authentication';
+import * as sql from './controllers/sql';
 import config from '../../config.json';
 import { isDev } from './misc/utils';
 import ServerClient from './objects/server-client';
@@ -115,4 +115,4 @@ server.listen(config.port, () => {
 	console.log(`Listening on port ${chalk.red(config.port)} in ${envColor(process.env.NODE_ENV)} mode`);
 });
 
-authentication.init();
+sql.init();

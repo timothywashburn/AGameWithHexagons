@@ -1,7 +1,9 @@
 import {Endpoint, endpoints} from "../endpoint";
 import * as auth from '../../controllers/authentication';
-import {RegistrationResponseData} from "../../../shared/enums/misc-enums";
+import {RegistrationResponse, RegistrationResponseData} from "../../../shared/enums/misc-enums";
 import {AuthData} from "../endpoint";
+import {hashPassword, isUsernameTaken, isUsernameValid} from "../../controllers/authentication";
+import {runQuery} from "../../controllers/sql";
 
 class Register extends Endpoint {
 
@@ -22,7 +24,7 @@ class Register extends Endpoint {
             };
         }
 
-        return auth.createAccount(username, password)
+        return createAccount(username, password)
         .then(async (result: RegistrationResponseData) => {
             return {
                 success: result.id === 0x00,
@@ -43,7 +45,21 @@ class Register extends Endpoint {
     requiresAuthentication(): boolean {
         return false;
     }
+}
 
+async function createAccount(username: string, password: string): Promise<RegistrationResponseData> {
+    if (!(await isUsernameValid(username))) return RegistrationResponse.USERNAME_INVALID;
+
+    if (await isUsernameTaken(username)) return RegistrationResponse.USERNAME_EXISTS;
+
+    try {
+        const hash = await hashPassword(password);
+        await runQuery('INSERT INTO accounts (username, password) VALUES (?, ?)', [username, hash]);
+        console.log('Account created:', username);
+        return RegistrationResponse.SUCCESS;
+    } catch (error) {
+        return RegistrationResponse.PASSWORD_INVALID;
+    }
 }
 
 endpoints.push(new Register());
