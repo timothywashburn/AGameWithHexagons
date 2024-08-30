@@ -12,8 +12,8 @@ export class TurnTypeEnum extends CustomEnum<TurnType> {
 export class TurnType extends EnumValue {
 	public displayName: string;
 
-	constructor(message: string) {
+	constructor(displayName: string) {
 		super();
-		this.displayName = message;
+		this.displayName = displayName;
 	}
 }

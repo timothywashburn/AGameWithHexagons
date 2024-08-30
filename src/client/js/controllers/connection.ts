@@ -74,7 +74,7 @@ clientSocket.on('packet', function (packet: Packet) {
 		const message = document.createElement('div')!;
 
 		let client = (window as any).gameData.playerListInfo.find(
-			(playerListEntry: UserProfile) => playerListEntry.userID === packetClientChat.clientID,
+			(playerListEntry: UserProfile) => playerListEntry.userID === packetClientChat.clientID
 		);
 		message.innerHTML = client.username + ': ' + packetClientChat.message;
 
@@ -87,11 +87,11 @@ clientSocket.on('packet', function (packet: Packet) {
 		const message = document.createElement('div');
 
 		let client = (window as any).gameData.playerListInfo.find(
-			(playerListEntry: UserProfile) => playerListEntry.userID === packetClientAnnouncement.clientID,
+			(playerListEntry: UserProfile) => playerListEntry.userID === packetClientAnnouncement.clientID
 		);
 
 		let announcement: AnnouncementType = Enum.AnnouncementType.getFromIndex(
-			packetClientAnnouncement.announcementID,
+			packetClientAnnouncement.announcementID
 		);
 
 		message.innerHTML = client.username + ' ' + announcement.message;
@@ -102,7 +102,7 @@ clientSocket.on('packet', function (packet: Packet) {
 	} else if (packet.packetTypeID === ClientPacketID.TURN_START.id) {
 		let packetClientTurnStart = packet as PacketClientTurnStart;
 
-		getGame().updateTurnInfo(packetClientTurnStart.turnInfo);
+		getGame().updateTurnInfo(packetClientTurnStart.turnNumber, packetClientTurnStart.turnTypeIndex);
 
 		const button = document.getElementById('end-turn-button') as HTMLButtonElement;
 		button.disabled = false;

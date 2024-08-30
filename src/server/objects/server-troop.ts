@@ -1,7 +1,8 @@
 import ServerClient from './server-client';
 import { TroopSnapshot } from '../../shared/interfaces/snapshot';
 import ServerGame from './server-game';
-import { TroopType } from '../../shared/enums/unit-enums';
+import Enum from '../../shared/enums/enum';
+import { TroopType } from '../../shared/enums/game/troop-type';
 
 export default abstract class ServerTroop {
 	public id: number;
@@ -21,8 +22,8 @@ export default abstract class ServerTroop {
 	getTroopSnapshot(client: ServerClient): TroopSnapshot {
 		return {
 			id: this.id,
-			type: this.type,
-			ownerID: this.owner.getID(),
+			typeIndex: this.type.getIndex(),
+			ownerID: this.owner.getID()
 		};
 	}
 }

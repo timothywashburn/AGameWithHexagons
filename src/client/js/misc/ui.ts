@@ -3,9 +3,9 @@ import { clientSocket } from '../controllers/connection';
 import PacketServerSpawnUnit from '../../../shared/packets/server/packet-server-spawn-unit';
 import { getGame } from '../objects/client-game';
 import ClientTile from '../objects/client-tile';
-import { BuildingType, TroopType } from '../../../shared/enums/unit-enums';
 import PacketServerEndTurn from '../../../shared/packets/server/packet-server-end-turn';
 import PacketServerDev from '../../../shared/packets/server/packet-server-dev';
+import Enum from '../../../shared/enums/enum';
 
 document.getElementById('chatSend')!.addEventListener('click', () => {
 	const chatInput = document.getElementById('chatInput') as HTMLInputElement;
@@ -81,43 +81,34 @@ document.getElementById('start-game-button')!.addEventListener('click', () => {
 
 export function updateTurnText() {
 	const turnText = document.getElementById('turn-text') as HTMLInputElement;
-	turnText.textContent = `Turn ${getGame().turnInfo.turn}: ${getGame().turnInfo.type.displayName}`;
-}
-
-export function capitalizeFirstLetterOnly(string: string) {
-	return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+	turnText.textContent = `Turn ${getGame().turnNumber}: ${getGame().turnType.displayName}`;
 }
 
 export function populateSpawnButtons() {
-	for (let i = 0; i < Object.keys(TroopType).length; i++) {
-		let troopName = Object.values(TroopType)[i];
+	for (let i = 0; i < Enum.TroopType.size(); i++) {
+		let troopType = Enum.TroopType.getFromIndex(i);
 		let newButton = document.createElement('button');
-		newButton.appendChild(document.createTextNode(capitalizeFirstLetterOnly(troopName)));
-		newButton.id = `spawn-troop-${troopName.toLowerCase()}`;
+		newButton.appendChild(document.createTextNode(troopType.displayName));
+		newButton.id = `spawn-troop-${troopType.getIndex()}`;
 
 		newButton.addEventListener('click', () => {
-			let packet = new PacketServerSpawnUnit('troop', Object.values(TroopType)[i], getGame().selectedTile!.id);
+			let packet = new PacketServerSpawnUnit('troop', troopType.getIndex(), getGame().selectedTile!.id);
 			packet.sendToServer(clientSocket).then((response) => {
 				if (!response.success) return;
-				console.log(`spawning troop of type ${Object.values(TroopType)[i]}`);
 				toggleSidebar('troop');
 			});
 		});
 		document.getElementById('troop-spawn-options')!.appendChild(newButton);
 	}
 
-	for (let i = 0; i < Object.keys(BuildingType).length; i++) {
-		let buildingName = Object.values(BuildingType)[i];
+	for (let i = 0; i < Enum.BuildingType.size(); i++) {
+		let buildingType = Enum.BuildingType.getFromIndex(i);
 		let newButton = document.createElement('button');
-		newButton.appendChild(document.createTextNode(capitalizeFirstLetterOnly(buildingName)));
-		newButton.id = `spawn-building-${buildingName.toLowerCase()}`;
+		newButton.appendChild(document.createTextNode(buildingType.displayName));
+		newButton.id = `spawn-building-${buildingType.getIndex()}`;
 
 		newButton.addEventListener('click', () => {
-			let packet = new PacketServerSpawnUnit(
-				'building',
-				Object.values(BuildingType)[i],
-				getGame().selectedTile!.id
-			);
+			let packet = new PacketServerSpawnUnit('building', buildingType.getIndex(), getGame().selectedTile!.id);
 			packet.sendToServer(clientSocket).then((response) => {
 				if (!response.success) return;
 				toggleSidebar('building');
@@ -158,11 +149,11 @@ export function setSidebarInfoTile() {
 export function setSidebarInfoTroop() {
 	let thisTroop = getGame().selectedTile!.troop!;
 	document.getElementById('troop-name')!.innerText = `Troop ${thisTroop.id}`;
-	document.getElementById('troop-class')!.innerText = `${capitalizeFirstLetterOnly(thisTroop.type.valueOf())}`;
+	document.getElementById('troop-class')!.innerText = `${thisTroop.type.displayName}`;
 }
 
 export function setSidebarInfoBuilding() {
 	let thisBuilding = getGame().selectedTile!.building!;
 	document.getElementById('building-name')!.innerText = `Building ${thisBuilding.id}`;
-	document.getElementById('building-class')!.innerText = `${capitalizeFirstLetterOnly(thisBuilding.type.valueOf())}`;
+	document.getElementById('building-class')!.innerText = `${thisBuilding.type.displayName}`;
 }

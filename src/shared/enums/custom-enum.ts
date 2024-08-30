@@ -12,6 +12,10 @@ export default abstract class CustomEnum<T extends EnumValue> {
 		this.enumValues.push(enumValue);
 		return enumValue;
 	}
+
+	public size() {
+		return this.enumValues.length;
+	}
 }
 
 export abstract class EnumValue {

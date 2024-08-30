@@ -1,14 +1,6 @@
-import {
-	EmailChangeResponse,
-	EmailChangeResponseData,
-	NameChangeResponse,
-	NameChangeResponseData,
-	PasswordChangeResponse,
-	PasswordChangeResponseData,
-	ToastMessage,
-} from '../../../shared/enums/misc-enums';
 import { showToast } from '../controllers/toast';
 import { Modal } from 'bootstrap';
+import Enum from '../../../shared/enums/enum';
 
 window.onload = function () {
 	showToasts();
@@ -16,8 +8,8 @@ window.onload = function () {
 	fetch('/api/account', {
 		method: 'GET',
 		headers: {
-			Authorization: 'Bearer ' + localStorage.token,
-		},
+			Authorization: 'Bearer ' + localStorage.token
+		}
 	})
 		.then((response) => response.json())
 		.then((data) => {
@@ -40,10 +32,11 @@ window.onload = function () {
 
 function showToasts() {
 	const urlParams = new URLSearchParams(window.location.search);
-	const toastId = urlParams.get('toast') as string;
+	const toastIdString = urlParams.get('toast');
+	if (!toastIdString) return;
 
-	let toast = Object.values(ToastMessage).find((toast) => toast.id === parseInt(toastId));
-	if (toast) showToast(toast.message, toast.color);
+	let toast = Enum.AccountToastMessage.getFromIndex(parseInt(toastIdString));
+	showToast(toast.message, toast.color);
 }
 
 function setupButtons() {
@@ -69,8 +62,8 @@ function setupButtons() {
 			method: 'GET',
 			headers: {
 				'Content-Type': 'application/json',
-				Authorization: `Bearer ${localStorage.getItem('token')}`,
-			},
+				Authorization: `Bearer ${localStorage.getItem('token')}`
+			}
 		})
 			.then((response) => response.json())
 			.then((data) => {
@@ -101,8 +94,8 @@ function setupButtons() {
 		fetch('/api/resendverification', {
 			method: 'GET',
 			headers: {
-				Authorization: 'Bearer ' + localStorage.token,
-			},
+				Authorization: 'Bearer ' + localStorage.token
+			}
 		})
 			.then((response) => response.json())
 			.then((data) => {
@@ -122,68 +115,68 @@ function setupButtons() {
 			});
 	});
 
-    let cancelButton = document.getElementById('cancelBtn')!;
-    cancelButton.addEventListener('click', function() {
-        let modal = document.getElementById('promptModal')!;
+	let cancelButton = document.getElementById('cancelBtn')!;
+	cancelButton.addEventListener('click', function () {
+		let modal = document.getElementById('promptModal')!;
 
-        updateModal('placeholder');
-        (document.getElementById('placeholder') as HTMLInputElement).value = '';
-        (document.getElementById('placeholder-confirm') as HTMLInputElement).value = '';
+		updateModal('placeholder');
+		(document.getElementById('placeholder') as HTMLInputElement).value = '';
+		(document.getElementById('placeholder-confirm') as HTMLInputElement).value = '';
 
-        resetErrors();
+		resetErrors();
 
-        modal.classList.remove('show');
-        modal.style.display = 'none';
+		modal.classList.remove('show');
+		modal.style.display = 'none';
 
-        let backdrops = document.getElementsByClassName('modal-backdrop') as HTMLCollectionOf<Element>;
-        for (let i = 0; i < backdrops.length; i++) {
-            backdrops[i].parentNode!.removeChild(backdrops[i]);
-        }
-    });
+		let backdrops = document.getElementsByClassName('modal-backdrop') as HTMLCollectionOf<Element>;
+		for (let i = 0; i < backdrops.length; i++) {
+			backdrops[i].parentNode!.removeChild(backdrops[i]);
+		}
+	});
 }
 
 document.getElementById('placeholderForm')!.addEventListener('submit', function (e) {
 	e.preventDefault();
 
-    let modalTitle = document.getElementById('promptModalLabel')!.textContent;
+	let modalTitle = document.getElementById('promptModalLabel')!.textContent;
 
-    if (modalTitle === 'Change Email') {
-        let email = (document.getElementById('email') as HTMLInputElement).value;
-        let confirm = (document.getElementById('email-confirm') as HTMLInputElement).value;
+	if (modalTitle === 'Change Email') {
+		let email = (document.getElementById('email') as HTMLInputElement).value;
+		let confirm = (document.getElementById('email-confirm') as HTMLInputElement).value;
 
-        if (email !== confirm) {
-            showError('Emails do not match');
-            return;
-        }
+		if (email !== confirm) {
+			showError('Emails do not match');
+			return;
+		}
 
-        changeEmail(email);
-    } else if (modalTitle === 'Change Username') {
-        let username = (document.getElementById('username') as HTMLInputElement).value;
-        let confirm = (document.getElementById('username-confirm') as HTMLInputElement).value;
+		changeEmail(email);
+	} else if (modalTitle === 'Change Username') {
+		let username = (document.getElementById('username') as HTMLInputElement).value;
+		let confirm = (document.getElementById('username-confirm') as HTMLInputElement).value;
 
-        if (username !== confirm) {
-            showError('Usernames do not match');
-            return;
-        }
+		if (username !== confirm) {
+			showError('Usernames do not match');
+			return;
+		}
 
-        changeUsername(username);
-    }
+		changeUsername(username);
+	}
 });
 
-document.getElementById('changePasswordForm')!.addEventListener('submit', function(e) {
-    e.preventDefault();
+document.getElementById('changePasswordForm')!.addEventListener('submit', function (e) {
+	e.preventDefault();
 
-    let oldPassword = (document.getElementById('old-password') as HTMLInputElement).value;
-    let newPassword = (document.getElementById('new-password') as HTMLInputElement).value;
-    let confirm = (document.getElementById('confirm-new-password') as HTMLInputElement).value;
+	let oldPassword = (document.getElementById('old-password') as HTMLInputElement).value;
+	let newPassword = (document.getElementById('new-password') as HTMLInputElement).value;
+	let confirm = (document.getElementById('confirm-new-password') as HTMLInputElement).value;
 
-    if (newPassword !== confirm) {
-        resetErrors();
-        showPasswordError('Passwords do not match', false);
-        return;
-    }
+	if (newPassword !== confirm) {
+		resetErrors();
+		showPasswordError('Passwords do not match', false);
+		return;
+	}
 
-    changePassword(oldPassword, confirm);
+	changePassword(oldPassword, confirm);
 });
 
 function changeUsername(newUsername: string) {
@@ -192,24 +185,22 @@ function changeUsername(newUsername: string) {
 	fetch(`/api/changeusername?${params}`, {
 		method: 'GET',
 		headers: {
-			Authorization: 'Bearer ' + localStorage.token,
-		},
+			Authorization: 'Bearer ' + localStorage.token
+		}
 	})
 		.then((response) => response.json())
 		.then((data) => {
 			resetErrors();
 
-            if(data.success !== undefined && !data.success) {
-                showError('Error changing username');
-                return;
-            }
+			if (data.success !== undefined && !data.success) {
+				showError('Error changing username');
+				return;
+			}
 
-            let error = Object.values(NameChangeResponse).find((error) => error.id === data.result) as NameChangeResponseData;
-            console.log(error);
-
-			if (error.id === NameChangeResponse.SUCCESS.id) {
-				location.href = `/account?toast=${ToastMessage.NAME_CHANGE_SUCCESS.id}`;
-			} else showError(error.message);
+			let response = Enum.NameChangeResponse.getFromIndex(data.result);
+			if (response === Enum.NameChangeResponse.SUCCESS) {
+				location.href = `/account?toast=${Enum.AccountToastMessage.NAME_CHANGE_SUCCESS.getIndex()}`;
+			} else showError(response.message);
 		})
 		.catch((error) => console.error(error));
 }
@@ -220,23 +211,23 @@ function changeEmail(newEmail: string) {
 	fetch(`/api/changeemail?${params}`, {
 		method: 'GET',
 		headers: {
-			Authorization: 'Bearer ' + localStorage.token,
-		},
+			Authorization: 'Bearer ' + localStorage.token
+		}
 	})
 		.then((response) => response.json())
 		.then((data) => {
 			resetErrors();
 
-            if(data.success !== undefined && !data.success) {
-                showError('Error changing email');
-                return;
-            }
+			if (data.success !== undefined && !data.success) {
+				showError('Error changing email');
+				return;
+			}
 
-            let error = Object.values(EmailChangeResponse).find((error) => error.id === data.result) as EmailChangeResponseData;
+			let response = Enum.EmailChangeResponse.getFromIndex(data.result);
 
-			if (error.id === EmailChangeResponse.SUCCESS.id) {
-				location.href = `/account?toast=${ToastMessage.EMAIL_CHANGE_SUCCESS.id}`;
-			} else showError(error.message);
+			if (response === Enum.EmailChangeResponse.SUCCESS) {
+				location.href = `/account?toast=${Enum.AccountToastMessage.EMAIL_CHANGE_SUCCESS.getIndex()}`;
+			} else showError(response.message);
 		})
 		.catch((error) => console.error(error));
 }
@@ -247,8 +238,8 @@ function changePassword(oldPassword: string, newPassword: string) {
 	fetch(`/api/changepassword?${params}`, {
 		method: 'GET',
 		headers: {
-			Authorization: 'Bearer ' + localStorage.token,
-		},
+			Authorization: 'Bearer ' + localStorage.token
+		}
 	})
 		.then((response) => response.json())
 		.then((data) => {
@@ -256,17 +247,17 @@ function changePassword(oldPassword: string, newPassword: string) {
 
 			resetErrors();
 
-            if(data.success !== undefined && !data.success) {
-                showPasswordError('Error changing password', true);
-                return;
-            }
+			if (data.success !== undefined && !data.success) {
+				showPasswordError('Error changing password', true);
+				return;
+			}
 
-            let error = Object.values(PasswordChangeResponse).find((error) => error.id === data.result) as PasswordChangeResponseData;
-            console.log(error);
+			let response = Enum.PasswordChangeResponse.getFromIndex(data.result);
+			console.log(response);
 
-			if (error.id === PasswordChangeResponse.SUCCESS.id) {
-				location.href = `/account?toast=${ToastMessage.PASSWORD_CHANGE_SUCCESS.id}`;
-			} else showPasswordError(error.message, true);
+			if (response === Enum.PasswordChangeResponse.SUCCESS) {
+				location.href = `/account?toast=${Enum.AccountToastMessage.PASSWORD_CHANGE_SUCCESS.getIndex()}`;
+			} else showPasswordError(response.message, true);
 		})
 		.catch((error) => console.error(error));
 }
@@ -305,7 +296,7 @@ function showError(message: string) {
 
 function showPasswordError(message: string, highlightOld: boolean) {
 	let passwordInputElements = document.querySelectorAll(
-		'.info-field input[type="password"]',
+		'.info-field input[type="password"]'
 	) as NodeListOf<HTMLInputElement>;
 	let passwordErrorMessage = document.getElementById('main-error-message')!;
 
@@ -330,7 +321,7 @@ function resetErrors() {
 	errorMessage.textContent = '';
 
 	let passwordInputElements = document.querySelectorAll(
-		'.info-field input[type="password"]',
+		'.info-field input[type="password"]'
 	) as NodeListOf<HTMLInputElement>;
 	passwordInputElements.forEach((input: HTMLElement) => {
 		input.style.borderColor = '';

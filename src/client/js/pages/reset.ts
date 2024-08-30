@@ -1,4 +1,4 @@
-import { PasswordChangeResponse, PasswordChangeResponseData } from '../../../shared/enums/misc-enums';
+import Enum from '../../../shared/enums/enum';
 
 const urlParams = new URLSearchParams(window.location.search);
 const token = urlParams.get('token');
@@ -29,22 +29,19 @@ document.getElementById('resetForm')!.addEventListener('submit', function (e) {
 	let params = new URLSearchParams({ token: token.toString(), password: password.toString() }).toString();
 
 	fetch(`/api/resetpassword?${params}`, {
-		method: 'GET',
+		method: 'GET'
 	})
 		.then((response) => response.json())
 		.then((data) => {
-			let error = document.getElementById('resetError')!;
-			let errorMessage = Object.values(PasswordChangeResponse).find(
-				(error) => error.id === data.result,
-			) as PasswordChangeResponseData;
+			let errorElement = document.getElementById('resetError')!;
+			let response = Enum.PasswordChangeResponse.getFromIndex(data.result);
 
-			if (errorMessage.id === PasswordChangeResponse.SUCCESS.id) {
+			if (response === Enum.PasswordChangeResponse.SUCCESS) {
 				window.location.href = '/login';
-
-				if (error) error.style.visibility = 'hidden';
+				if (errorElement) errorElement.style.visibility = 'hidden';
 			} else {
-				error.textContent = 'An error occurred. This link is likely expired.';
-				error.style.visibility = 'visible';
+				errorElement.textContent = 'An error occurred. This link is likely expired.';
+				errorElement.style.visibility = 'visible';
 			}
 			resetBtn.classList.remove('active');
 		})

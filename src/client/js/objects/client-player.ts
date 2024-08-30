@@ -1,9 +1,11 @@
 import { PlayerSnapshot } from '../../../shared/interfaces/snapshot';
 import { getGame } from './client-game';
 import ClientElement from './client-element';
+import Enum from '../../../shared/enums/enum';
+import { TeamColor } from '../../../shared/enums/game/team-color';
 
 export default class ClientPlayer extends ClientElement {
-	public color: string;
+	public teamColor: TeamColor;
 
 	constructor(playerSnapshot: PlayerSnapshot) {
 		super(playerSnapshot.id);
@@ -14,7 +16,7 @@ export default class ClientPlayer extends ClientElement {
 	}
 
 	updatePlayer(playerSnapshot: PlayerSnapshot) {
-		this.color = playerSnapshot.color;
+		this.teamColor = Enum.TeamColor.getFromIndex(playerSnapshot.colorIndex);
 	}
 
 	static getClient(id: number): ClientPlayer | null {

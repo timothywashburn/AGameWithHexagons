@@ -1,6 +1,3 @@
-import { BuildingType, TroopType } from '../enums/unit-enums';
-import { TurnType } from '../enums/game/turn-type';
-
 export interface ElementSnapshot {
 	id: number;
 }
@@ -8,17 +5,13 @@ export interface ElementSnapshot {
 export interface GameSnapshot {
 	isRunning: boolean;
 	isAuthenticated: boolean;
-	turnInfo: TurnInfo;
+	turnNumber: number;
+	turnTypeIndex: number;
 	resources: GameResources;
 	players: PlayerSnapshot[];
 	tiles: TileSnapshot[];
 	troops: TroopSnapshot[];
 	buildings: BuildingSnapshot[];
-}
-
-export interface TurnInfo {
-	turn: number;
-	type: TurnType; // TODO: Snapshots should be sending indices of enums not the enum contents
 }
 
 export interface GameResources {
@@ -27,7 +20,7 @@ export interface GameResources {
 }
 
 export interface PlayerSnapshot extends ElementSnapshot {
-	color: string;
+	colorIndex: number;
 }
 
 export interface TileSnapshot extends ElementSnapshot {
@@ -39,11 +32,11 @@ export interface TileSnapshot extends ElementSnapshot {
 }
 
 export interface TroopSnapshot extends ElementSnapshot {
-	type: TroopType;
+	typeIndex: number;
 	ownerID: number;
 }
 
 export interface BuildingSnapshot extends ElementSnapshot {
-	type: BuildingType;
+	typeIndex: number;
 	ownerID: number;
 }

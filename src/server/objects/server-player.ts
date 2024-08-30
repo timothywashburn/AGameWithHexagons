@@ -1,23 +1,22 @@
 import ServerGame from './server-game';
-import { TeamColor } from '../../shared/enums/misc-enums';
 import { PlayerSnapshot } from '../../shared/interfaces/snapshot';
 import ServerClient from './server-client';
-
-let nextColor = 0;
+import Enum from '../../shared/enums/enum';
+import { TeamColor } from '../../shared/enums/game/team-color';
 
 export default class ServerPlayer {
 	public game: ServerGame;
 	public client: ServerClient;
 	public id: number;
 
-	public color: string;
+	public color: TeamColor;
 
 	constructor(game: ServerGame, client: ServerClient) {
 		this.game = game;
 		this.client = client;
 		this.id = this.client.getID();
 
-		this.color = Object.values(TeamColor)[nextColor++ % Object.keys(TeamColor).length];
+		this.color = Enum.TeamColor.getFromIndex(game.nextPlayerTeamColor++ % Enum.TeamColor.size());
 
 		game.players.push(this);
 	}
@@ -25,7 +24,7 @@ export default class ServerPlayer {
 	getPlayerSnapshot(client: ServerClient): PlayerSnapshot {
 		return {
 			id: this.client.getID(),
-			color: this.color,
+			colorIndex: this.color.getIndex()
 		};
 	}
 }
