@@ -3,17 +3,17 @@ export const NameErrorType = Object.freeze({
 	TOO_SHORT: { id: 0x02, message: 'Name Too Short (3 Characters Minimum)' },
 	TOO_LONG: { id: 0x03, message: 'Name Too Long (30 Characters Maximum)' },
 });
-
-export interface AnnouncementTypeData {
-	id: number;
-	message: string;
-	color: string;
-}
-
-export const AnnouncementType: Readonly<{ [key: string]: AnnouncementTypeData }> = Object.freeze({
-	GAME_JOIN: { id: 0x01, message: 'Joined the game', color: 'green' },
-	GAME_LEAVE: { id: 0x02, message: 'Left the game', color: 'red' },
-});
+//
+// export interface AnnouncementTypeData {
+// 	id: number;
+// 	message: string;
+// 	color: string;
+// }
+//
+// export const AnnouncementType: Readonly<{ [key: string]: AnnouncementTypeData }> = Object.freeze({
+// 	GAME_JOIN: { id: 0x01, message: 'Joined the game', color: 'green' },
+// 	GAME_LEAVE: { id: 0x02, message: 'Left the game', color: 'red' },
+// });
 
 export interface RegistrationResponseData {
 	id: number;
