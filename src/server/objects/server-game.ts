@@ -8,9 +8,9 @@ import ServerBuilding from './server-building';
 import PacketClientGameSnapshot from '../../shared/packets/client/packet-client-game-snapshot';
 import ServerPlayer from './server-player';
 import PacketClientTurnStart from '../../shared/packets/client/packet-client-turn-start';
-import { TurnType } from '../../shared/enums/gamestate-enums';
 import PacketClientPlayerListInfo from '../../shared/packets/client/packet-client-player-list-info';
 import PacketClientDev from '../../shared/packets/client/packet-client-dev';
+import Enum from '../../shared/enums/enum';
 
 let gameID = 0;
 
@@ -30,7 +30,7 @@ export default class ServerGame {
 
 	public turnInfo: TurnInfo = {
 		turn: 1,
-		type: TurnType.DEVELOP,
+		type: Enum.TurnType.DEVELOP
 	};
 
 	constructor() {
@@ -90,7 +90,7 @@ export default class ServerGame {
 			players: this.players.map((player) => player.getPlayerSnapshot(client)),
 			tiles: this.tiles.map((tile) => tile.getTileSnapshot(client)),
 			troops: this.troops.map((troop) => troop.getTroopSnapshot(client)),
-			buildings: this.buildings.map((building) => building.getBuildingSnapshot(client)),
+			buildings: this.buildings.map((building) => building.getBuildingSnapshot(client))
 		};
 	}
 
@@ -115,7 +115,7 @@ export default class ServerGame {
 		this.sendServerSnapshot();
 
 		this.turnInfo.turn++;
-		this.turnInfo.type = this.turnInfo.turn % 2 == 0 ? TurnType.SIEGE : TurnType.DEVELOP;
+		this.turnInfo.type = this.turnInfo.turn % 2 == 0 ? Enum.TurnType.SIEGE : Enum.TurnType.DEVELOP;
 
 		setTimeout(() => {
 			let packet = new PacketClientTurnStart(this.turnInfo);

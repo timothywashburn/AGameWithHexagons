@@ -1,5 +1,5 @@
 import { BuildingType, TroopType } from '../enums/unit-enums';
-import { TurnType, TurnTypeData } from '../enums/gamestate-enums';
+import { TurnType } from '../enums/game/turn-type';
 
 export interface ElementSnapshot {
 	id: number;
@@ -18,7 +18,7 @@ export interface GameSnapshot {
 
 export interface TurnInfo {
 	turn: number;
-	type: TurnTypeData;
+	type: TurnType; // TODO: Snapshots should be sending indices of enums not the enum contents
 }
 
 export interface GameResources {

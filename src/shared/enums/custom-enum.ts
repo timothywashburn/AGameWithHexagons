@@ -1,5 +1,5 @@
 export default abstract class CustomEnum<T extends EnumValue> {
-	public readonly enumValues: T[] = [];
+	private readonly enumValues: T[] = [];
 
 	protected constructor() {}
 

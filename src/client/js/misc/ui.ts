@@ -70,7 +70,7 @@ document.getElementById('end-turn-button')!.addEventListener('click', () => {
 
 document.getElementById('start-game-button')!.addEventListener('click', () => {
 	let packet = new PacketServerDev({
-		action: 'START_GAME',
+		action: 'START_GAME'
 	});
 
 	packet.sendToServer(clientSocket);
@@ -81,7 +81,7 @@ document.getElementById('start-game-button')!.addEventListener('click', () => {
 
 export function updateTurnText() {
 	const turnText = document.getElementById('turn-text') as HTMLInputElement;
-	turnText.textContent = `Turn ${getGame().turnInfo.turn}: ${getGame().turnInfo.type.text}`;
+	turnText.textContent = `Turn ${getGame().turnInfo.turn}: ${getGame().turnInfo.type.displayName}`;
 }
 
 export function capitalizeFirstLetterOnly(string: string) {
@@ -116,7 +116,7 @@ export function populateSpawnButtons() {
 			let packet = new PacketServerSpawnUnit(
 				'building',
 				Object.values(BuildingType)[i],
-				getGame().selectedTile!.id,
+				getGame().selectedTile!.id
 			);
 			packet.sendToServer(clientSocket).then((response) => {
 				if (!response.success) return;
