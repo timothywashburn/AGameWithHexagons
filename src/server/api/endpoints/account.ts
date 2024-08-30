@@ -1,6 +1,8 @@
 import {Endpoint, endpoints} from "../endpoint";
 import {AuthData} from "../endpoint";
 import * as auth from "../../controllers/authentication";
+import {verifyToken} from "../../controllers/authentication";
+import {runQuery} from "../../controllers/sql";
 
 class Account extends Endpoint {
 
@@ -9,7 +11,7 @@ class Account extends Endpoint {
     }
 
     async call(parameters: string[], authData: AuthData): Promise<string | object> {
-        return auth.getAccountInfo(authData.token)
+        return getAccountInfo(authData.token)
             .then(async (result: object) => {
                 return {
                     success: true,
@@ -30,6 +32,16 @@ class Account extends Endpoint {
         return true;
     }
 
+}
+
+export async function getAccountInfo(token: string): Promise<object> {
+    try {
+        const decoded = verifyToken(token);
+        const result = await runQuery<any[]>('SELECT username, email, email_verified FROM accounts WHERE id = ?', [decoded.userId]);
+        return result[0];
+    } catch {
+        return {};
+    }
 }
 
 endpoints.push(new Account());

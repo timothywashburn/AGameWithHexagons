@@ -1,6 +1,6 @@
 import {Endpoint, endpoints} from "../endpoint";
 import {AuthData} from "../endpoint";
-import * as auth from "../../controllers/authentication";
+import {sendEmailVerification} from "./change-email";
 
 class ResendVerification extends Endpoint {
 
@@ -10,7 +10,7 @@ class ResendVerification extends Endpoint {
 
     async call(parameters: string[], authData: AuthData): Promise<string | object> {
 
-        await auth.sendEmailVerification(authData.token);
+        await sendEmailVerification(authData.token);
         return {
             success: true
         };

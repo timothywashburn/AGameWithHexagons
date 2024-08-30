@@ -2,6 +2,7 @@ import {Endpoint, endpoints} from "../endpoint";
 import {AuthData} from "../endpoint";
 import * as auth from "../../controllers/authentication";
 import {PasswordChangeResponse, PasswordChangeResponseData} from "../../../shared/enums/misc-enums";
+import {changePassword} from "./change-password";
 
 class ResetPassword extends Endpoint {
 
@@ -12,7 +13,7 @@ class ResetPassword extends Endpoint {
     async call(parameters: string[], authData: AuthData): Promise<string | object> {
         let password = parameters[0];
 
-        return auth.changePassword(authData.token, null, password, false)
+        return changePassword(authData.token, null, password, false)
         .then(async (result: PasswordChangeResponseData) => {
             return {
                 result: result.id
