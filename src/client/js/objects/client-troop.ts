@@ -1,10 +1,10 @@
-import { getGame } from './client-game';
 import ClientTile from './client-tile';
 import { TroopSnapshot } from '../../../shared/interfaces/snapshot';
 import ClientPlayer from './client-player';
 import ClientElement from './client-element';
 import Enum from '../../../shared/enums/enum';
 import { TurnType as TroopType } from '../../../shared/enums/game/turn-type';
+import thePlayer from './client-the-player';
 
 const canvas = document.getElementById('gameCanvas') as HTMLCanvasElement;
 const ctx = canvas.getContext('2d')!;
@@ -25,7 +25,7 @@ export default abstract class ClientTroop extends ClientElement {
 
 		this.prepareSprite();
 
-		getGame().troops.push(this);
+		thePlayer.getGame().troops.push(this);
 	}
 
 	abstract getImageName(): string;
@@ -47,7 +47,7 @@ export default abstract class ClientTroop extends ClientElement {
 	}
 
 	getParentTile(): ClientTile {
-		return getGame().tiles.find((tile) => tile.troop === this)!;
+		return thePlayer.getGame().tiles.find((tile) => tile.troop === this)!;
 	}
 
 	async prepareSprite() {

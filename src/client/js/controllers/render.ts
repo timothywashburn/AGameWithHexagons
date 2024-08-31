@@ -1,5 +1,5 @@
-import { getGame } from '../objects/client-game';
 import { toggleSidebar } from './ui-overlay';
+import thePlayer from '../objects/client-the-player';
 
 const canvas = document.getElementById('gameCanvas') as HTMLCanvasElement;
 const ctx = canvas.getContext('2d')!;
@@ -71,7 +71,7 @@ canvas.addEventListener('mouseup', (event) => {
 
 const stationaryClick = (event: MouseEvent) => {
 	let clickedTile = getTile(event.clientX, event.clientY);
-	let game = getGame();
+	let game = thePlayer.getGame();
 	if (game.selectedTile == clickedTile) {
 		game.selectedTile = null;
 
@@ -112,13 +112,13 @@ canvas.addEventListener('mousemove', (event) => {
 	}
 
 	let hoveredTile = getTile(mouseX, mouseY);
-	for (let tile of getGame().tiles) {
+	for (let tile of thePlayer.getGame().tiles) {
 		tile.isHovered = hoveredTile === tile;
 	}
 });
 
 const getTile = (canvasX: number, canvasY: number) => {
-	for (let tile of getGame().tiles) {
+	for (let tile of thePlayer.getGame().tiles) {
 		if (ctx.isPointInPath(tile.path!, canvasX, canvasY)) {
 			return tile;
 		}

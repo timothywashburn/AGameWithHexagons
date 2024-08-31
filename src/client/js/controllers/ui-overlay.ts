@@ -1,12 +1,12 @@
 import PacketServerChat from '../../../shared/packets/server/packet-server-chat';
 import { clientSocket } from './connection';
 import PacketServerSpawnUnit from '../../../shared/packets/server/packet-server-spawn-unit';
-import { getGame } from '../objects/client-game';
 import ClientTile from '../objects/client-tile';
 import PacketServerEndTurn from '../../../shared/packets/server/packet-server-end-turn';
 import PacketServerDev from '../../../shared/packets/server/packet-server-dev';
 import Enum from '../../../shared/enums/enum';
 import PlayerActions from './action-manager';
+import thePlayer from '../objects/client-the-player';
 
 document.getElementById('chatSend')!.addEventListener('click', () => {
 	const chatInput = document.getElementById('chatInput') as HTMLInputElement;
@@ -33,40 +33,41 @@ document.addEventListener('keypress', (e) => {
 });
 
 document.getElementById('toggle-tile')!.addEventListener('click', () => {
-	let game = getGame();
+	let game = thePlayer.getGame();
 	if (game.selectedTile != null) {
 		toggleSidebar('tile');
 	}
 });
 
 document.getElementById('toggle-troop')!.addEventListener('click', () => {
-	let game = getGame();
+	let game = thePlayer.getGame();
 	if (game.selectedTile != null && game.selectedTile.troop != null) {
 		toggleSidebar('troop');
 	}
 });
 
 document.getElementById('toggle-building')!.addEventListener('click', () => {
-	let game = getGame();
+	let game = thePlayer.getGame();
 	if (game.selectedTile != null && game.selectedTile.building != null) {
 		toggleSidebar('building');
 	}
 });
 
 document.getElementById('end-turn-button')!.addEventListener('click', () => {
-	let packet = new PacketServerEndTurn();
-
-	const button = document.getElementById('end-turn-button') as HTMLButtonElement;
-	button.disabled = true;
-
-	packet.sendToServer(clientSocket).then((reply) => {
-		if (reply.success) {
-			const turnText = document.getElementById('turn-text') as HTMLInputElement;
-			turnText.textContent = 'Waiting for Players';
-		} else {
-			button.disabled = false;
-		}
-	});
+	// TODO: planned actions
+	// let packet = new PacketServerEndTurn();
+	//
+	// const button = document.getElementById('end-turn-button') as HTMLButtonElement;
+	// button.disabled = true;
+	//
+	// packet.sendToServer(clientSocket).then((reply) => {
+	// 	if (reply.success) {
+	// 		const turnText = document.getElementById('turn-text') as HTMLInputElement;
+	// 		turnText.textContent = 'Waiting for Players';
+	// 	} else {
+	// 		button.disabled = false;
+	// 	}
+	// });
 });
 
 document.getElementById('start-game-button')!.addEventListener('click', () => {
@@ -82,7 +83,7 @@ document.getElementById('start-game-button')!.addEventListener('click', () => {
 
 export function updateTurnText() {
 	const turnText = document.getElementById('turn-text') as HTMLInputElement;
-	turnText.textContent = `Turn ${getGame().turnNumber}: ${getGame().turnType.displayName}`;
+	turnText.textContent = `Turn ${thePlayer.getGame().turnNumber}: ${thePlayer.getGame().turnType.displayName}`;
 }
 
 export function populateSpawnButtons() {
@@ -93,8 +94,8 @@ export function populateSpawnButtons() {
 		newButton.id = `spawn-troop-${troopType.getIndex()}`;
 
 		newButton.addEventListener('click', () => {
-			PlayerActions.spawnUnit('troop', troopType.getIndex(), getGame().selectedTile!.id);
-			// let packet = new PacketServerSpawnUnit('troop', troopType.getIndex(), getGame().selectedTile!.id);
+			PlayerActions.spawnUnit('troop', troopType.getIndex(), thePlayer.getGame().selectedTile!.id);
+			// let packet = new PacketServerSpawnUnit('troop', troopType.getIndex(), thePlayer.getGame().selectedTile!.id);
 			// packet.sendToServer(clientSocket).then((response) => {
 			// 	if (!response.success) return;
 			// 	toggleSidebar('troop');
@@ -110,7 +111,11 @@ export function populateSpawnButtons() {
 		newButton.id = `spawn-building-${buildingType.getIndex()}`;
 
 		newButton.addEventListener('click', () => {
-			let packet = new PacketServerSpawnUnit('building', buildingType.getIndex(), getGame().selectedTile!.id);
+			let packet = new PacketServerSpawnUnit(
+				'building',
+				buildingType.getIndex(),
+				thePlayer.getGame().selectedTile!.id
+			);
 			packet.sendToServer(clientSocket).then((response) => {
 				if (!response.success) return;
 				toggleSidebar('building');
@@ -126,7 +131,7 @@ export function toggleSidebar(sidebar: 'tile' | 'troop' | 'building') {
 	document.getElementById('sidebar-building')!.style.display = 'none';
 
 	document.getElementById(`sidebar-${sidebar}`)!.style.display = 'block';
-	showSidebarToggles(getGame().selectedTile!);
+	showSidebarToggles(thePlayer.getGame().selectedTile!);
 
 	if (sidebar === 'tile') setSidebarInfoTile();
 	else if (sidebar === 'troop') setSidebarInfoTroop();
@@ -144,18 +149,18 @@ export function showSidebarToggles(tile: ClientTile) {
 }
 
 export function setSidebarInfoTile() {
-	let thisTile = getGame().selectedTile!;
+	let thisTile = thePlayer.getGame().selectedTile!;
 	document.getElementById('tile-name')!.innerText = `Tile ${thisTile.id}`;
 }
 
 export function setSidebarInfoTroop() {
-	let thisTroop = getGame().selectedTile!.troop!;
+	let thisTroop = thePlayer.getGame().selectedTile!.troop!;
 	document.getElementById('troop-name')!.innerText = `Troop ${thisTroop.id}`;
 	document.getElementById('troop-class')!.innerText = `${thisTroop.type.displayName}`;
 }
 
 export function setSidebarInfoBuilding() {
-	let thisBuilding = getGame().selectedTile!.building!;
+	let thisBuilding = thePlayer.getGame().selectedTile!.building!;
 	document.getElementById('building-name')!.innerText = `Building ${thisBuilding.id}`;
 	document.getElementById('building-class')!.innerText = `${thisBuilding.type.displayName}`;
 }

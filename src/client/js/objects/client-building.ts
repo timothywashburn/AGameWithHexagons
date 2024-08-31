@@ -1,9 +1,9 @@
 import { BuildingSnapshot } from '../../../shared/interfaces/snapshot';
 import ClientPlayer from './client-player';
 import ClientElement from './client-element';
-import { getGame } from './client-game';
 import ClientTile from './client-tile';
 import { BuildingType } from '../../../shared/enums/game/building-type';
+import thePlayer from './client-the-player';
 
 const canvas = document.getElementById('gameCanvas') as HTMLCanvasElement;
 const ctx = canvas.getContext('2d')!;
@@ -24,7 +24,7 @@ export default abstract class ClientBuilding extends ClientElement {
 
 		this.prepareSprite();
 
-		getGame().buildings.push(this);
+		thePlayer.getGame().buildings.push(this);
 	}
 
 	abstract getImageName(): string;
@@ -46,7 +46,7 @@ export default abstract class ClientBuilding extends ClientElement {
 	}
 
 	getParentTile(): ClientTile {
-		return getGame().tiles.find((tile) => tile.building === this)!;
+		return thePlayer.getGame().tiles.find((tile) => tile.building === this)!;
 	}
 
 	async prepareSprite() {

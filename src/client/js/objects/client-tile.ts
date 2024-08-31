@@ -1,8 +1,8 @@
 import { TileSnapshot } from '../../../shared/interfaces/snapshot';
 import ClientTroop from './client-troop';
 import ClientBuilding from './client-building';
-import { getGame } from './client-game';
 import ClientElement from './client-element';
+import thePlayer from './client-the-player';
 
 const canvas = document.getElementById('gameCanvas') as HTMLCanvasElement;
 const ctx = canvas.getContext('2d')!;
@@ -42,13 +42,13 @@ export default class ClientTile extends ClientElement {
 
 		this.updateTile(tileSnapshot);
 
-		getGame().tiles.push(this);
+		thePlayer.getGame().tiles.push(this);
 	}
 
 	updateTile(tileSnapshot: TileSnapshot) {
 		this.color = tileSnapshot.color;
-		this.troop = getGame().getTroop(tileSnapshot.troopID);
-		this.building = getGame().getBuilding(tileSnapshot.buildingID);
+		this.troop = thePlayer.getGame().getTroop(tileSnapshot.troopID);
+		this.building = thePlayer.getGame().getBuilding(tileSnapshot.buildingID);
 	}
 
 	renderTile() {
@@ -78,7 +78,7 @@ export default class ClientTile extends ClientElement {
 	}
 
 	getImage() {
-		if (getGame().selectedTile == this) return hexagonSelected;
+		if (thePlayer.getGame().selectedTile == this) return hexagonSelected;
 		if (this.isHovered) return hexagonHover;
 		return hexagon;
 	}

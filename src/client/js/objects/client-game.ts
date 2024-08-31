@@ -14,10 +14,7 @@ import { getClientBuildingConstructor, getClientTroopConstructor } from '../../c
 import { populateSpawnButtons, updateTurnText } from '../controllers/ui-overlay';
 import { TurnType } from '../../../shared/enums/game/turn-type';
 import Enum from '../../../shared/enums/enum';
-
-let game: ClientGame;
-
-export const getGame = () => game;
+import thePlayer from './client-the-player';
 
 export class ClientGame {
 	public startTime: number;
@@ -37,7 +34,8 @@ export class ClientGame {
 	public selectedTile: ClientTile | null = null;
 
 	constructor(initData: GameSnapshot) {
-		game = this;
+		thePlayer.setGame(this);
+
 		this.startTime = Date.now();
 		this.setupDebug();
 		this.initGame(initData);

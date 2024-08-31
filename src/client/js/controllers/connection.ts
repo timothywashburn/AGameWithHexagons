@@ -1,7 +1,7 @@
 import Packet, { ClientPacketID, getPacketName, PacketDestination } from '../../../shared/packets/base/packet';
 import { io } from 'socket.io-client';
 import { devConfig, joinGame } from '../pages/play';
-import { ClientGame, getGame } from '../objects/client-game';
+import { ClientGame } from '../objects/client-game';
 import PacketClientAnnouncement from '../../../shared/packets/client/packet-client-announcement';
 import PacketClientGameInit from '../../../shared/packets/client/packet-client-game-init';
 import PacketClientGameSnapshot from '../../../shared/packets/client/packet-client-game-snapshot';
@@ -14,6 +14,7 @@ import PacketClientDev from '../../../shared/packets/client/packet-client-dev';
 import { isDev } from '../../../server/misc/utils';
 import Enum from '../../../shared/enums/enum';
 import { AnnouncementType } from '../../../shared/enums/packet/announcement-type';
+import thePlayer from '../objects/client-the-player';
 
 export const clientSocket = (io as any).connect();
 
@@ -50,7 +51,7 @@ clientSocket.on('packet', function (packet: Packet) {
 		if (devConfig.hidePlayerList) document.getElementById('playerList')!.style.display = 'none';
 	} else if (packet.packetTypeID === ClientPacketID.GAME_SNAPSHOT.id) {
 		let packetClientGameSnapshot = packet as PacketClientGameSnapshot;
-		getGame().updateGame(packetClientGameSnapshot.snapshot);
+		thePlayer.getGame().updateGame(packetClientGameSnapshot.snapshot);
 	} else if (packet.packetTypeID === ClientPacketID.PLAYER_LIST_INFO.id) {
 		let packetClientPlayerListInfo = packet as PacketClientPlayerListInfo;
 
@@ -102,7 +103,7 @@ clientSocket.on('packet', function (packet: Packet) {
 	} else if (packet.packetTypeID === ClientPacketID.TURN_START.id) {
 		let packetClientTurnStart = packet as PacketClientTurnStart;
 
-		getGame().updateTurnInfo(packetClientTurnStart.turnNumber, packetClientTurnStart.turnTypeIndex);
+		thePlayer.getGame().updateTurnInfo(packetClientTurnStart.turnNumber, packetClientTurnStart.turnTypeIndex);
 
 		const button = document.getElementById('end-turn-button') as HTMLButtonElement;
 		button.disabled = false;
