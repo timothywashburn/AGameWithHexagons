@@ -1,0 +1,194 @@
+<div class="container game-start" id="game-start">
+    <div class="row" style="height: 10%">
+        <h2>GAME NAME</h2>
+    </div>
+
+    <div class="row" style="height: 90%">
+        <div class="col-md-4">
+            <ul id="playerList"></ul>
+            <div id="chatBox">
+                <div id="chatMessages"></div>
+                <div id="inputWrapper">
+                    <input type="text" id="chatInput" class="form-control" placeholder="Press &quot;Enter&quot; to type...">
+                    <button id="chatSend" class="btn btn-primary">Send</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div id="gameSettings">
+                <h2>Game Settings</h2>
+                <div class="row">
+                    <h3>Security Level</h3>
+                    <select class="form-select">
+                        <option value="public">Public</option>
+                        <option value="private">Private</option>
+                    </select>
+                    <input type="text" id="game-setting-password" class="form-control" placeholder="Enter room password...">
+                </div>
+                <div class="row">
+                    <h3>End Condition</h3>
+                    <select class="form-select">
+                        <option value="domination">Domination</option>
+                        <option value="max-turns">Maximum Turns</option>
+                    </select>
+                    <input type="number" id="game-setting-maxturns" class="form-control" placeholder="Enter maximum turns...">
+                </div>
+                <div class="row">
+                    <h3>Fog of War</h3>
+                    <select class="form-select">
+                        <option value="on">On</option>
+                        <option value="off">Off</option>
+                    </select>
+                </div>
+                <div class="row">
+                    <h3>Maximum Players</h3>
+                    <input type="number" id="game-setting-maxplayers" class="form-control" placeholder="Enter maximum players...">
+                </div>
+            </div>
+
+            <button class="btn btn-danger" id="leave-game-button">Leave Game</button>
+        </div>
+    </div>
+</div>
+
+<style>
+    .game-start {
+        position: fixed;
+        width: 75%;
+        height: 75%;
+        top: 50%;
+        left: 50%;
+        padding: 10px 20px; /* Adjust padding as needed */
+        transform: translateX(-50%) translateY(-50%);
+
+        background-color: #f8f9fa;
+        border: 1px solid #ccc;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        border-radius: 5px;
+
+        z-index: 1001;
+    }
+
+    .game-start h2 {
+        text-align: center;
+        font-size: 1.5em;
+        margin: auto;
+    }
+
+    .game-start h3 {
+        font-size: 1.25em;
+        margin-top: auto;
+    }
+
+    #gameSettings {
+        height: 100%;
+        padding: 10px 20px;
+
+        background-color: #f8f9fa;
+        border: 1px solid #ccc;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        border-radius: 5px;
+    }
+
+    #gameSettings div {
+        margin-top: 10px;
+    }
+
+    #gameSettings > div > * {
+        display: inline-block;
+        width: 30%;
+    }
+
+    #gameSettings > div > *:not(:last-child) {
+        margin-right: 5%;
+    }
+
+    #gameSettings select {
+        width: 200px;
+    }
+
+    #gameSettings input {
+        width: 200px;
+    }
+
+    #playerList {
+        height: calc(60% - 16px); /* TODO: no idea why there is a hard-coded 16px bottom margin */
+        padding: 20px;
+        overflow-y: auto; /* TODO: fill the list in a grid pattern instead of simply vertical? */
+
+        background-color: #f8f9fa;
+        border: 1px solid #ccc;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        border-radius: 5px;
+    }
+
+    #playerList li {
+        list-style-type: none;
+        font-size: 1.25em;
+        margin-bottom: 10px;
+    }
+
+    #chatBox {
+        height: 40%;
+        padding: 10px;
+
+        background-color: #f8f9fa;
+        border: 1px solid #ccc;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        border-radius: 5px;
+
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        z-index: 1;
+    }
+
+    #chatMessages {
+        flex-grow: 1;
+        overflow-y: auto;
+        margin-bottom: 10px;
+    }
+
+    #inputWrapper {
+        position: relative;
+    }
+
+    #chatInput {
+        padding-right: 30px;
+    }
+
+    #chatSend {
+        position: absolute;
+        width: 30px;
+        height: 30px;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        padding: 0;
+
+        background: #56a5e8 url('../../images/white-arrow.png') no-repeat 9px center;
+        background-size: 45%;
+        border: none;
+        border-radius: 50%;
+
+        text-indent: -9999px;
+    }
+
+    .game-start button {
+        padding: 10px;
+        font-size: 1em;
+        cursor: pointer;
+        border-radius: 5px;
+    }
+
+    .game-start button:hover {
+        background-color: #c82333;
+    }
+
+    #leave-game-button {
+        position: absolute;
+        bottom: 20px;
+        right: 30px;
+    }
+</style>
