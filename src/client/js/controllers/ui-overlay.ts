@@ -54,20 +54,19 @@ document.getElementById('toggle-building')!.addEventListener('click', () => {
 });
 
 document.getElementById('end-turn-button')!.addEventListener('click', () => {
-	// TODO: planned actions
-	// let packet = new PacketServerEndTurn();
-	//
-	// const button = document.getElementById('end-turn-button') as HTMLButtonElement;
-	// button.disabled = true;
-	//
-	// packet.sendToServer(clientSocket).then((reply) => {
-	// 	if (reply.success) {
-	// 		const turnText = document.getElementById('turn-text') as HTMLInputElement;
-	// 		turnText.textContent = 'Waiting for Players';
-	// 	} else {
-	// 		button.disabled = false;
-	// 	}
-	// });
+	let packet = new PacketServerEndTurn(thePlayer.getPlannedActions());
+
+	const button = document.getElementById('end-turn-button') as HTMLButtonElement;
+	button.disabled = true;
+
+	packet.sendToServer(clientSocket).then((reply) => {
+		if (reply.success) {
+			const turnText = document.getElementById('turn-text') as HTMLInputElement;
+			turnText.textContent = 'Waiting for Players';
+		} else {
+			button.disabled = false;
+		}
+	});
 });
 
 document.getElementById('start-game-button')!.addEventListener('click', () => {

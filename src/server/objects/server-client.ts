@@ -16,6 +16,7 @@ import { GameResources } from '../../shared/interfaces/snapshot';
 import PacketServerDev from '../../shared/packets/server/packet-server-dev';
 import { isDev } from '../misc/utils';
 import Enum from '../../shared/enums/enum';
+import PlannedAction from '../../shared/game/planned-action';
 
 let nextID = -1;
 
@@ -30,6 +31,7 @@ export default class ServerClient {
 	public profile: UserProfile;
 
 	public resources: GameResources;
+	public plannedActions: PlannedAction[] = [];
 
 	constructor(socket: Socket) {
 		ServerClient.clientList.push(this);
@@ -109,6 +111,7 @@ export default class ServerClient {
 				let success = false;
 				if (this.getGame().isRunning) {
 					success = true;
+					this.plannedActions = packetEndTurn.plannedActions;
 					this.getGame().connectionManager.waitingToEndTurn =
 						this.getGame().connectionManager.waitingToEndTurn.filter((client) => client !== this);
 					this.getGame().attemptEndTurn();

@@ -112,6 +112,19 @@ export default class ServerGame {
 	}
 
 	private endTurn() {
+		let clientsToProcess = [...this.connectionManager.clients];
+
+		while (clientsToProcess.length > 0) {
+			const client: ServerClient = clientsToProcess.shift()!;
+
+			if (client.plannedActions.length > 0) {
+				const actionToExecute = client.plannedActions.shift()!;
+				if (client.plannedActions.length > 0) clientsToProcess.push(client);
+
+				// TODO: implement after fixing ServerClient and ServerPlayer
+			}
+		}
+
 		this.connectionManager.waitingToEndTurn = this.connectionManager.clients;
 		this.sendServerSnapshot();
 
