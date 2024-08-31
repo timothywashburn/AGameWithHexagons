@@ -1,11 +1,12 @@
 import PacketServerChat from '../../../shared/packets/server/packet-server-chat';
-import { clientSocket } from '../controllers/connection';
+import { clientSocket } from './connection';
 import PacketServerSpawnUnit from '../../../shared/packets/server/packet-server-spawn-unit';
 import { getGame } from '../objects/client-game';
 import ClientTile from '../objects/client-tile';
 import PacketServerEndTurn from '../../../shared/packets/server/packet-server-end-turn';
 import PacketServerDev from '../../../shared/packets/server/packet-server-dev';
 import Enum from '../../../shared/enums/enum';
+import PlayerActions from './action-manager';
 
 document.getElementById('chatSend')!.addEventListener('click', () => {
 	const chatInput = document.getElementById('chatInput') as HTMLInputElement;
@@ -19,7 +20,7 @@ document.getElementById('chatSend')!.addEventListener('click', () => {
 
 document.getElementById('chatInput')!.addEventListener('keypress', (event) => {
 	if (event.key === 'Enter') {
-		event.preventDefault(); // Prevent the default action (form submission)
+		event.preventDefault();
 		document.getElementById('chatSend')!.click();
 	}
 });
@@ -92,11 +93,12 @@ export function populateSpawnButtons() {
 		newButton.id = `spawn-troop-${troopType.getIndex()}`;
 
 		newButton.addEventListener('click', () => {
-			let packet = new PacketServerSpawnUnit('troop', troopType.getIndex(), getGame().selectedTile!.id);
-			packet.sendToServer(clientSocket).then((response) => {
-				if (!response.success) return;
-				toggleSidebar('troop');
-			});
+			PlayerActions.spawnUnit('troop', troopType.getIndex(), getGame().selectedTile!.id);
+			// let packet = new PacketServerSpawnUnit('troop', troopType.getIndex(), getGame().selectedTile!.id);
+			// packet.sendToServer(clientSocket).then((response) => {
+			// 	if (!response.success) return;
+			// 	toggleSidebar('troop');
+			// });
 		});
 		document.getElementById('troop-spawn-options')!.appendChild(newButton);
 	}

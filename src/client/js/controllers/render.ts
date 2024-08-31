@@ -1,5 +1,5 @@
 import { getGame } from '../objects/client-game';
-import { toggleSidebar } from '../misc/ui';
+import { toggleSidebar } from './ui-overlay';
 
 const canvas = document.getElementById('gameCanvas') as HTMLCanvasElement;
 const ctx = canvas.getContext('2d')!;
@@ -42,7 +42,7 @@ canvas.addEventListener(
 		cameraZoom *= 1 + delta * SCROLL_SENSITIVITY;
 		cameraZoom = Math.max(Math.min(cameraZoom, MAX_ZOOM), MIN_ZOOM);
 	},
-	{ passive: true },
+	{ passive: true }
 );
 
 canvas.addEventListener('mousedown', (event) => {

@@ -1,6 +1,6 @@
 import '../objects/client-game';
 import '../controllers/connection';
-import '../misc/ui';
+import '../controllers/ui-overlay';
 import '../../../shared/packets/base/packet';
 import { showToast } from '../controllers/toast';
 import { Modal } from 'bootstrap';

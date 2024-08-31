@@ -11,7 +11,7 @@ import {
 import ClientPlayer from './client-player';
 import ClientBuilding from './client-building';
 import { getClientBuildingConstructor, getClientTroopConstructor } from '../../client-register';
-import { populateSpawnButtons, updateTurnText } from '../misc/ui';
+import { populateSpawnButtons, updateTurnText } from '../controllers/ui-overlay';
 import { TurnType } from '../../../shared/enums/game/turn-type';
 import Enum from '../../../shared/enums/enum';
 

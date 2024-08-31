@@ -8,7 +8,7 @@ import PacketClientGameSnapshot from '../../../shared/packets/client/packet-clie
 import PacketClientPlayerListInfo from '../../../shared/packets/client/packet-client-player-list-info';
 import PacketClientChat from '../../../shared/packets/client/packet-client-chat';
 import { UserProfile } from '../../../server/objects/server-client';
-import { updateTurnText } from '../misc/ui';
+import { updateTurnText } from './ui-overlay';
 import PacketClientTurnStart from '../../../shared/packets/client/packet-client-turn-start';
 import PacketClientDev from '../../../shared/packets/client/packet-client-dev';
 import { isDev } from '../../../server/misc/utils';
