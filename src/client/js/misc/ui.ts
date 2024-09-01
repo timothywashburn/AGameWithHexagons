@@ -75,8 +75,8 @@ document.getElementById('start-game-button')!.addEventListener('click', () => {
 
 	packet.sendToServer(clientSocket);
 
-	const button = document.getElementById('start-game-button') as HTMLButtonElement;
-	button.style.display = 'none';
+	const div = document.getElementById('start-game-menu') as HTMLDivElement;
+	div.style.display = 'none';
 });
 
 export function updateTurnText() {

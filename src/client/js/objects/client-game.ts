@@ -64,15 +64,26 @@ export class ClientGame {
 	}
 
 	initGame(gameSnapshot: GameSnapshot) {
+		// TODO: debug, remove later
+		let isGameHost = false;
+
+		if (!gameSnapshot.isRunning) {
+			document.getElementById('start-game-menu')!.style.display = 'block';
+		}
+
+		if (isGameHost) {
+			document.getElementById('start-game-button')!.style.display = 'inline';
+			document.getElementById('disband-game-button')!.style.display = 'inline';
+		} else {
+			document.getElementById('join-game-button')!.style.display = 'inline';
+			document.getElementById('leave-game-button')!.style.display = 'inline';
+			document.getElementById('return-menu-button')!.style.display = 'inline';
+		}
+
 		this.updateGame(gameSnapshot);
 	}
 
 	updateGame(snapshot: GameSnapshot) {
-		if (!snapshot.isRunning) {
-			let button = document.getElementById('start-game-button') as HTMLButtonElement;
-			button.style.display = 'block';
-		}
-
 		this.updateTurnInfo(snapshot.turnNumber, snapshot.turnTypeIndex);
 
 		this.resources = {

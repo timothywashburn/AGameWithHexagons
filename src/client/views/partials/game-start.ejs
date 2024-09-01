@@ -1,4 +1,4 @@
-<div class="container game-start" id="game-start">
+<div class="container game-start" id="start-game-menu" style="display: none">
     <div class="row" style="height: 10%">
         <h2>GAME NAME</h2>
     </div>
@@ -20,11 +20,11 @@
                 <h2>Game Settings</h2>
                 <div class="row">
                     <h3>Security Level</h3>
-                    <select class="form-select">
+                    <select class="form-select game-participant-readonly">
                         <option value="public">Public</option>
                         <option value="private">Private</option>
                     </select>
-                    <input type="text" id="game-setting-password" class="form-control" placeholder="Enter room password...">
+                    <input type="text" id="game-setting-password" class="form-control game-participant-readonly" placeholder="Enter room password...">
                 </div>
                 <div class="row">
                     <h3>End Condition</h3>
@@ -32,22 +32,28 @@
                         <option value="domination">Domination</option>
                         <option value="max-turns">Maximum Turns</option>
                     </select>
-                    <input type="number" id="game-setting-maxturns" class="form-control" placeholder="Enter maximum turns...">
+                    <input type="number" id="game-setting-maxturns" class="form-control game-participant-readonly" placeholder="Enter maximum turns...">
                 </div>
                 <div class="row">
                     <h3>Fog of War</h3>
-                    <select class="form-select">
+                    <select class="form-select game-participant-readonly">
                         <option value="on">On</option>
                         <option value="off">Off</option>
                     </select>
                 </div>
                 <div class="row">
                     <h3>Maximum Players</h3>
-                    <input type="number" id="game-setting-maxplayers" class="form-control" placeholder="Enter maximum players...">
+                    <input type="number" id="game-setting-maxplayers" class="form-control game-participant-readonly" placeholder="Enter maximum players...">
                 </div>
             </div>
 
-            <button class="btn btn-danger" id="leave-game-button">Leave Game</button>
+            <div id="playerStatuses">
+                <button class="btn btn-success game-participant" id="join-game-button">Join Game</button>
+                <button class="btn btn-danger game-participant" id="return-menu-button">Return to Menu</button>
+                <button class="btn btn-danger game-participant" id="leave-game-button">Leave Game</button>
+                <button class="btn btn-success game-host" id="start-game-button">Start Game</button>
+                <button class="btn btn-danger game-host" id="disband-game-button">Disband Game</button>
+            </div>
         </div>
     </div>
 </div>
@@ -59,7 +65,7 @@
         height: 75%;
         top: 50%;
         left: 50%;
-        padding: 10px 20px; /* Adjust padding as needed */
+        padding: 10px 20px;
         transform: translateX(-50%) translateY(-50%);
 
         background-color: #f8f9fa;
@@ -79,37 +85,6 @@
     .game-start h3 {
         font-size: 1.25em;
         margin-top: auto;
-    }
-
-    #gameSettings {
-        height: 100%;
-        padding: 10px 20px;
-
-        background-color: #f8f9fa;
-        border: 1px solid #ccc;
-        box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-        border-radius: 5px;
-    }
-
-    #gameSettings div {
-        margin-top: 10px;
-    }
-
-    #gameSettings > div > * {
-        display: inline-block;
-        width: 30%;
-    }
-
-    #gameSettings > div > *:not(:last-child) {
-        margin-right: 5%;
-    }
-
-    #gameSettings select {
-        width: 200px;
-    }
-
-    #gameSettings input {
-        width: 200px;
     }
 
     #playerList {
@@ -175,20 +150,59 @@
         text-indent: -9999px;
     }
 
-    .game-start button {
+    #gameSettings {
+        height: 100%;
+        padding: 10px 20px;
+
+        background-color: #f8f9fa;
+        border: 1px solid #ccc;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        border-radius: 5px;
+    }
+
+    #gameSettings div {
+        margin-top: 10px;
+    }
+
+    #gameSettings > div > * {
+        display: inline-block;
+        width: 30%;
+    }
+
+    #gameSettings > div > *:not(:last-child) {
+        margin-right: 5%;
+    }
+
+    #gameSettings select {
+        width: 200px;
+    }
+
+    #gameSettings input {
+        width: 200px;
+    }
+
+    #playerStatuses {
+        position: absolute;
+        bottom: 20px;
+        right: 30px;
+    }
+
+    #playerStatuses button {
         padding: 10px;
         font-size: 1em;
         cursor: pointer;
         border-radius: 5px;
     }
 
-    .game-start button:hover {
-        background-color: #c82333;
+    .game-host {
+        display: none;
     }
 
-    #leave-game-button {
-        position: absolute;
-        bottom: 20px;
-        right: 30px;
+    .game-participant {
+        display: none;
+    }
+
+    .game-participant-readonly {
+
     }
 </style>
