@@ -36,7 +36,7 @@ export default class ConnectionManager {
 			new ServerPlayer(this.game, client);
 		}
 
-		let packet = new PacketClientGameInit(this.game.getFullGameSnapshot(client));
+		let packet = new PacketClientGameInit(this.game.getGameInitData(client));
 		packet.addClient(client);
 		await packet.sendToClients();
 

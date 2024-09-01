@@ -15,6 +15,7 @@ import { populateSpawnButtons, updateTurnText } from '../controllers/ui-overlay'
 import { TurnType } from '../../../shared/enums/game/turn-type';
 import Enum from '../../../shared/enums/enum';
 import thePlayer from './client-the-player';
+import { renderAction } from '../controllers/client-action-handler';
 
 export class ClientGame {
 	public startTime: number;
@@ -131,10 +132,10 @@ export class ClientGame {
 		lobbyDiv.style.display = 'none';
 		gameDiv.style.display = 'block';
 
-		this.tick();
+		this.renderFrame();
 	}
 
-	async tick() {
+	async renderFrame() {
 		try {
 			const renderStartTime = window.performance.now();
 
@@ -145,6 +146,8 @@ export class ClientGame {
 			this.troops.forEach((troop) => troop.renderTroop());
 			this.buildings.forEach((building) => building.renderBuilding());
 
+			thePlayer.getPlannedActions().forEach((action) => renderAction(action));
+
 			const finalRenderTime = window.performance.now() - renderStartTime;
 			this.renderTimes.push(finalRenderTime);
 			this.frame++;
@@ -153,7 +156,7 @@ export class ClientGame {
 		}
 
 		// await new Promise(resolve => setTimeout(resolve, 1000));
-		requestAnimationFrame(() => this.tick());
+		requestAnimationFrame(() => this.renderFrame());
 	}
 
 	getPlayer(id: number | undefined): ClientPlayer | null {

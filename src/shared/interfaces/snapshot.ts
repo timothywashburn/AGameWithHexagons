@@ -1,6 +1,12 @@
+import PlannedAction from '../game/planned-action';
+
 export interface ElementSnapshot {
 	id: number;
 }
+
+export type GameInitData = GameSnapshot & {
+	plannedActions: PlannedAction<any>[];
+};
 
 export interface GameSnapshot {
 	isRunning: boolean;

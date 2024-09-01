@@ -1,12 +1,11 @@
 import PacketServerChat from '../../../shared/packets/server/packet-server-chat';
 import { clientSocket } from './connection';
-import PacketServerSpawnUnit from '../../../shared/packets/server/packet-server-spawn-unit';
 import ClientTile from '../objects/client-tile';
 import PacketServerEndTurn from '../../../shared/packets/server/packet-server-end-turn';
 import PacketServerDev from '../../../shared/packets/server/packet-server-dev';
 import Enum from '../../../shared/enums/enum';
-import PlayerActions from './action-manager';
 import thePlayer from '../objects/client-the-player';
+import CreateUnitAction, { CreateUnitActionData } from '../../../shared/game/actions/create-unit-action';
 
 document.getElementById('chatSend')!.addEventListener('click', () => {
 	const chatInput = document.getElementById('chatInput') as HTMLInputElement;
@@ -93,12 +92,14 @@ export function populateSpawnButtons() {
 		newButton.id = `spawn-troop-${troopType.getIndex()}`;
 
 		newButton.addEventListener('click', () => {
-			PlayerActions.spawnUnit('troop', troopType.getIndex(), thePlayer.getGame().selectedTile!.id);
-			// let packet = new PacketServerSpawnUnit('troop', troopType.getIndex(), thePlayer.getGame().selectedTile!.id);
-			// packet.sendToServer(clientSocket).then((response) => {
-			// 	if (!response.success) return;
-			// 	toggleSidebar('troop');
-			// });
+			let actionData: CreateUnitActionData = {
+				category: 'troop',
+				unitIndex: troopType.getIndex(),
+				tileID: thePlayer.getGame().selectedTile!.id
+			};
+			new CreateUnitAction(actionData);
+			// TODO: Add support for in progress units
+			// toggleSidebar('troop');
 		});
 		document.getElementById('troop-spawn-options')!.appendChild(newButton);
 	}
@@ -110,15 +111,14 @@ export function populateSpawnButtons() {
 		newButton.id = `spawn-building-${buildingType.getIndex()}`;
 
 		newButton.addEventListener('click', () => {
-			let packet = new PacketServerSpawnUnit(
-				'building',
-				buildingType.getIndex(),
-				thePlayer.getGame().selectedTile!.id
-			);
-			packet.sendToServer(clientSocket).then((response) => {
-				if (!response.success) return;
-				toggleSidebar('building');
-			});
+			let actionData: CreateUnitActionData = {
+				category: 'building',
+				unitIndex: buildingType.getIndex(),
+				tileID: thePlayer.getGame().selectedTile!.id
+			};
+			new CreateUnitAction(actionData);
+			// TODO: Add support for in progress units
+			// toggleSidebar('building');
 		});
 		document.getElementById('building-spawn-options')!.appendChild(newButton);
 	}

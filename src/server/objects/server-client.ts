@@ -4,9 +4,6 @@ import PacketServerChat from '../../shared/packets/server/packet-server-chat';
 import ServerGame from './server-game';
 import PacketClientChat from '../../shared/packets/client/packet-client-chat';
 import { generateUsername } from 'unique-username-generator';
-import PacketServerSpawnUnit, {
-	PacketServerSpawnUnitReply
-} from '../../shared/packets/server/packet-server-spawn-unit';
 import { ServerTroopInitData } from './server-troop';
 import { getServerBuildingConstructor, getServerTroopConstructor } from '../server-register';
 import ResponsePacket from '../../shared/packets/base/response-packet';
@@ -31,7 +28,7 @@ export default class ServerClient {
 	public profile: UserProfile;
 
 	public resources: GameResources;
-	public plannedActions: PlannedAction[] = [];
+	public plannedActions: PlannedAction<any>[] = [];
 
 	constructor(socket: Socket) {
 		ServerClient.clientList.push(this);
@@ -74,35 +71,6 @@ export default class ServerClient {
 				);
 
 				responsePacket.sendToClients();
-			}
-
-			if (packet.packetTypeID === ServerPacketID.SPAWN.id && this.getGame().isRunning) {
-				let packetServerSpawnUnit = packet as PacketServerSpawnUnit;
-				let parentTile = this.getGame().getTile(packetServerSpawnUnit.tileID)!;
-
-				if (packetServerSpawnUnit.category === 'troop') {
-					let troopType = Enum.TroopType.getFromIndex(packetServerSpawnUnit.unitIndex);
-					let initData: ServerTroopInitData = {
-						game: this.getGame(),
-						owner: this
-					};
-					let TroopConstructor = getServerTroopConstructor(troopType);
-					parentTile.troop = new TroopConstructor(initData);
-				} else if (packetServerSpawnUnit.category === 'building') {
-					let buildingType = Enum.BuildingType.getFromIndex(packetServerSpawnUnit.unitIndex);
-					let initData: ServerBuildingInitData = {
-						game: this.getGame(),
-						owner: this
-					};
-					let BuildingConstructor = getServerBuildingConstructor(buildingType);
-					parentTile.building = new BuildingConstructor(initData);
-				}
-
-				this.getGame().sendSnapshot(this);
-
-				new ResponsePacket<PacketServerSpawnUnitReply>(packetServerSpawnUnit.packetID, {
-					success: true
-				}).replyToClient(this);
 			}
 
 			if (packet.packetTypeID === ServerPacketID.END_TURN.id) {

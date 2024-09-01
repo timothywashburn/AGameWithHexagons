@@ -2,7 +2,7 @@ import { Server } from 'http';
 import ServerClient from './server-client';
 import ServerTile from './server-tile';
 import ServerTroop from './server-troop';
-import { GameSnapshot } from '../../shared/interfaces/snapshot';
+import { GameInitData, GameSnapshot } from '../../shared/interfaces/snapshot';
 import ConnectionManager from '../controllers/connection-manager';
 import ServerBuilding from './server-building';
 import PacketClientGameSnapshot from '../../shared/packets/client/packet-client-game-snapshot';
@@ -12,6 +12,8 @@ import PacketClientPlayerListInfo from '../../shared/packets/client/packet-clien
 import PacketClientDev from '../../shared/packets/client/packet-client-dev';
 import Enum from '../../shared/enums/enum';
 import { TurnType, TurnTypeEnum } from '../../shared/enums/game/turn-type';
+import { cli } from 'webpack';
+import { handleAction } from '../controllers/server-action-handler';
 
 let gameID = 0;
 
@@ -81,7 +83,14 @@ export default class ServerGame {
 		// this.tiles.push(new ServerTile(-5, 0)); //This tile should Error
 	}
 
-	getFullGameSnapshot(client: ServerClient): GameSnapshot {
+	getGameInitData(client: ServerClient): GameInitData {
+		return {
+			plannedActions: client.plannedActions,
+			...this.getGameSnapshot(client)
+		};
+	}
+
+	getGameSnapshot(client: ServerClient): GameSnapshot {
 		return {
 			isRunning: this.isRunning,
 			isAuthenticated: client.isAuthenticated,
@@ -100,7 +109,7 @@ export default class ServerGame {
 	}
 
 	sendSnapshot(client: ServerClient) {
-		let packet = new PacketClientGameSnapshot(this.getFullGameSnapshot(client));
+		let packet = new PacketClientGameSnapshot(this.getGameSnapshot(client));
 		packet.addClient(client);
 		packet.sendToClients();
 	}
@@ -120,8 +129,7 @@ export default class ServerGame {
 			if (client.plannedActions.length > 0) {
 				const actionToExecute = client.plannedActions.shift()!;
 				if (client.plannedActions.length > 0) clientsToProcess.push(client);
-
-				// TODO: implement after fixing ServerClient and ServerPlayer
+				handleAction(client, actionToExecute);
 			}
 		}
 

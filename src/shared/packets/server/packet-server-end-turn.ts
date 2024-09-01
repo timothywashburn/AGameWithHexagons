@@ -8,9 +8,9 @@ export interface PacketServerEndTurnReply {
 }
 
 export default class PacketServerEndTurn extends ReplyableServerPacket<PacketServerEndTurnReply> {
-	public plannedActions: PlannedAction[];
+	public plannedActions: PlannedAction<any>[];
 
-	constructor(plannedActions: PlannedAction[]) {
+	constructor(plannedActions: PlannedAction<any>[]) {
 		super(ServerPacketID.END_TURN.id);
 
 		this.plannedActions = plannedActions;

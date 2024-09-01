@@ -15,6 +15,7 @@ import { isDev } from '../../../server/misc/utils';
 import Enum from '../../../shared/enums/enum';
 import { AnnouncementType } from '../../../shared/enums/packet/announcement-type';
 import thePlayer from '../objects/client-the-player';
+import { onReceivePlannedActions } from './client-action-handler';
 
 export const clientSocket = (io as any).connect();
 
@@ -49,6 +50,8 @@ clientSocket.on('packet', function (packet: Packet) {
 
 		if (devConfig.hideChat) document.getElementById('chatBox')!.style.display = 'none';
 		if (devConfig.hidePlayerList) document.getElementById('playerList')!.style.display = 'none';
+
+		onReceivePlannedActions(packetClientGameInit.initData.plannedActions);
 	} else if (packet.packetTypeID === ClientPacketID.GAME_SNAPSHOT.id) {
 		let packetClientGameSnapshot = packet as PacketClientGameSnapshot;
 		thePlayer.getGame().updateGame(packetClientGameSnapshot.snapshot);

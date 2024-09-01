@@ -3,7 +3,7 @@ import PlannedAction from '../../../shared/game/planned-action';
 
 class ClientThePlayer {
 	private game: ClientGame | null = null;
-	private plannedActions: PlannedAction[] = [];
+	private plannedActions: PlannedAction<any>[] = [];
 
 	getGame() {
 		return this.game!;
@@ -21,7 +21,7 @@ class ClientThePlayer {
 		return [...this.plannedActions];
 	}
 
-	addPlannedAction(plannedAction: PlannedAction) {
+	addPlannedAction(plannedAction: PlannedAction<any>) {
 		this.plannedActions.push(plannedAction);
 	}
 
