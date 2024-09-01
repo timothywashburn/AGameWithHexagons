@@ -5,10 +5,9 @@ import ServerGame from './server-game';
 import PacketClientChat from '../../shared/packets/client/packet-client-chat';
 import { generateUsername } from 'unique-username-generator';
 import PacketServerSpawnUnit, {
-	PacketServerSpawnUnitReply,
+	PacketServerSpawnUnitReply
 } from '../../shared/packets/server/packet-server-spawn-unit';
 import { ServerTroopInitData } from './server-troop';
-import { BuildingType, TroopType } from '../../shared/enums/unit-enums';
 import { getServerBuildingConstructor, getServerTroopConstructor } from '../server-register';
 import ResponsePacket from '../../shared/packets/base/response-packet';
 import { ServerBuildingInitData } from './server-building';
@@ -16,6 +15,7 @@ import PacketServerEndTurn, { PacketServerEndTurnReply } from '../../shared/pack
 import { GameResources } from '../../shared/interfaces/snapshot';
 import PacketServerDev from '../../shared/packets/server/packet-server-dev';
 import { isDev } from '../misc/utils';
+import Enum from '../../shared/enums/enum';
 
 let nextID = -1;
 
@@ -40,7 +40,7 @@ export default class ServerClient {
 
 		this.resources = {
 			energy: 0,
-			goo: 0,
+			goo: 0
 		};
 
 		socket.on('disconnect', () => {
@@ -68,7 +68,7 @@ export default class ServerClient {
 				let responsePacket = new PacketClientChat(this.profile.userID, message);
 
 				this.getGame().connectionManager.clients.forEach((client: ServerClient) =>
-					responsePacket.addClient(client),
+					responsePacket.addClient(client)
 				);
 
 				responsePacket.sendToClients();
@@ -79,18 +79,18 @@ export default class ServerClient {
 				let parentTile = this.getGame().getTile(packetServerSpawnUnit.tileID)!;
 
 				if (packetServerSpawnUnit.category === 'troop') {
-					let troopType = packetServerSpawnUnit.type as TroopType;
+					let troopType = Enum.TroopType.getFromIndex(packetServerSpawnUnit.unitIndex);
 					let initData: ServerTroopInitData = {
 						game: this.getGame(),
-						owner: this,
+						owner: this
 					};
 					let TroopConstructor = getServerTroopConstructor(troopType);
 					parentTile.troop = new TroopConstructor(initData);
 				} else if (packetServerSpawnUnit.category === 'building') {
-					let buildingType = packetServerSpawnUnit.type as BuildingType;
+					let buildingType = Enum.BuildingType.getFromIndex(packetServerSpawnUnit.unitIndex);
 					let initData: ServerBuildingInitData = {
 						game: this.getGame(),
-						owner: this,
+						owner: this
 					};
 					let BuildingConstructor = getServerBuildingConstructor(buildingType);
 					parentTile.building = new BuildingConstructor(initData);
@@ -99,7 +99,7 @@ export default class ServerClient {
 				this.getGame().sendSnapshot(this);
 
 				new ResponsePacket<PacketServerSpawnUnitReply>(packetServerSpawnUnit.packetID, {
-					success: true,
+					success: true
 				}).replyToClient(this);
 			}
 
@@ -115,7 +115,7 @@ export default class ServerClient {
 				}
 
 				new ResponsePacket<PacketServerEndTurnReply>(packetEndTurn.packetID, {
-					success: success,
+					success: success
 				}).replyToClient(this);
 			}
 		});

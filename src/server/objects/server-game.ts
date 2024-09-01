@@ -2,15 +2,16 @@ import { Server } from 'http';
 import ServerClient from './server-client';
 import ServerTile from './server-tile';
 import ServerTroop from './server-troop';
-import { GameSnapshot, TurnInfo } from '../../shared/interfaces/snapshot';
+import { GameSnapshot } from '../../shared/interfaces/snapshot';
 import ConnectionManager from '../controllers/connection-manager';
 import ServerBuilding from './server-building';
 import PacketClientGameSnapshot from '../../shared/packets/client/packet-client-game-snapshot';
 import ServerPlayer from './server-player';
 import PacketClientTurnStart from '../../shared/packets/client/packet-client-turn-start';
-import { TurnType } from '../../shared/enums/gamestate-enums';
 import PacketClientPlayerListInfo from '../../shared/packets/client/packet-client-player-list-info';
 import PacketClientDev from '../../shared/packets/client/packet-client-dev';
+import Enum from '../../shared/enums/enum';
+import { TurnType, TurnTypeEnum } from '../../shared/enums/game/turn-type';
 
 let gameID = 0;
 
@@ -19,6 +20,7 @@ export default class ServerGame {
 
 	public id: number;
 	private nextElementID: number = 0;
+	public nextPlayerTeamColor: number = 0;
 	public connectionManager: ConnectionManager;
 	public isRunning: boolean = false;
 	public startTime: number;
@@ -28,10 +30,8 @@ export default class ServerGame {
 	public troops: ServerTroop[] = [];
 	public buildings: ServerBuilding[] = [];
 
-	public turnInfo: TurnInfo = {
-		turn: 1,
-		type: TurnType.DEVELOP,
-	};
+	public turnNumber: number = 1;
+	public turnType: TurnType = Enum.TurnType.DEVELOP;
 
 	constructor() {
 		this.id = gameID++;
@@ -85,12 +85,13 @@ export default class ServerGame {
 		return {
 			isRunning: this.isRunning,
 			isAuthenticated: client.isAuthenticated,
-			turnInfo: this.turnInfo,
+			turnNumber: this.turnNumber,
+			turnTypeIndex: this.turnType.getIndex(),
 			resources: client.resources,
 			players: this.players.map((player) => player.getPlayerSnapshot(client)),
 			tiles: this.tiles.map((tile) => tile.getTileSnapshot(client)),
 			troops: this.troops.map((troop) => troop.getTroopSnapshot(client)),
-			buildings: this.buildings.map((building) => building.getBuildingSnapshot(client)),
+			buildings: this.buildings.map((building) => building.getBuildingSnapshot(client))
 		};
 	}
 
@@ -114,11 +115,11 @@ export default class ServerGame {
 		this.connectionManager.waitingToEndTurn = this.connectionManager.clients;
 		this.sendServerSnapshot();
 
-		this.turnInfo.turn++;
-		this.turnInfo.type = this.turnInfo.turn % 2 == 0 ? TurnType.SIEGE : TurnType.DEVELOP;
+		this.turnNumber++;
+		this.turnType = this.turnNumber % 2 == 0 ? Enum.TurnType.SIEGE : Enum.TurnType.DEVELOP;
 
 		setTimeout(() => {
-			let packet = new PacketClientTurnStart(this.turnInfo);
+			let packet = new PacketClientTurnStart(this.turnNumber, this.turnType.getIndex());
 			this.connectionManager.clients.forEach((client) => packet.addClient(client));
 			packet.sendToClients();
 		}, 1000);

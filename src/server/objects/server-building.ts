@@ -1,7 +1,7 @@
 import ServerGame from './server-game';
 import ServerClient from './server-client';
 import { BuildingSnapshot } from '../../shared/interfaces/snapshot';
-import { BuildingType } from '../../shared/enums/unit-enums';
+import { BuildingType } from '../../shared/enums/game/building-type';
 
 export default class ServerBuilding {
 	public id: number;
@@ -21,8 +21,8 @@ export default class ServerBuilding {
 	getBuildingSnapshot(client: ServerClient): BuildingSnapshot {
 		return {
 			id: this.id,
-			type: this.type,
-			ownerID: this.owner.getID(),
+			typeIndex: this.type.getIndex(),
+			ownerID: this.owner.getID()
 		};
 	}
 }

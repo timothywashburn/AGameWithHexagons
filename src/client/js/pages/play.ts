@@ -2,9 +2,9 @@ import '../objects/client-game';
 import '../controllers/connection';
 import '../misc/ui';
 import '../../../shared/packets/base/packet';
-import { ToastMessage } from '../../../shared/enums/misc-enums';
 import { showToast } from '../controllers/toast';
 import { Modal } from 'bootstrap';
+import Enum from '../../../shared/enums/enum';
 
 (window as any).gameData = {};
 
@@ -14,17 +14,20 @@ window.onload = function () {
 	fetch('/api/account', {
 		method: 'GET',
 		headers: {
-			Authorization: 'Bearer ' + localStorage.token,
-		},
+			Authorization: 'Bearer ' + localStorage.token
+		}
 	})
 		.then((response) => response.json())
 		.then((data) => {
 			if (!data.success) return;
 
 			if (data.info.email === null) {
-				showToast(ToastMessage.NO_EMAIL_WARN.message, ToastMessage.NO_EMAIL_WARN.color);
+				showToast(Enum.AccountToastMessage.NO_EMAIL_WARN.message, Enum.AccountToastMessage.NO_EMAIL_WARN.color);
 			} else if (data.info.email_verified.data[0] === 0) {
-				showToast(ToastMessage.UNVERIFIED_EMAIL_WARN.message, ToastMessage.UNVERIFIED_EMAIL_WARN.color);
+				showToast(
+					Enum.AccountToastMessage.UNVERIFIED_EMAIL_WARN.message,
+					Enum.AccountToastMessage.UNVERIFIED_EMAIL_WARN.color
+				);
 			}
 		})
 		.catch((error) => console.error(error));
@@ -45,7 +48,7 @@ function updateGames() {
 	let requestOptions: RequestInit = {
 		method: 'GET',
 		headers: headers as HeadersInit,
-		redirect: 'follow',
+		redirect: 'follow'
 	};
 
 	fetch('/api/gamedata', requestOptions)
@@ -82,7 +85,7 @@ export function joinGame(gameID: number, socketID: number) {
 	let requestOptions: RequestInit = {
 		method: 'GET',
 		headers: headers as HeadersInit,
-		redirect: 'follow',
+		redirect: 'follow'
 	};
 
 	let url = '/api/join';

@@ -2,8 +2,8 @@ import { BuildingSnapshot } from '../../../shared/interfaces/snapshot';
 import ClientPlayer from './client-player';
 import ClientElement from './client-element';
 import { getGame } from './client-game';
-import { BuildingType } from '../../../shared/enums/unit-enums';
 import ClientTile from './client-tile';
+import { BuildingType } from '../../../shared/enums/game/building-type';
 
 const canvas = document.getElementById('gameCanvas') as HTMLCanvasElement;
 const ctx = canvas.getContext('2d')!;
@@ -40,7 +40,7 @@ export default abstract class ClientBuilding extends ClientElement {
 			this.getParentTile().canvasX! - radius,
 			this.getParentTile().canvasY! - radius,
 			radius * 2,
-			radius * 2,
+			radius * 2
 		);
 		ctx.restore();
 	}
@@ -53,7 +53,7 @@ export default abstract class ClientBuilding extends ClientElement {
 		try {
 			const response = await fetch(`images/${this.getImageName()}.svg`);
 			let svgString = await response.text();
-			svgString = svgString.replace(/fill:#003545/g, `fill:${this.owner.color}`);
+			svgString = svgString.replace(/fill:#003545/g, `fill:${this.owner.teamColor.colorString}`);
 
 			this.sprite = new Image();
 			const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });

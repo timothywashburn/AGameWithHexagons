@@ -1,4 +1,6 @@
-import { RegistrationResponse, RegistrationResponseData } from '../../../shared/enums/misc-enums';
+import { RegistrationResponse } from '../../../shared/enums/account/registration-response';
+import { response } from 'express';
+import Enum from '../../../shared/enums/enum';
 
 document.getElementById('registerForm')!.addEventListener('submit', function (e) {
 	e.preventDefault();
@@ -17,7 +19,7 @@ document.getElementById('registerForm')!.addEventListener('submit', function (e)
 	let params = new URLSearchParams({ username: username, password: password }).toString();
 
 	fetch(`/api/register?${params}`, {
-		method: 'GET',
+		method: 'GET'
 	})
 		.then((response) => response.json())
 		.then((data) => {
@@ -27,13 +29,11 @@ document.getElementById('registerForm')!.addEventListener('submit', function (e)
 				let token = data.token;
 				if (token) localStorage.setItem('token', token);
 			} else {
-				let errorMessage = Object.values(RegistrationResponse).find(
-					(error) => error.id === data.result,
-				) as RegistrationResponseData;
+				let response = Enum.RegistrationResponse.getFromIndex(data.result);
 				let userOnly =
-					errorMessage.id === RegistrationResponse.USERNAME_EXISTS.id ||
-					errorMessage.id === RegistrationResponse.USERNAME_INVALID.id;
-				showError(errorMessage.message, userOnly);
+					response === Enum.RegistrationResponse.USERNAME_EXISTS ||
+					response === Enum.RegistrationResponse.USERNAME_INVALID;
+				showError(response.message, userOnly);
 			}
 			registerBtn.classList.remove('active');
 		})

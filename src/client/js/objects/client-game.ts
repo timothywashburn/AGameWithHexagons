@@ -6,13 +6,14 @@ import {
 	GameSnapshot,
 	PlayerSnapshot,
 	TileSnapshot,
-	TroopSnapshot,
-	TurnInfo,
+	TroopSnapshot
 } from '../../../shared/interfaces/snapshot';
 import ClientPlayer from './client-player';
 import ClientBuilding from './client-building';
 import { getClientBuildingConstructor, getClientTroopConstructor } from '../../client-register';
 import { populateSpawnButtons, updateTurnText } from '../misc/ui';
+import { TurnType } from '../../../shared/enums/game/turn-type';
+import Enum from '../../../shared/enums/enum';
 
 let game: ClientGame;
 
@@ -29,7 +30,9 @@ export class ClientGame {
 
 	public frame: number = 1;
 	public renderTimes: number[] = [];
-	public turnInfo: TurnInfo;
+
+	public turnNumber: number;
+	public turnType: TurnType;
 
 	public selectedTile: ClientTile | null = null;
 
@@ -70,11 +73,11 @@ export class ClientGame {
 			button.style.display = 'block';
 		}
 
-		this.updateTurnInfo(snapshot.turnInfo);
+		this.updateTurnInfo(snapshot.turnNumber, snapshot.turnTypeIndex);
 
 		this.resources = {
 			energy: snapshot.resources.energy,
-			goo: snapshot.resources.goo,
+			goo: snapshot.resources.goo
 		};
 
 		snapshot.players.forEach((snapshot: PlayerSnapshot) => {
@@ -91,7 +94,7 @@ export class ClientGame {
 			if (troop) {
 				troop.updateTroop(snapshot);
 			} else {
-				let TroopConstructor = getClientTroopConstructor(snapshot.type);
+				let TroopConstructor = getClientTroopConstructor(Enum.TroopType.getFromIndex(snapshot.typeIndex));
 				new TroopConstructor(snapshot);
 			}
 		});
@@ -101,7 +104,9 @@ export class ClientGame {
 			if (building) {
 				building.updateBuilding(snapshot);
 			} else {
-				let BuildingConstructor = getClientBuildingConstructor(snapshot.type);
+				let BuildingConstructor = getClientBuildingConstructor(
+					Enum.BuildingType.getFromIndex(snapshot.typeIndex)
+				);
 				new BuildingConstructor(snapshot);
 			}
 		});
@@ -116,8 +121,9 @@ export class ClientGame {
 		});
 	}
 
-	updateTurnInfo(turnInfo: TurnInfo) {
-		this.turnInfo = turnInfo;
+	updateTurnInfo(turnNumber: number, turnTypeIndex: number) {
+		this.turnNumber = turnNumber;
+		this.turnType = Enum.TurnType.getFromIndex(turnTypeIndex);
 	}
 
 	startRender() {

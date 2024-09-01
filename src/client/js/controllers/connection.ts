@@ -1,5 +1,4 @@
 import Packet, { ClientPacketID, getPacketName, PacketDestination } from '../../../shared/packets/base/packet';
-import { AnnouncementType, AnnouncementTypeData } from '../../../shared/enums/misc-enums';
 import { io } from 'socket.io-client';
 import { devConfig, joinGame } from '../pages/play';
 import { ClientGame, getGame } from '../objects/client-game';
@@ -13,6 +12,8 @@ import { updateTurnText } from '../misc/ui';
 import PacketClientTurnStart from '../../../shared/packets/client/packet-client-turn-start';
 import PacketClientDev from '../../../shared/packets/client/packet-client-dev';
 import { isDev } from '../../../server/misc/utils';
+import Enum from '../../../shared/enums/enum';
+import { AnnouncementType } from '../../../shared/enums/packet/announcement-type';
 
 export const clientSocket = (io as any).connect();
 
@@ -73,7 +74,7 @@ clientSocket.on('packet', function (packet: Packet) {
 		const message = document.createElement('div')!;
 
 		let client = (window as any).gameData.playerListInfo.find(
-			(playerListEntry: UserProfile) => playerListEntry.userID === packetClientChat.clientID,
+			(playerListEntry: UserProfile) => playerListEntry.userID === packetClientChat.clientID
 		);
 		message.innerHTML = client.username + ': ' + packetClientChat.message;
 
@@ -86,12 +87,12 @@ clientSocket.on('packet', function (packet: Packet) {
 		const message = document.createElement('div');
 
 		let client = (window as any).gameData.playerListInfo.find(
-			(playerListEntry: UserProfile) => playerListEntry.userID === packetClientAnnouncement.clientID,
+			(playerListEntry: UserProfile) => playerListEntry.userID === packetClientAnnouncement.clientID
 		);
 
-		let announcement: AnnouncementTypeData = Object.values(AnnouncementType).find(
-			(announcement) => announcement.id === packetClientAnnouncement.announcementID,
-		)!;
+		let announcement: AnnouncementType = Enum.AnnouncementType.getFromIndex(
+			packetClientAnnouncement.announcementID
+		);
 
 		message.innerHTML = client.username + ' ' + announcement.message;
 		message.style.color = announcement.color;
@@ -101,7 +102,7 @@ clientSocket.on('packet', function (packet: Packet) {
 	} else if (packet.packetTypeID === ClientPacketID.TURN_START.id) {
 		let packetClientTurnStart = packet as PacketClientTurnStart;
 
-		getGame().updateTurnInfo(packetClientTurnStart.turnInfo);
+		getGame().updateTurnInfo(packetClientTurnStart.turnNumber, packetClientTurnStart.turnTypeIndex);
 
 		const button = document.getElementById('end-turn-button') as HTMLButtonElement;
 		button.disabled = false;

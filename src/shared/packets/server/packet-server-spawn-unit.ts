@@ -1,6 +1,5 @@
 import { ServerPacketID } from '../base/packet';
 import ReplyableServerPacket from '../base/replyable-server-packet';
-import { BuildingType, TroopType } from '../../enums/unit-enums';
 
 export interface PacketServerSpawnUnitReply {
 	success: boolean;
@@ -8,14 +7,14 @@ export interface PacketServerSpawnUnitReply {
 
 export default class PacketServerSpawnUnit extends ReplyableServerPacket<PacketServerSpawnUnitReply> {
 	public category: 'troop' | 'building';
-	public type: TroopType | BuildingType;
+	public unitIndex: number;
 	public tileID: number;
 
-	constructor(category: 'troop' | 'building', type: TroopType | BuildingType, tileID: number) {
+	constructor(category: 'troop' | 'building', unitIndex: number, tileID: number) {
 		super(ServerPacketID.SPAWN.id);
 
 		this.category = category;
-		this.type = type;
+		this.unitIndex = unitIndex;
 		this.tileID = tileID;
 	}
 }

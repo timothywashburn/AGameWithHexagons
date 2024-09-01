@@ -2,9 +2,10 @@ import PacketClientGameInit from '../../shared/packets/client/packet-client-game
 import PacketClientPlayerListInfo from '../../shared/packets/client/packet-client-player-list-info';
 import PacketClientAnnouncement from '../../shared/packets/client/packet-client-announcement';
 import ServerClient from '../objects/server-client';
-import { AnnouncementType, AnnouncementTypeData } from '../../shared/enums/misc-enums';
 import ServerGame from '../objects/server-game';
 import ServerPlayer from '../objects/server-player';
+import Enum from '../../shared/enums/enum';
+import { AnnouncementType } from '../../shared/enums/packet/announcement-type';
 
 export default class ConnectionManager {
 	public readonly game: ServerGame;
@@ -40,13 +41,13 @@ export default class ConnectionManager {
 		await packet.sendToClients();
 
 		this.updatePlayerList();
-		this.sendAlert(client, AnnouncementType.GAME_JOIN);
+		this.sendAlert(client, Enum.AnnouncementType.GAME_JOIN);
 	}
 
 	disconnectClient(client: ServerClient) {
 		this.clients = this.clients.filter((testClient: ServerClient) => testClient !== client);
 
-		this.sendAlert(client, AnnouncementType.GAME_LEAVE);
+		this.sendAlert(client, Enum.AnnouncementType.GAME_LEAVE);
 		this.updatePlayerList();
 	}
 
@@ -59,8 +60,8 @@ export default class ConnectionManager {
 		packet.sendToClients();
 	}
 
-	sendAlert(client: ServerClient, announcementType: AnnouncementTypeData) {
-		let packet = new PacketClientAnnouncement(client.profile.userID, announcementType.id);
+	sendAlert(client: ServerClient, announcementType: AnnouncementType) {
+		let packet = new PacketClientAnnouncement(client.profile.userID, announcementType.getIndex());
 		this.clients.forEach((client) => packet.addClient(client));
 		packet.sendToClients();
 	}

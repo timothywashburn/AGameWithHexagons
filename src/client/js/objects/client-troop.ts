@@ -3,7 +3,8 @@ import ClientTile from './client-tile';
 import { TroopSnapshot } from '../../../shared/interfaces/snapshot';
 import ClientPlayer from './client-player';
 import ClientElement from './client-element';
-import { TroopType } from '../../../shared/enums/unit-enums';
+import Enum from '../../../shared/enums/enum';
+import { TurnType as TroopType } from '../../../shared/enums/game/turn-type';
 
 const canvas = document.getElementById('gameCanvas') as HTMLCanvasElement;
 const ctx = canvas.getContext('2d')!;
@@ -18,7 +19,7 @@ export default abstract class ClientTroop extends ClientElement {
 
 	protected constructor(troopSnapshot: TroopSnapshot) {
 		super(troopSnapshot.id);
-		this.type = troopSnapshot.type;
+		this.type = Enum.TroopType.getFromIndex(troopSnapshot.typeIndex);
 
 		this.updateTroop(troopSnapshot);
 
@@ -40,7 +41,7 @@ export default abstract class ClientTroop extends ClientElement {
 			this.getParentTile().canvasX! - radius,
 			this.getParentTile().canvasY! - radius,
 			radius * 2,
-			radius * 2,
+			radius * 2
 		);
 		ctx.restore();
 	}
@@ -53,7 +54,7 @@ export default abstract class ClientTroop extends ClientElement {
 		try {
 			const response = await fetch(`images/${this.getImageName()}.svg`);
 			let svgString = await response.text();
-			svgString = svgString.replace(/fill:#003545/g, `fill:${this.owner.color}`);
+			svgString = svgString.replace(/fill:#003545/g, `fill:${this.owner.teamColor.colorString}`);
 
 			this.sprite = new Image();
 			const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });

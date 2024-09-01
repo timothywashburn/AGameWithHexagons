@@ -1,8 +1,8 @@
 import ServerTroop, { ServerTroopInitData } from '../../server-troop';
-import { TroopType } from '../../../../shared/enums/unit-enums';
+import Enum from '../../../../shared/enums/enum';
 
 export default class ServerRangedTroopTroop extends ServerTroop {
 	constructor(initData: ServerTroopInitData) {
-		super(TroopType.RANGED, initData);
+		super(Enum.TroopType.RANGED, initData);
 	}
 }

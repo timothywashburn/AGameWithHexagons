@@ -1,13 +1,13 @@
 import { ClientPacketID } from '../base/packet';
 import ClientPacket from '../base/client-packet';
-import { TurnType, TurnTypeData } from '../../enums/gamestate-enums';
-import { TurnInfo } from '../../interfaces/snapshot';
 
 export default class PacketClientTurnStart extends ClientPacket {
-	turnInfo: TurnInfo;
+	public turnNumber: number;
+	public turnTypeIndex: number;
 
-	constructor(turnInfo: TurnInfo) {
+	constructor(turnNumber: number, turnTypeIndex: number) {
 		super(ClientPacketID.TURN_START.id);
-		this.turnInfo = turnInfo;
+		this.turnNumber = turnNumber;
+		this.turnTypeIndex = turnTypeIndex;
 	}
 }
