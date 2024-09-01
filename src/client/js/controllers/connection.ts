@@ -7,7 +7,7 @@ import PacketClientGameInit from '../../../shared/packets/client/packet-client-g
 import PacketClientGameSnapshot from '../../../shared/packets/client/packet-client-game-snapshot';
 import PacketClientPlayerListInfo from '../../../shared/packets/client/packet-client-player-list-info';
 import PacketClientChat from '../../../shared/packets/client/packet-client-chat';
-import { UserProfile } from '../../../server/objects/server-client';
+import { PlayerListItemInfo, UserProfile } from '../../../server/objects/server-client';
 import { updateTurnText } from '../misc/ui';
 import PacketClientTurnStart from '../../../shared/packets/client/packet-client-turn-start';
 import PacketClientDev from '../../../shared/packets/client/packet-client-dev';
@@ -59,11 +59,12 @@ clientSocket.on('packet', function (packet: Packet) {
 		const playerList = document.getElementById('playerList')!;
 		playerList.innerHTML = '';
 
-		(window as any).gameData.playerListInfo.forEach((playerListEntry: UserProfile) => {
+		(window as any).gameData.playerListInfo.forEach((playerListEntry: PlayerListItemInfo) => {
 			const listItem = document.createElement('li');
 
 			const name = document.createTextNode(playerListEntry.username);
 			listItem.appendChild(name);
+			console.log(playerListEntry.joinState);
 
 			playerList.appendChild(listItem);
 		});

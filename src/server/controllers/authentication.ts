@@ -2,7 +2,7 @@ import ServerClient, { UserProfile } from '../objects/server-client';
 import jwt, { JsonWebTokenError } from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import config from '../../../config.json';
-import {runQuery} from "./sql";
+import { runQuery } from './sql';
 
 const saltRounds = 10;
 
@@ -47,7 +47,9 @@ export async function generateToken(username: string, expires = '1w'): Promise<s
 export async function validateUser(token: string, client?: ServerClient | null): Promise<boolean> {
 	try {
 		const decoded = verifyToken(token);
-		const result = await runQuery<any[]>('SELECT last_logout, username FROM accounts WHERE id = ?', [decoded.userId]);
+		const result = await runQuery<any[]>('SELECT last_logout, username FROM accounts WHERE id = ?', [
+			decoded.userId
+		]);
 
 		if (result.length === 0 || (decoded.iat && result[0].last_logout / 1000 > decoded.iat)) {
 			throw new Error('Token expired');
@@ -55,7 +57,10 @@ export async function validateUser(token: string, client?: ServerClient | null):
 
 		if (client) {
 			client.isAuthenticated = true;
-			client.profile = new UserProfile(decoded.userId, result[0].username);
+			client.profile = {
+				userID: decoded.userId,
+				username: result[0].username
+			};
 		}
 
 		return true;
@@ -73,7 +78,9 @@ export async function verifyEmail(token: string): Promise<boolean> {
 	try {
 		const decoded = verifyToken(token);
 
-		const emailChange = await runQuery<any[]>('SELECT last_email_change FROM accounts WHERE id = ?', [decoded.userId]);
+		const emailChange = await runQuery<any[]>('SELECT last_email_change FROM accounts WHERE id = ?', [
+			decoded.userId
+		]);
 
 		if (!decoded.iat || Math.floor(emailChange[0].last_email_change / 1000) > decoded.iat) {
 			return false;

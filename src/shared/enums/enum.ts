@@ -8,6 +8,7 @@ import { TeamColorEnum } from './game/team-color';
 import { BuildingTypeEnum } from './game/building-type';
 import { TurnTypeEnum } from './game/turn-type';
 import { TroopTypeEnum } from './game/troop-type';
+import { JoinStateEnum } from './misc/join-state';
 
 export default class Enum {
 	// Account
@@ -22,6 +23,9 @@ export default class Enum {
 	static TeamColor = new TeamColorEnum();
 	static TroopType = new TroopTypeEnum();
 	static TurnType = new TurnTypeEnum();
+
+	// Misc
+	static JoinState = new JoinStateEnum();
 
 	// Packet
 	static AnnouncementType = new AnnouncementTypeEnum();

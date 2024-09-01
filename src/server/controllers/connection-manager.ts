@@ -1,7 +1,7 @@
 import PacketClientGameInit from '../../shared/packets/client/packet-client-game-init';
 import PacketClientPlayerListInfo from '../../shared/packets/client/packet-client-player-list-info';
 import PacketClientAnnouncement from '../../shared/packets/client/packet-client-announcement';
-import ServerClient from '../objects/server-client';
+import ServerClient, { PlayerListItemInfo } from '../objects/server-client';
 import ServerGame from '../objects/server-game';
 import ServerPlayer from '../objects/server-player';
 import Enum from '../../shared/enums/enum';
@@ -53,7 +53,14 @@ export default class ConnectionManager {
 
 	updatePlayerList() {
 		let playerListInfo = [];
-		for (let client of this.clients) playerListInfo.push(client.profile);
+		for (let client of this.clients) {
+			const playerListItemInfo: PlayerListItemInfo = {
+				// TODO: replace static join state with actual state
+				joinState: Enum.JoinState.JOINED,
+				...client.profile
+			};
+			playerListInfo.push(playerListItemInfo);
+		}
 
 		let packet = new PacketClientPlayerListInfo(playerListInfo);
 		this.clients.forEach((client) => packet.addClient(client));

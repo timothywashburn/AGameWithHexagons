@@ -16,6 +16,7 @@ import { GameResources } from '../../shared/interfaces/snapshot';
 import PacketServerDev from '../../shared/packets/server/packet-server-dev';
 import { isDev } from '../misc/utils';
 import Enum from '../../shared/enums/enum';
+import { JoinState } from '../../shared/enums/misc/join-state';
 
 let nextID = -1;
 
@@ -36,7 +37,10 @@ export default class ServerClient {
 
 		this.socket = socket;
 		this.isAuthenticated = false;
-		this.profile = new UserProfile(nextID--, generateUsername('', 3, 20));
+		this.profile = {
+			userID: nextID--,
+			username: generateUsername('', 3, 20)
+		};
 
 		this.resources = {
 			energy: 0,
@@ -141,12 +145,11 @@ export default class ServerClient {
 	}
 }
 
-export class UserProfile {
+export interface UserProfile {
 	userID: number;
 	username: string;
-
-	constructor(userID: number, username: string) {
-		this.userID = userID;
-		this.username = username;
-	}
 }
+
+export type PlayerListItemInfo = UserProfile & {
+	joinState: JoinState;
+};
