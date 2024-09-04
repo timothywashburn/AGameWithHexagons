@@ -10,6 +10,7 @@ export default abstract class ClientPacket extends Packet {
 
 	addClient(client: ServerClient) {
 		this.clients.push(client);
+		return this;
 	}
 
 	sendToClients() {

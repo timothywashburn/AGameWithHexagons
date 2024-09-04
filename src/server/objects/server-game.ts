@@ -5,7 +5,6 @@ import ServerTroop from './server-troop';
 import { GameInitData, GameSnapshot } from '../../shared/interfaces/snapshot';
 import ConnectionManager from '../controllers/connection-manager';
 import ServerBuilding from './server-building';
-import PacketClientGameSnapshot from '../../shared/packets/client/packet-client-game-snapshot';
 import ServerPlayer from './server-player';
 import PacketClientTurnStart from '../../shared/packets/client/packet-client-turn-start';
 import PacketClientPlayerListInfo from '../../shared/packets/client/packet-client-player-list-info';
@@ -14,6 +13,7 @@ import Enum from '../../shared/enums/enum';
 import { TurnType, TurnTypeEnum } from '../../shared/enums/game/turn-type';
 import { cli } from 'webpack';
 import { handleAction } from '../controllers/server-action-handler';
+import { clientSocket } from '../../client/js/controllers/connection';
 
 let gameID = 0;
 
@@ -104,16 +104,6 @@ export default class ServerGame {
 		};
 	}
 
-	sendServerSnapshot() {
-		this.connectionManager.clients.forEach((client) => this.sendSnapshot(client));
-	}
-
-	sendSnapshot(client: ServerClient) {
-		let packet = new PacketClientGameSnapshot(this.getGameSnapshot(client));
-		packet.addClient(client);
-		packet.sendToClients();
-	}
-
 	attemptEndTurn() {
 		if (this.connectionManager.waitingToEndTurn.length !== 0) return;
 		console.log('ending turn');
@@ -134,15 +124,16 @@ export default class ServerGame {
 		}
 
 		this.connectionManager.waitingToEndTurn = this.connectionManager.clients;
-		this.sendServerSnapshot();
 
 		this.turnNumber++;
 		this.turnType = this.turnNumber % 2 == 0 ? Enum.TurnType.SIEGE : Enum.TurnType.DEVELOP;
 
 		setTimeout(() => {
-			let packet = new PacketClientTurnStart(this.turnNumber, this.turnType.getIndex());
-			this.connectionManager.clients.forEach((client) => packet.addClient(client));
-			packet.sendToClients();
+			this.connectionManager.clients.forEach((client) => {
+				new PacketClientTurnStart(this.getGameSnapshot(client), this.turnNumber, this.turnType.getIndex())
+					.addClient(client)
+					.sendToClients();
+			});
 		}, 1000);
 	}
 
