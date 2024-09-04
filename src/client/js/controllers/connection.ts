@@ -106,6 +106,7 @@ clientSocket.on('packet', function (packet: Packet) {
 	} else if (packet.packetTypeID === ClientPacketID.TURN_START.id) {
 		let packetClientTurnStart = packet as PacketClientTurnStart;
 
+		thePlayer.clearPlannedActions();
 		thePlayer.getGame().updateTurnInfo(packetClientTurnStart.turnNumber, packetClientTurnStart.turnTypeIndex);
 
 		const button = document.getElementById('end-turn-button') as HTMLButtonElement;
