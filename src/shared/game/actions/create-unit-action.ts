@@ -9,6 +9,6 @@ export interface CreateUnitActionData {
 
 export default class CreateUnitAction extends PlannedAction<CreateUnitActionData> {
 	constructor(actionData: CreateUnitActionData) {
-		super(Enum.ActionType.CREATE_UNIT.getIndex(), actionData);
+		super(Enum.ActionType.CREATE_UNIT, actionData);
 	}
 }

@@ -6,8 +6,8 @@ export default abstract class PlannedAction<T> {
 	public actionTypeIndex: number;
 	public actionData: T;
 
-	protected constructor(actionTypeIndex: number, actionData: T) {
-		this.actionTypeIndex = actionTypeIndex;
+	protected constructor(actionTypeIndex: ActionType, actionData: T) {
+		this.actionTypeIndex = actionTypeIndex.getIndex();
 		this.actionData = actionData;
 
 		thePlayer.addPlannedAction(this);
