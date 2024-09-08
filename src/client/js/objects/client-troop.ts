@@ -14,6 +14,11 @@ let radius = 20;
 export default abstract class ClientTroop extends ClientElement {
 	public type: TroopType;
 	public owner: ClientPlayer;
+	public hasMoved: boolean = false;
+
+	//TODO: Temporary attribute for movement testing. Move to official
+	// attribute system once it is created
+	public speed: number
 
 	public sprite = new Image();
 
@@ -25,6 +30,8 @@ export default abstract class ClientTroop extends ClientElement {
 
 		this.prepareSprite();
 
+		this.speed = 2;
+
 		thePlayer.getGame().troops.push(this);
 	}
 
@@ -32,6 +39,7 @@ export default abstract class ClientTroop extends ClientElement {
 
 	updateTroop(troopSnapshot: TroopSnapshot) {
 		this.owner = ClientPlayer.getClient(troopSnapshot.ownerID)!;
+		this.hasMoved = false;
 	}
 
 	renderTroop() {

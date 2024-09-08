@@ -156,6 +156,10 @@ export function setSidebarInfoTroop() {
 	let thisTroop = thePlayer.getGame().selectedTile!.troop!;
 	document.getElementById('troop-name')!.innerText = `Troop ${thisTroop.id}`;
 	document.getElementById('troop-class')!.innerText = `${thisTroop.type.displayName}`;
+
+	let moveButton = document.getElementById('troop-move');
+	if (!thisTroop.hasMoved) moveButton!.style.display = "block";
+	else moveButton!.style.display = "none";
 }
 
 export function setSidebarInfoBuilding() {

@@ -26,6 +26,7 @@ export default class ClientTile extends ClientElement {
 	public building: ClientBuilding | null = null;
 
 	public isHovered: boolean = false;
+	public isMoveOption: boolean = false
 
 	public canvasX: number | undefined;
 	public canvasY: number | undefined;
@@ -75,6 +76,24 @@ export default class ClientTile extends ClientElement {
 		ctx.restore();
 
 		ctx.stroke(this.path);
+
+		if (this.isMoveOption) {
+			ctx.save();
+			ctx.fillStyle = 'blue';
+			ctx.beginPath();
+			ctx.arc(this.canvasX, this.canvasY, 5, 0, Math.PI * 2);  // Draw a circle with a radius of 5 at the center
+			ctx.fill();
+			ctx.restore();
+		}
+
+		// Used for development
+		// ctx.save();
+		// ctx.font = '12px Arial';
+		// ctx.fillStyle = 'black';
+		// ctx.textAlign = 'center';
+		// ctx.textBaseline = 'middle';
+		// ctx.fillText(`(${this.x}, ${this.y})`, this.canvasX, this.canvasY);
+		// ctx.restore();
 	}
 
 	getImage() {

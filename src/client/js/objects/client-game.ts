@@ -173,6 +173,11 @@ export class ClientGame {
 		return null;
 	}
 
+	getTileByPosition(x: number, y: number): ClientTile | null {
+		for (let tile of this.tiles) if (tile.x === x && tile.y == y) return tile;
+		return null;
+	}
+
 	getTroop(id: number | undefined): ClientTroop | null {
 		if (id == undefined) return null;
 		for (let troop of this.troops) if (troop.id === id) return troop;

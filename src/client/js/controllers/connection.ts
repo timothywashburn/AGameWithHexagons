@@ -15,6 +15,7 @@ import Enum from '../../../shared/enums/enum';
 import { AnnouncementType } from '../../../shared/enums/packet/announcement-type';
 import thePlayer from '../objects/client-the-player';
 import { onReceivePlannedActions } from './client-action-handler';
+import {disableMoveOptionRendering, setSelectedTile} from "./render";
 
 export const clientSocket = (io as any).connect();
 
@@ -100,7 +101,13 @@ clientSocket.on('packet', function (packet: Packet) {
 		chatMessages.appendChild(message);
 		chatMessages.scrollTop = chatMessages.scrollHeight;
 	} else if (packet.packetTypeID === ClientPacketID.TURN_START.id) {
-		let packetClientTurnStart = packet as PacketClientTurnStart;
+		let packetClientTurnStart = packet as PacketClientTurnStart
+
+		disableMoveOptionRendering();
+
+		setTimeout(() => {
+			setSelectedTile(thePlayer.getGame().selectedTile, true);
+		}, 100);
 
 		thePlayer.clearPlannedActions();
 		thePlayer.getGame().updateGame(packetClientTurnStart.snapshot);

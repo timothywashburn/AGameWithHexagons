@@ -2,6 +2,8 @@ import PlannedAction from '../../../shared/game/planned-action';
 import Enum from '../../../shared/enums/enum';
 import CreateUnitAction from '../../../shared/game/actions/create-unit-action';
 import thePlayer from '../objects/client-the-player';
+import MoveUnitAction from "../../../shared/game/actions/move-unit-action";
+import {setSelectedTile} from "./render";
 
 const canvas = document.getElementById('gameCanvas') as HTMLCanvasElement;
 const ctx = canvas.getContext('2d')!;
@@ -36,5 +38,16 @@ export async function renderAction(action: PlannedAction<any>) {
 		ctx.save();
 		ctx.drawImage(sprite, tile.canvasX! - radius, tile.canvasY! - radius, radius * 2, radius * 2);
 		ctx.restore();
+
+	} else if (actionType == Enum.ActionType.MOVE) {
+		let moveUnitAction = action as MoveUnitAction;
+		let troop = thePlayer.getGame().getTroop(moveUnitAction.actionData.troopID);
+		let proposedTile = thePlayer.getGame().getTile(moveUnitAction.actionData.tileID);
+
+		if (!troop || !proposedTile) return;
+
+		//TODO: Once ghost rendering is finalized, make this render as a ghost instead.
+		troop.getParentTile().troop = null;
+		proposedTile.troop = troop;
 	}
 }

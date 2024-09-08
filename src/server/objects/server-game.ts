@@ -14,6 +14,7 @@ import { TurnType, TurnTypeEnum } from '../../shared/enums/game/turn-type';
 import { cli } from 'webpack';
 import { handleAction } from '../controllers/server-action-handler';
 import { clientSocket } from '../../client/js/controllers/connection';
+import ClientTile from "../../client/js/objects/client-tile";
 
 let gameID = 0;
 
@@ -128,6 +129,8 @@ export default class ServerGame {
 		this.turnNumber++;
 		this.turnType = this.turnNumber % 2 == 0 ? Enum.TurnType.SIEGE : Enum.TurnType.DEVELOP;
 
+		this.troops.forEach(troop => troop.hasMoved = false);
+
 		setTimeout(() => {
 			this.connectionManager.clients.forEach((client) => {
 				new PacketClientTurnStart(this.getGameSnapshot(client), this.turnNumber, this.turnType.getIndex())
@@ -140,6 +143,15 @@ export default class ServerGame {
 	getName() {
 		return `Game ${ServerGame.gameList.indexOf(this) + 1}`;
 	}
+
+	getTroop(id: number): ServerTroop | null {
+		for (let troop of this.troops) {
+			if (troop.id === id) return troop
+		}
+
+		return null;
+	}
+
 
 	isJoinable() {
 		return this.connectionManager.clients.length < this.connectionManager.maxPlayers && !this.isRunning;
@@ -156,8 +168,13 @@ export default class ServerGame {
 	}
 
 	getTile(id: number): ServerTile | null {
-		for (let game of this.tiles) if (game.id === id) return game;
+		for (let tile of this.tiles) if (tile.id === id) return tile;
 		console.error(`TILE NOT FOUND: ${id}`);
+		return null;
+	}
+
+	getTileByPosition(x: number, y: number): ServerTile | null {
+		for (let tile of this.tiles) if (tile.x === x && tile.y == y) return tile;
 		return null;
 	}
 
