@@ -35,6 +35,8 @@ export class ClientGame {
 	public selectedTile: ClientTile | null = null;
 
 	constructor(initData: GameSnapshot) {
+		console.log(initData)
+
 		thePlayer.setGame(this);
 
 		this.startTime = Date.now();
