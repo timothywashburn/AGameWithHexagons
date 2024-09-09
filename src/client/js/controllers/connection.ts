@@ -17,6 +17,7 @@ import thePlayer from '../objects/client-the-player';
 import { onReceivePlannedActions } from './client-action-handler';
 import {disableMoveOptionRendering, setSelectedTile} from "./render";
 import PacketClientSocketResponse from "../../../shared/packets/client/packet-client-socket-response";
+import {getCookie} from "./cookie-handler";
 
 export const clientSocket = (io as any).connect();
 
@@ -27,6 +28,8 @@ clientSocket.on('connect', () => {
 		clearInterval(intervalID);
 		if (devConfig.autoJoin) joinGame(1, (window as any).gameData.socketID);
 	}, 10);
+
+	clientSocket.emit('header', getCookie("token"));
 });
 
 clientSocket.on('packet', function (packet: Packet) {

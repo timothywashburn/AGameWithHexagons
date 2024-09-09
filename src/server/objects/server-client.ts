@@ -15,6 +15,7 @@ import { isDev } from '../misc/utils';
 import Enum from '../../shared/enums/enum';
 import PlannedAction from '../../shared/game/planned-action';
 import PacketClientSocketResponse from "../../shared/packets/client/packet-client-socket-response";
+import {validateUser} from "../controllers/authentication";
 
 let nextID = -1;
 
@@ -46,6 +47,13 @@ export default class ServerClient {
 		socket.on('disconnect', () => {
 			if (this.game) this.game.connectionManager.disconnectClient(this);
 			ServerClient.clientList = ServerClient.clientList.filter((client) => client !== this);
+		});
+
+		socket.on('header', (token: string) => {
+			validateUser(token, this).then(() => {
+				let packet = new PacketClientSocketResponse({ clientID: this.getID() });
+				packet.addClient(this).sendToClients();
+			})
 		});
 
 		socket.on('packet', (packet: Packet) => {
@@ -91,9 +99,6 @@ export default class ServerClient {
 				}).replyToClient(this);
 			}
 		});
-
-		let packet = new PacketClientSocketResponse({ clientID: this.getID() });
-		packet.addClient(this).sendToClients();
 	}
 
 	getID() {
