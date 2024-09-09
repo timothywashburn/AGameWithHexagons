@@ -158,7 +158,7 @@ export function setSidebarInfoTroop() {
 	document.getElementById('troop-class')!.innerText = `${thisTroop.type.displayName}`;
 
 	let moveButton = document.getElementById('troop-move');
-	if (!thisTroop.hasMoved) moveButton!.style.display = 'block';
+	if (!thisTroop.hasMoved && thisTroop.owner.id === thePlayer.getID()) moveButton!.style.display = 'block';
 	else moveButton!.style.display = 'none';
 }
 

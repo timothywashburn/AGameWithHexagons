@@ -5,6 +5,8 @@ class ClientThePlayer {
 	private game: ClientGame | null = null;
 	private plannedActions: PlannedAction<any>[] = [];
 
+	private id: number;
+
 	getGame() {
 		return this.game!;
 	}
@@ -19,6 +21,14 @@ class ClientThePlayer {
 
 	getPlannedActions() {
 		return [...this.plannedActions];
+	}
+
+	getID() {
+		return this.id;
+	}
+
+	setID(id: number) {
+		this.id = id;
 	}
 
 	addPlannedAction(plannedAction: PlannedAction<any>) {

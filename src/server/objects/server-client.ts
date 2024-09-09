@@ -14,6 +14,8 @@ import PacketServerDev from '../../shared/packets/server/packet-server-dev';
 import { isDev } from '../misc/utils';
 import Enum from '../../shared/enums/enum';
 import PlannedAction from '../../shared/game/planned-action';
+import PacketClientSocketResponse from '../../shared/packets/client/packet-client-socket-response';
+import { validateUser } from '../controllers/authentication';
 
 let nextID = -1;
 
@@ -45,6 +47,13 @@ export default class ServerClient {
 		socket.on('disconnect', () => {
 			if (this.game) this.game.connectionManager.disconnectClient(this);
 			ServerClient.clientList = ServerClient.clientList.filter((client) => client !== this);
+		});
+
+		socket.on('header', (token: string) => {
+			validateUser(token, this).then(() => {
+				let packet = new PacketClientSocketResponse({ clientID: this.getID() });
+				packet.addClient(this).sendToClients();
+			});
 		});
 
 		socket.on('packet', (packet: Packet) => {
@@ -93,7 +102,9 @@ export default class ServerClient {
 	}
 
 	getID() {
-		// TODO: Figure out if ids should be done this way or not
+		// TODO: Figure out if ids should be done this way or not.
+
+		//TODO: Make it so the user is authenticated as soon as this object is created instead of waiting for another HTTP request.
 		return this.profile.userID;
 	}
 

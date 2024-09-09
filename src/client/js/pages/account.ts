@@ -1,6 +1,7 @@
 import { showToast } from '../controllers/toast';
 import { Modal } from 'bootstrap';
 import Enum from '../../../shared/enums/enum';
+import { getCookie } from '../controllers/cookie-handler';
 
 window.onload = function () {
 	showToasts();
@@ -8,7 +9,7 @@ window.onload = function () {
 	fetch('/api/account', {
 		method: 'GET',
 		headers: {
-			Authorization: 'Bearer ' + localStorage.token
+			Authorization: 'Bearer ' + getCookie('token')
 		}
 	})
 		.then((response) => response.json())
@@ -62,7 +63,7 @@ function setupButtons() {
 			method: 'GET',
 			headers: {
 				'Content-Type': 'application/json',
-				Authorization: `Bearer ${localStorage.getItem('token')}`
+				Authorization: `Bearer ${getCookie('token')}`
 			}
 		})
 			.then((response) => response.json())
@@ -94,7 +95,7 @@ function setupButtons() {
 		fetch('/api/resendverification', {
 			method: 'GET',
 			headers: {
-				Authorization: 'Bearer ' + localStorage.token
+				Authorization: 'Bearer ' + getCookie('token')
 			}
 		})
 			.then((response) => response.json())
@@ -185,7 +186,7 @@ function changeUsername(newUsername: string) {
 	fetch(`/api/changeusername?${params}`, {
 		method: 'GET',
 		headers: {
-			Authorization: 'Bearer ' + localStorage.token
+			Authorization: 'Bearer ' + getCookie('token')
 		}
 	})
 		.then((response) => response.json())
@@ -211,7 +212,7 @@ function changeEmail(newEmail: string) {
 	fetch(`/api/changeemail?${params}`, {
 		method: 'GET',
 		headers: {
-			Authorization: 'Bearer ' + localStorage.token
+			Authorization: 'Bearer ' + getCookie('token')
 		}
 	})
 		.then((response) => response.json())
@@ -238,7 +239,7 @@ function changePassword(oldPassword: string, newPassword: string) {
 	fetch(`/api/changepassword?${params}`, {
 		method: 'GET',
 		headers: {
-			Authorization: 'Bearer ' + localStorage.token
+			Authorization: 'Bearer ' + getCookie('token')
 		}
 	})
 		.then((response) => response.json())

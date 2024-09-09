@@ -1,3 +1,5 @@
+import { setCookie } from '../controllers/cookie-handler';
+
 document.getElementById('loginForm')!.addEventListener('submit', function (e) {
 	e.preventDefault();
 
@@ -10,7 +12,7 @@ document.getElementById('loginForm')!.addEventListener('submit', function (e) {
 	let params = new URLSearchParams({ username: username, password: password }).toString();
 
 	fetch(`/api/login?${params}`, {
-		method: 'GET',
+		method: 'GET'
 	})
 		.then((response) => response.json())
 		.then((data) => {
@@ -18,7 +20,7 @@ document.getElementById('loginForm')!.addEventListener('submit', function (e) {
 				window.location.href = '/play';
 
 				let token = data.token;
-				localStorage.setItem('token', token);
+				setCookie('token', token, 7);
 			} else {
 				showError('Incorrect Login');
 			}

@@ -41,6 +41,7 @@ export function handleAction(client: ServerClient, action: PlannedAction<any>) {
 		let proposedTile = client.getGame().getTile(actionData.tileID);
 
 		if (!currentTroop || !proposedTile || currentTroop.hasMoved) return;
+		if (currentTroop.owner != client) return;
 
 		let allowed = currentTroop.verifyMove(currentTroop.getParentTile(), proposedTile, client.getGame());
 		if (!allowed) return;
