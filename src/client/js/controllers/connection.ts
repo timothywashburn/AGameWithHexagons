@@ -16,6 +16,7 @@ import { AnnouncementType } from '../../../shared/enums/packet/announcement-type
 import thePlayer from '../objects/client-the-player';
 import { onReceivePlannedActions } from './client-action-handler';
 import {disableMoveOptionRendering, setSelectedTile} from "./render";
+import PacketClientSocketResponse from "../../../shared/packets/client/packet-client-socket-response";
 
 export const clientSocket = (io as any).connect();
 
@@ -42,6 +43,12 @@ clientSocket.on('packet', function (packet: Packet) {
 				button.style.display = 'none';
 			}
 		}
+
+	} else if (packet.packetTypeID === ClientPacketID.SOCKET_RESPONSE.id) {
+		let packetClientSocketResponse = packet as PacketClientSocketResponse;
+
+		console.log(`CLIENT ID: ${packetClientSocketResponse.initData.clientID}`);
+		thePlayer.setID(packetClientSocketResponse.initData.clientID);
 	} else if (packet.packetTypeID === ClientPacketID.GAME_INIT.id) {
 		let packetClientGameInit = packet as PacketClientGameInit;
 
