@@ -5,14 +5,16 @@ export class BuildingTypeEnum extends CustomEnum<BuildingType> {
 		super();
 	}
 
-	public TOWER = this.addValue(new BuildingType('Tower'));
+	public TOWER = this.addValue(new BuildingType('Tower', 'account'));
 }
 
 export class BuildingType extends EnumValue {
 	public displayName: string;
+	public spriteName: string;
 
-	constructor(displayName: string) {
+	constructor(displayName: string, spriteName: string) {
 		super();
 		this.displayName = displayName;
+		this.spriteName = spriteName;
 	}
 }

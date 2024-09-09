@@ -94,7 +94,7 @@ export function populateSpawnButtons() {
 		newButton.addEventListener('click', () => {
 			let actionData: CreateUnitActionData = {
 				category: 'troop',
-				unitIndex: troopType.getIndex(),
+				unitTypeIndex: troopType.getIndex(),
 				tileID: thePlayer.getGame().selectedTile!.id
 			};
 			new CreateUnitAction(actionData);
@@ -113,7 +113,7 @@ export function populateSpawnButtons() {
 		newButton.addEventListener('click', () => {
 			let actionData: CreateUnitActionData = {
 				category: 'building',
-				unitIndex: buildingType.getIndex(),
+				unitTypeIndex: buildingType.getIndex(),
 				tileID: thePlayer.getGame().selectedTile!.id
 			};
 			new CreateUnitAction(actionData);
@@ -158,8 +158,8 @@ export function setSidebarInfoTroop() {
 	document.getElementById('troop-class')!.innerText = `${thisTroop.type.displayName}`;
 
 	let moveButton = document.getElementById('troop-move');
-	if (!thisTroop.hasMoved) moveButton!.style.display = "block";
-	else moveButton!.style.display = "none";
+	if (!thisTroop.hasMoved) moveButton!.style.display = 'block';
+	else moveButton!.style.display = 'none';
 }
 
 export function setSidebarInfoBuilding() {
