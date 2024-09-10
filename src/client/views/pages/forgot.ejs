@@ -23,21 +23,27 @@
 
         <div class="spacer"></div>
 
-        <p>Email Address</p>
-        <div class="input-group">
-            <input type="email" id="email" name="email" required>
-        </div>
+        <form id="forgotForm">
+            <div class="info-field form-group">
+                <label for="email">Email Address</label>
+                <input type="text" id="email" class="form-control" name="email" required>
+            </div>
 
-        <div class="btn-group" role="group" aria-label="Basic example">
-            <button type="button" class="btn btn-secondary active" id="password-tab">Forgot Password</button>
-            <button type="button" class="btn btn-secondary" id="username-tab">Forgot Username</button>
-        </div>
+            <div class="spacer"></div>
 
-        <div class="spacer"></div>
+            <div class="btn-group" role="group" aria-label="Basic example">
+                <button type="button" class="btn btn-secondary active" id="password-tab">Forgot Password</button>
+                <button type="button" class="btn btn-secondary" id="username-tab">Forgot Username</button>
+            </div>
 
-        <p id="forgotError"></p>
+            <p id="forgotError"></p>
 
-        <button type="submit" class="reset-btn danger" id="forgotBtn">Submit</button>
+            <button type="submit" class="reset-btn danger" id="forgotBtn">Submit</button>
+
+            <div class="forgot">
+                <p><a href="/login">Back to Login</a></p>
+            </div>
+        </form>
     </div>
 </div>
 
@@ -61,11 +67,6 @@
         border-radius: 5px;
         box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1);
         width: 550px;
-    }
-
-    .input-group {
-        margin-bottom: 10px;
-        width: 100%;
     }
 
     .input-group label {
@@ -94,14 +95,19 @@
         background-color: #1a5ad6;
     }
 
-    .spacer {
+    #forgotError {
+        padding-top: 40px;
+        padding-bottom: 40px;
         height: 20px;
     }
 
-    #resetError, #usernameError {
-        height: 20px;
-        color: red;
-        visibility: hidden;
+    .forgot {
+        padding-top: 25px;
+        text-align: center;
+    }
+
+    .spacer {
+        padding-top: 20px;
     }
 </style>
 
