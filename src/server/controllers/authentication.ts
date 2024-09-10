@@ -1,5 +1,5 @@
-import ServerClient, { UserProfile } from '../objects/server-client';
-import jwt, { JsonWebTokenError } from 'jsonwebtoken';
+import ServerClient, {UserProfile} from '../objects/server-client';
+import jwt, {JsonWebTokenError} from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import config from '../../../config.json';
 import {runQuery} from "./sql";
@@ -45,22 +45,29 @@ export async function generateToken(username: string, expires = '1w'): Promise<s
 }
 
 export async function validateUser(token: string, client?: ServerClient | null): Promise<boolean> {
+	const userProfile = await getUserProfile(token);
+	if (!userProfile) {
+		return false;
+	}
+
+	if (client) {
+		client.isAuthenticated = true;
+		client.profile = userProfile;
+	}
+
+	return true;
+}
+
+export async function getUserProfile(token: string): Promise<UserProfile | null> {
 	try {
 		const decoded = verifyToken(token);
 		const result = await runQuery<any[]>('SELECT last_logout, username FROM accounts WHERE id = ?', [decoded.userId]);
 
-		if (result.length === 0 || (decoded.iat && result[0].last_logout / 1000 > decoded.iat)) {
-			throw new Error('Token expired');
-		}
+		if (result.length === 0 || (decoded.iat && result[0].last_logout / 1000 > decoded.iat)) return null;
 
-		if (client) {
-			client.isAuthenticated = true;
-			client.profile = new UserProfile(decoded.userId, result[0].username);
-		}
-
-		return true;
+		return new UserProfile(decoded.userId, result[0].username);
 	} catch {
-		return false;
+		return null;
 	}
 }
 

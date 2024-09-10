@@ -1,22 +1,27 @@
-import { Server, Socket } from 'socket.io';
+import {Server, Socket} from 'socket.io';
 import * as http from 'http';
 
 import path from 'path';
-import express, { Request, Response } from 'express';
+import express, {NextFunction, Request, Response} from 'express';
 import fs from 'fs';
 import chalk from 'chalk';
 import webpack from 'webpack';
 import webpackDevMiddleware from 'webpack-dev-middleware';
-import * as endpoints from './api/endpoint';
+import {handleEndpoint} from './api/endpoint';
 import webpackConfig from '../../webpack.dev';
 import * as sql from './controllers/sql';
 import config from '../../config.json';
-import { isDev } from './misc/utils';
+import {isDev} from './misc/utils';
 import ServerClient from './objects/server-client';
 import ServerGame from './objects/server-game';
-import { handleEndpoint } from './api/endpoint';
+import {getUserProfile} from "./controllers/authentication";
+
+const cookieParser = require('cookie-parser');
 
 const app = express();
+
+app.use(cookieParser())
+app.use(authMiddleware);
 
 const viewsDir = `${__dirname}/../client/views`;
 
@@ -116,3 +121,22 @@ server.listen(config.port, () => {
 });
 
 sql.init();
+
+export async function authMiddleware(req: Request, res: Response, next: NextFunction) {
+	// console.log(req);
+
+	if (!req.cookies || !req.cookies.token) {
+		next();
+		return;
+	}
+
+	const token = req.cookies.token;
+
+	try {
+		res.locals.user = await getUserProfile(token);
+	} catch (error) {
+		console.warn("Account not found or token is expired!");
+	}
+
+	next();
+}
