@@ -82,7 +82,7 @@ if (isDev) {
 }
 
 app.get('/account', ensureAuthenticated, (req, res) => {
-	res.render('account');
+	res.render('pages/account');
 });
 
 app.get('/', (req: Request, res: Response) => {
