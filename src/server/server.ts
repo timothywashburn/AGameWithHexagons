@@ -14,7 +14,7 @@ import config from '../../config.json';
 import {isDev} from './misc/utils';
 import ServerClient from './objects/server-client';
 import ServerGame from './objects/server-game';
-import {getUserProfile} from "./controllers/authentication";
+import {getUserProfile, validateUser, verifyToken} from "./controllers/authentication";
 
 const cookieParser = require('cookie-parser');
 
@@ -80,6 +80,10 @@ if (isDev) {
 		}),
 	);
 }
+
+app.get('/account', ensureAuthenticated, (req, res) => {
+	res.render('account');
+});
 
 app.get('/', (req: Request, res: Response) => {
 	res.render('pages/index');
@@ -149,4 +153,19 @@ export async function prepareRendering(req: Request, res: Response, next: NextFu
 				next();
 			});
 	});
+}
+
+export async function ensureAuthenticated(req: Request, res: Response, next: NextFunction) {
+	const token = req.cookies.token;
+
+	if (!token) {
+		return res.redirect('/login');
+	}
+
+	try {
+		await validateUser(token);
+		next();
+	} catch (err) {
+		return res.redirect('/login');
+	}
 }
