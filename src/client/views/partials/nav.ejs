@@ -1,3 +1,4 @@
+<% var currentUser = typeof user !== 'undefined' ? user : null; %>
 <nav class="navbar navbar-expand-sm bg-body-tertiary">
     <div class="container-fluid">
         <a class="navbar-brand nav-text" href="/">Home</a>
@@ -19,8 +20,8 @@
 
             <ul class="navbar-nav ms-auto d-flex align-items-center">
                 <div class="nav-text d-flex align-items-center">
-                    <% if (user) { %>
-                        <h1>Welcome, <%= user.username %></h1>
+                    <% if (currentUser) { %>
+                        <h1>Welcome, <%= currentUser.username %></h1>
                     <% } else { %>
                         <h1>Welcome, Guest</h1>
                     <% } %>
@@ -28,7 +29,9 @@
 
                 <li class="nav-item">
                     <a class="nav-link logout-link" href="/account">
-                        <img class="navbar-icon" src="/images/account.svg" alt="Account">
+                        <div class="navbar-icon">
+                            <%- profileImg %>
+                        </div>
                     </a>
                 </li>
             </ul>
@@ -54,9 +57,9 @@
         }
     }
 
-    .navbar-icon {
-        max-height: 30px;
-        width: auto;
+    .navbar-icon svg {
+        width: 35px;
+        height: 35px;
     }
 
     .toast {
@@ -88,7 +91,7 @@
 
     .nav-text {
         text-align: center;
-        padding-top: 5px;
+        padding-top: 8px;
         padding-right: 10px;
     }
 

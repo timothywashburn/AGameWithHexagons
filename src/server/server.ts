@@ -21,7 +21,7 @@ const cookieParser = require('cookie-parser');
 const app = express();
 
 app.use(cookieParser())
-app.use(authMiddleware);
+app.use(prepareRendering);
 
 const viewsDir = `${__dirname}/../client/views`;
 
@@ -122,21 +122,31 @@ server.listen(config.port, () => {
 
 sql.init();
 
-export async function authMiddleware(req: Request, res: Response, next: NextFunction) {
-	// console.log(req);
+export async function prepareRendering(req: Request, res: Response, next: NextFunction) {
+	const svgPath = path.join(__dirname, '../client', 'images', 'account.svg');
+	fs.readFile(svgPath, 'utf8', (err, svgContent) => {
+		if (err) {
+			console.error('Error reading SVG file:', err);
+			return res.status(500).send('Internal Server Error');
+		}
 
-	if (!req.cookies || !req.cookies.token) {
-		next();
-		return;
-	}
+		res.locals.profileImg = svgContent;
 
-	const token = req.cookies.token;
+		if (!req.cookies || !req.cookies.token) {
+			next();
+			return;
+		}
 
-	try {
-		res.locals.user = await getUserProfile(token);
-	} catch (error) {
-		console.warn("Account not found or token is expired!");
-	}
+		const token = req.cookies.token;
 
-	next();
+		getUserProfile(token)
+			.then(user => {
+				res.locals.user = user;
+				next();
+			})
+			.catch(error => {
+				console.warn("Account not found or token is expired!");
+				next();
+			});
+	});
 }
