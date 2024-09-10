@@ -1,7 +1,7 @@
 import { showToast } from '../controllers/toast';
 import { Modal } from 'bootstrap';
 import Enum from '../../../shared/enums/enum';
-import {getCookie} from "../controllers/cookie-handler";
+import {expireCookie, getCookie} from "../controllers/cookie-handler";
 
 window.onload = function () {
 	showToasts();
@@ -14,8 +14,6 @@ window.onload = function () {
 	})
 		.then((response) => response.json())
 		.then((data) => {
-			if (data.success !== undefined && !data.success) window.location.href = '/login';
-
 			setupButtons();
 
 			(document.getElementById('username') as HTMLInputElement).value = data.info.username;
@@ -69,6 +67,7 @@ function setupButtons() {
 			.then((response) => response.json())
 			.then((data) => {
 				if (data.success) {
+					expireCookie("token");
 					window.location.href = '/login';
 				} else {
 					console.error(data.error);

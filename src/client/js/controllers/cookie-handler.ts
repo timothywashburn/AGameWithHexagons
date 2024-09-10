@@ -18,3 +18,7 @@ export function setCookie(name: string, value: string, days: number) {
     }
     document.cookie = name + '=' + (value || '') + expires + '; path=/';
 }
+
+export function expireCookie(name: string) {
+    setCookie(name, "", 0);
+}

@@ -81,8 +81,18 @@ if (isDev) {
 	);
 }
 
+
+//Let me know if there is a better way to go about this
 app.get('/account', ensureAuthenticated, (req, res) => {
 	res.render('pages/account');
+});
+
+app.get('/login', ensureAuthenticated, (req, res) => {
+	res.render('pages/login')
+});
+
+app.get('/register', ensureAuthenticated, (req, res) => {
+	res.render('pages/register')
 });
 
 app.get('/', (req: Request, res: Response) => {
@@ -159,13 +169,22 @@ export async function ensureAuthenticated(req: Request, res: Response, next: Nex
 	const token = req.cookies.token;
 
 	if (!token) {
-		return res.redirect('/login');
+		if (req.path === '/account') {
+			return res.redirect('/login');
+		}
+		return next();
 	}
 
 	try {
 		await validateUser(token);
+		if (req.path === '/login' || req.path === '/register') {
+			return res.redirect('/account');
+		}
 		next();
 	} catch (err) {
-		return res.redirect('/login');
+		if (req.path === '/account') {
+			return res.redirect('/login');
+		}
+		next();
 	}
 }
