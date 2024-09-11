@@ -5,6 +5,7 @@ import PlannedAction from "../../game/planned-action";
 
 export type ClientInitData = {
 	clientID: number;
+	guestToken: string | null;
 };
 
 export default class PacketClientSocketResponse extends ClientPacket {

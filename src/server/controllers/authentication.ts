@@ -113,3 +113,23 @@ export async function isEmailInUse(email: string): Promise<boolean> {
 	if (result.length === 0) return false;
 	return result[0].email_verified === 1;
 }
+
+export async function generateGuestToken(profile: UserProfile) {
+	const payload = {
+		userId: profile.userID,
+		username: profile.username,
+	};
+
+	const options = { expiresIn: "1d" };
+
+	return jwt.sign(payload, config.secret, options);
+}
+
+export async function getGuestProfile(guestToken: string): Promise<UserProfile | null> {
+	try {
+		const decoded = verifyToken(guestToken);
+		return new UserProfile(decoded.userId, decoded.username);
+	} catch (error) {
+		return null;
+	}
+}

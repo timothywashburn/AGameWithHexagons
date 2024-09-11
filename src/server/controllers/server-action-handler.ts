@@ -41,10 +41,16 @@ export function handleAction(client: ServerClient, action: PlannedAction<any>) {
 		let proposedTile = client.getGame().getTile(actionData.tileID);
 
 		if (!currentTroop || !proposedTile || currentTroop.hasMoved) return;
-		if (currentTroop.owner != client) return;
+		if (currentTroop.owner.getID() != client.getID()) {
+			console.log("Troop owned by " + currentTroop.owner.profile.userID + " cannot be moved by " + client.profile.userID);
+			return;
+		}
 
 		let allowed = currentTroop.verifyMove(currentTroop.getParentTile(), proposedTile, client.getGame())
-		if (!allowed) return;
+		if (!allowed) {
+			console.log("Troop owned by " + currentTroop.owner.profile.username + " cannot move to tile " + proposedTile.id);
+			return;
+		}
 
 		currentTroop.getParentTile().troop = null;
 		proposedTile.troop = currentTroop

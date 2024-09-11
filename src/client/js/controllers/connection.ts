@@ -17,7 +17,7 @@ import thePlayer from '../objects/client-the-player';
 import { onReceivePlannedActions } from './client-action-handler';
 import {disableMoveOptionRendering, setSelectedTile} from "./render";
 import PacketClientSocketResponse from "../../../shared/packets/client/packet-client-socket-response";
-import {getCookie} from "./cookie-handler";
+import {getCookie, setCookie} from "./cookie-handler";
 
 export const clientSocket = (io as any).connect();
 
@@ -29,7 +29,7 @@ clientSocket.on('connect', () => {
 		if (devConfig.autoJoin) joinGame(1, (window as any).gameData.socketID);
 	}, 10);
 
-	clientSocket.emit('header', getCookie("token"));
+	clientSocket.emit('header', getCookie("token"), getCookie("guestToken"));
 });
 
 clientSocket.on('packet', function (packet: Packet) {
@@ -49,8 +49,12 @@ clientSocket.on('packet', function (packet: Packet) {
 
 	} else if (packet.packetTypeID === ClientPacketID.SOCKET_RESPONSE.id) {
 		let packetClientSocketResponse = packet as PacketClientSocketResponse;
+		let guestToken = packetClientSocketResponse.initData.guestToken;
 
-		console.log(`CLIENT ID: ${packetClientSocketResponse.initData.clientID}`);
+		if (guestToken) {
+			setCookie("guestToken", guestToken, 1);
+		}
+
 		thePlayer.setID(packetClientSocketResponse.initData.clientID);
 	} else if (packet.packetTypeID === ClientPacketID.GAME_INIT.id) {
 		let packetClientGameInit = packet as PacketClientGameInit;

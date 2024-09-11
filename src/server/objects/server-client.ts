@@ -1,21 +1,15 @@
-import { Socket } from 'socket.io';
-import Packet, { PacketDestination, ServerPacketID } from '../../shared/packets/base/packet';
+import {Socket} from 'socket.io';
+import Packet, {PacketDestination, ServerPacketID} from '../../shared/packets/base/packet';
 import PacketServerChat from '../../shared/packets/server/packet-server-chat';
 import ServerGame from './server-game';
 import PacketClientChat from '../../shared/packets/client/packet-client-chat';
-import { generateUsername } from 'unique-username-generator';
-import { ServerTroopInitData } from './server-troop';
-import { getServerBuildingConstructor, getServerTroopConstructor } from '../server-register';
+import {generateUsername} from 'unique-username-generator';
 import ResponsePacket from '../../shared/packets/base/response-packet';
-import { ServerBuildingInitData } from './server-building';
-import PacketServerEndTurn, { PacketServerEndTurnReply } from '../../shared/packets/server/packet-server-end-turn';
-import { GameResources } from '../../shared/interfaces/snapshot';
+import PacketServerEndTurn, {PacketServerEndTurnReply} from '../../shared/packets/server/packet-server-end-turn';
 import PacketServerDev from '../../shared/packets/server/packet-server-dev';
-import { isDev } from '../misc/utils';
-import Enum from '../../shared/enums/enum';
-import PlannedAction from '../../shared/game/planned-action';
+import {isDev} from '../misc/utils';
 import PacketClientSocketResponse from "../../shared/packets/client/packet-client-socket-response";
-import {validateUser} from "../controllers/authentication";
+import {generateGuestToken, getGuestProfile, validateUser} from "../controllers/authentication";
 
 let nextID = -1;
 
@@ -41,11 +35,11 @@ export default class ServerClient {
 			ServerClient.clientList = ServerClient.clientList.filter((client) => client !== this);
 		});
 
-		socket.on('header', (token: string) => {
-			validateUser(token, this).then(() => {
-				let packet = new PacketClientSocketResponse({ clientID: this.getID() });
+		socket.on('header', (token: string, guestToken: string) => {
+			this.handleHeader(token, guestToken).then(guestToken => {
+				let packet = new PacketClientSocketResponse({ clientID: this.getID(), guestToken: guestToken });
 				packet.addClient(this).sendToClients();
-			})
+			});
 		});
 
 		socket.on('packet', (packet: Packet) => {
@@ -120,7 +114,23 @@ export default class ServerClient {
 		console.error(`CLIENT NOT FOUND: ${id}`);
 		return null;
 	}
+
+	private async handleHeader(token: string, guestToken: string): Promise<string | null> {
+		const currentID = nextID;
+
+		if (guestToken) {
+			let profile = await getGuestProfile(guestToken);
+			if (profile != null) this.profile = profile;
+		}
+
+		await validateUser(token, this);
+
+		if (currentID + 1 === this.getID()) return await generateGuestToken(this.profile);
+		return null;
+	}
 }
+
+
 
 export class UserProfile {
 	userID: number;

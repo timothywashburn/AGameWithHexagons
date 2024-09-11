@@ -68,6 +68,7 @@ function setupButtons() {
 			.then((data) => {
 				if (data.success) {
 					expireCookie("token");
+					expireCookie("guestToken");
 					window.location.href = '/login';
 				} else {
 					console.error(data.error);
