@@ -15,6 +15,7 @@ document.getElementById('registerForm')!.addEventListener('submit', function (e)
 
 	if (password !== confirmPassword) {
 		showError('Passwords do not match');
+		return;
 	}
 
 	let params = new URLSearchParams({ username: username, password: password }).toString();
