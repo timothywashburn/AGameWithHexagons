@@ -29,20 +29,12 @@ export default class ServerClient {
 	public isConnected: boolean = true;
 	public profile: UserProfile;
 
-	public resources: GameResources;
-	public plannedActions: PlannedAction<any>[] = [];
-
 	constructor(socket: Socket) {
 		ServerClient.clientList.push(this);
 
 		this.socket = socket;
 		this.isAuthenticated = false;
 		this.profile = new UserProfile(nextID--, generateUsername('', 3, 20));
-
-		this.resources = {
-			energy: 0,
-			goo: 0
-		};
 
 		socket.on('disconnect', () => {
 			if (this.game) this.game.connectionManager.disconnectClient(this);
@@ -84,11 +76,12 @@ export default class ServerClient {
 
 			if (packet.packetTypeID === ServerPacketID.END_TURN.id) {
 				let packetEndTurn = packet as PacketServerEndTurn;
+				let player = this.getPlayer();
 
 				let success = false;
-				if (this.getGame().isRunning) {
+				if (this.getGame().isRunning && player != null) {
 					success = true;
-					this.plannedActions = packetEndTurn.plannedActions;
+					player.plannedActions = packetEndTurn.plannedActions;
 					this.getGame().connectionManager.waitingToEndTurn =
 						this.getGame().connectionManager.waitingToEndTurn.filter((client) => client !== this);
 					this.getGame().attemptEndTurn();
@@ -114,6 +107,12 @@ export default class ServerClient {
 
 	setGame(game: ServerGame) {
 		this.game = game;
+	}
+
+	getPlayer() {
+		if (!this.game) return null;
+
+		return this.game?.getPlayer(this.profile.userID);
 	}
 
 	static getClient(id: number): ServerClient | null {

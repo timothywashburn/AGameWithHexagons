@@ -85,23 +85,29 @@ export default class ServerGame {
 	}
 
 	getGameInitData(client: ServerClient): GameInitData {
+		let player = client.getPlayer();
+		if (player == null) throw new Error('Player for client: ' + client.getID() + ' not found in game: ' + this.id);
+
 		return {
-			plannedActions: client.plannedActions,
+			plannedActions: player.plannedActions,
 			...this.getGameSnapshot(client)
 		};
 	}
 
 	getGameSnapshot(client: ServerClient): GameSnapshot {
+		let player = client.getPlayer();
+		if (player == null) throw new Error('Player for client: ' + client.getID() + ' not found in game: ' + this.id);
+
 		return {
 			isRunning: this.isRunning,
 			isAuthenticated: client.isAuthenticated,
 			turnNumber: this.turnNumber,
 			turnTypeIndex: this.turnType.getIndex(),
-			resources: client.resources,
-			players: this.players.map((player) => player.getPlayerSnapshot(client)),
-			tiles: this.tiles.map((tile) => tile.getTileSnapshot(client)),
-			troops: this.troops.map((troop) => troop.getTroopSnapshot(client)),
-			buildings: this.buildings.map((building) => building.getBuildingSnapshot(client))
+			resources: player!.resources,
+			players: this.players.map((player) => player.getPlayerSnapshot()),
+			tiles: this.tiles.map((tile) => tile.getTileSnapshot()),
+			troops: this.troops.map((troop) => troop.getTroopSnapshot()),
+			buildings: this.buildings.map((building) => building.getBuildingSnapshot())
 		};
 	}
 
@@ -116,10 +122,13 @@ export default class ServerGame {
 
 		while (clientsToProcess.length > 0) {
 			const client: ServerClient = clientsToProcess.shift()!;
+			let player = client.getPlayer();
 
-			if (client.plannedActions.length > 0) {
-				const actionToExecute = client.plannedActions.shift()!;
-				if (client.plannedActions.length > 0) clientsToProcess.push(client);
+			if (player == null) throw new Error('Player for client: ' + client.getID() + ' not found in game: ' + this.id);
+
+			if (player.plannedActions.length > 0) {
+				const actionToExecute = player.plannedActions.shift()!;
+				if (player.plannedActions.length > 0) clientsToProcess.push(client);
 				handleAction(client, actionToExecute);
 			}
 		}

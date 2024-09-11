@@ -167,24 +167,17 @@ export async function prepareRendering(req: Request, res: Response, next: NextFu
 
 export async function ensureAuthenticated(req: Request, res: Response, next: NextFunction) {
 	const token = req.cookies.token;
+	let verified = await validateUser(token);
 
-	if (!token) {
+	if (!verified) {
 		if (req.path === '/account') {
 			return res.redirect('/login');
 		}
 		return next();
-	}
-
-	try {
-		await validateUser(token);
+	} else {
 		if (req.path === '/login' || req.path === '/register') {
 			return res.redirect('/account');
 		}
-		next();
-	} catch (err) {
-		if (req.path === '/account') {
-			return res.redirect('/login');
-		}
-		next();
+		return next();
 	}
 }

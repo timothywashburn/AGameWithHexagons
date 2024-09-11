@@ -46,6 +46,7 @@ export default class ConnectionManager {
 
 	disconnectClient(client: ServerClient) {
 		this.clients = this.clients.filter((testClient: ServerClient) => testClient !== client);
+		this.waitingToEndTurn = this.waitingToEndTurn.filter((testClient: ServerClient) => testClient !== client);
 
 		this.sendAlert(client, Enum.AnnouncementType.GAME_LEAVE);
 		this.updatePlayerList();

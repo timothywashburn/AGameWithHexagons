@@ -32,7 +32,7 @@ export default abstract class ServerTroop {
 		this.game.troops.push(this);
 	}
 
-	getTroopSnapshot(client: ServerClient): TroopSnapshot {
+	getTroopSnapshot(): TroopSnapshot {
 		return {
 			id: this.id,
 			typeIndex: this.type.getIndex(),

@@ -27,7 +27,7 @@ export default class ServerTile {
 		game.tiles.push(this);
 	}
 
-	getTileSnapshot(client: ServerClient): TileSnapshot {
+	getTileSnapshot(): TileSnapshot {
 		let snapshot: TileSnapshot = {
 			id: this.id,
 			x: this.x,

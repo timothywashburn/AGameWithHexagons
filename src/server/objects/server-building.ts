@@ -18,7 +18,7 @@ export default class ServerBuilding {
 		this.game.buildings.push(this);
 	}
 
-	getBuildingSnapshot(client: ServerClient): BuildingSnapshot {
+	getBuildingSnapshot(): BuildingSnapshot {
 		return {
 			id: this.id,
 			typeIndex: this.type.getIndex(),
