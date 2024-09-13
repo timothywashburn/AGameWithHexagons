@@ -6,7 +6,7 @@ import thePlayer from './client-the-player';
 import ClientUnit from './client-unit';
 import { TroopType } from '../../../shared/enums/game/troop-type';
 
-const canvas = document.getElementById('gameCanvas') as HTMLCanvasElement;
+const canvas = document.getElementById('game-canvas') as HTMLCanvasElement;
 const ctx = canvas.getContext('2d')!;
 
 let radius = 20;

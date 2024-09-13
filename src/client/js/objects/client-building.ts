@@ -8,7 +8,7 @@ import { ClientUnitState } from '../../../shared/enums/game/client-unit-state';
 import ClientUnit from './client-unit';
 import Enum from '../../../shared/enums/enum';
 
-const canvas = document.getElementById('gameCanvas') as HTMLCanvasElement;
+const canvas = document.getElementById('game-canvas') as HTMLCanvasElement;
 const ctx = canvas.getContext('2d')!;
 
 let radius = 20;

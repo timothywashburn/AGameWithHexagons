@@ -61,8 +61,8 @@ clientSocket.on('packet', function (packet: Packet) {
 		(window as any).gameData.initData = packetClientGameInit.initData;
 		new ClientGame(packetClientGameInit.initData);
 
-		if (devConfig.hideChat) document.getElementById('chatBox')!.style.display = 'none';
-		if (devConfig.hidePlayerList) document.getElementById('playerList')!.style.display = 'none';
+		if (devConfig.hideChat) document.getElementById('chat-box')!.style.display = 'none';
+		if (devConfig.hidePlayerList) document.getElementById('player-list')!.style.display = 'none';
 
 		onReceivePlannedActions(packetClientGameInit.initData.plannedActions);
 	} else if (packet.packetTypeID === ClientPacketID.PLAYER_LIST_INFO.id) {
@@ -70,7 +70,7 @@ clientSocket.on('packet', function (packet: Packet) {
 
 		(window as any).gameData.playerListInfo = packetClientPlayerListInfo.playerListInfo;
 
-		const playerList = document.getElementById('playerList')!;
+		const playerList = document.getElementById('player-list')!;
 		playerList.innerHTML = '';
 
 		(window as any).gameData.playerListInfo.forEach((playerListEntry: PlayerListItemInfo) => {
@@ -84,7 +84,7 @@ clientSocket.on('packet', function (packet: Packet) {
 	} else if (packet.packetTypeID === ClientPacketID.CHAT.id) {
 		let packetClientChat = packet as PacketClientChat;
 
-		const chatMessages = document.getElementById('chatMessages')!;
+		const chatMessages = document.getElementById('chat-messages')!;
 		const message = document.createElement('div')!;
 
 		let client = (window as any).gameData.playerListInfo.find(
@@ -97,7 +97,7 @@ clientSocket.on('packet', function (packet: Packet) {
 	} else if (packet.packetTypeID === ClientPacketID.ANNOUNCEMENT.id) {
 		let packetClientAnnouncement = packet as PacketClientAnnouncement;
 
-		const chatMessages = document.getElementById('chatMessages')!;
+		const chatMessages = document.getElementById('chat-messages')!;
 		const message = document.createElement('div');
 
 		let client = (window as any).gameData.playerListInfo.find(

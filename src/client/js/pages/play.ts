@@ -57,10 +57,10 @@ function updateGames() {
 		.then((data) => {
 			devConfig = data.dev;
 
-			let lobbyContainer = document.getElementById('lobbyContainer')!;
+			let lobbyContainer = document.getElementById('lobby-container')!;
 			lobbyContainer.innerHTML = data.html;
 
-			const gameCards = document.querySelectorAll('.gameLobby');
+			const gameCards = document.querySelectorAll('.game-lobby');
 			gameCards.forEach((game) => {
 				game.addEventListener('click', () => {
 					const gameID = parseInt(game.id);
@@ -70,7 +70,7 @@ function updateGames() {
 				});
 			});
 
-			let modalElement = document.getElementById('promptModal')!;
+			let modalElement = document.getElementById('prompt-modal')!;
 
 			if (!data.authenticated) {
 				let modal = new Modal(modalElement);
@@ -108,8 +108,8 @@ export function joinGame(gameID: number, socketID: number) {
 
 updateGames();
 
-document.getElementById('guestBtn')!.addEventListener('click', function () {
-	let modal = document.getElementById('promptModal')!;
+document.getElementById('guest-btn')!.addEventListener('click', function () {
+	let modal = document.getElementById('prompt-modal')!;
 	modal.classList.remove('show');
 	modal.style.display = 'none';
 
@@ -119,10 +119,10 @@ document.getElementById('guestBtn')!.addEventListener('click', function () {
 	}
 });
 
-document.getElementById('registerBtn')!.addEventListener('click', function () {
+document.getElementById('register-btn')!.addEventListener('click', function () {
 	window.location.href = '/register';
 });
 
-document.getElementById('loginBtn')!.addEventListener('click', function () {
+document.getElementById('login-btn')!.addEventListener('click', function () {
 	window.location.href = '/login';
 });

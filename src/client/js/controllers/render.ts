@@ -10,7 +10,7 @@ import MoveUnitAction, { MoveUnitActionData } from '../../../shared/game/actions
 import { Pair } from '../../../shared/interfaces/pair';
 import { calculateMoves, getAdjacentTiles } from '../../../shared/game/util';
 
-const canvas = document.getElementById('gameCanvas') as HTMLCanvasElement;
+const canvas = document.getElementById('game-canvas') as HTMLCanvasElement;
 const ctx = canvas.getContext('2d')!;
 
 let cameraX = 0;

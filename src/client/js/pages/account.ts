@@ -41,7 +41,7 @@ function showToasts() {
 function setupButtons() {
 	let changeEmailButton = document.getElementById('change-email')!;
 	changeEmailButton.onclick = function () {
-		let modal = new Modal(document.getElementById('promptModal')!);
+		let modal = new Modal(document.getElementById('prompt-modal')!);
 		modal.show();
 
 		updateModal('Email');
@@ -49,7 +49,7 @@ function setupButtons() {
 
 	let changeNameButton = document.getElementById('change-username')!;
 	changeNameButton.onclick = function () {
-		let modal = new Modal(document.getElementById('promptModal')!);
+		let modal = new Modal(document.getElementById('prompt-modal')!);
 		modal.show();
 
 		updateModal('Username');
@@ -79,7 +79,7 @@ function setupButtons() {
 			});
 	});
 
-	let modal = document.getElementById('promptModal')!;
+	let modal = document.getElementById('prompt-modal')!;
 	modal.addEventListener('hidden.bs.modal', function () {
 		updateModal('placeholder');
 		(document.getElementById('placeholder') as HTMLInputElement).value = '';
@@ -118,7 +118,7 @@ function setupButtons() {
 
 	let cancelButton = document.getElementById('cancelBtn')!;
 	cancelButton.addEventListener('click', function () {
-		let modal = document.getElementById('promptModal')!;
+		let modal = document.getElementById('prompt-modal')!;
 
 		updateModal('placeholder');
 		(document.getElementById('placeholder') as HTMLInputElement).value = '';
@@ -139,7 +139,7 @@ function setupButtons() {
 document.getElementById('placeholderForm')!.addEventListener('submit', function (e) {
 	e.preventDefault();
 
-	let modalTitle = document.getElementById('promptModalLabel')!.textContent;
+	let modalTitle = document.getElementById('prompt-modal-label')!.textContent;
 
 	if (modalTitle === 'Change Email') {
 		let email = (document.getElementById('email') as HTMLInputElement).value;
@@ -333,7 +333,7 @@ function resetErrors() {
 }
 
 function updateModal(type: string) {
-	let promptModalLabel = document.getElementById('promptModalLabel')!;
+	let promptModalLabel = document.getElementById('prompt-modal-label')!;
 	promptModalLabel.textContent = `Change ${type}`;
 
 	let modalBodyLabels = document.querySelectorAll('.modal-body label') as NodeListOf<HTMLLabelElement>;

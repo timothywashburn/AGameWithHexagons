@@ -3,15 +3,15 @@ import { response } from 'express';
 import Enum from '../../../shared/enums/enum';
 import { setCookie } from '../controllers/cookie-handler';
 
-document.getElementById('registerForm')!.addEventListener('submit', function (e) {
+document.getElementById('register-form')!.addEventListener('submit', function (e) {
 	e.preventDefault();
 
-	let registerBtn = document.getElementById('registerBtn')!;
+	let registerBtn = document.getElementById('register-btn')!;
 	registerBtn.classList.add('active');
 
 	let username = (document.getElementById('username') as HTMLInputElement).value;
 	let password = (document.getElementById('password') as HTMLInputElement).value;
-	let confirmPassword = (document.getElementById('confirmPassword') as HTMLInputElement).value;
+	let confirmPassword = (document.getElementById('confirm-password') as HTMLInputElement).value;
 
 	if (password !== confirmPassword) {
 		showError('Passwords do not match');
@@ -55,7 +55,7 @@ function showError(message: string, nameOnly = false) {
 		if (nameOnly && i === 0) break;
 	}
 
-	let errorMessage = document.getElementById('registrationError')!;
+	let errorMessage = document.getElementById('registration-error')!;
 	errorMessage.textContent = message;
 
 	clearTimeout(errorTimeout);
@@ -68,6 +68,6 @@ function resetErrors() {
 		input.style.borderColor = '';
 	});
 
-	let errorMessage = document.getElementById('registrationError')!;
+	let errorMessage = document.getElementById('registration-error')!;
 	errorMessage.textContent = '';
 }

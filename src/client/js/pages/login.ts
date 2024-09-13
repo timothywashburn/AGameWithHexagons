@@ -3,7 +3,7 @@ import { setCookie } from '../controllers/cookie-handler';
 document.getElementById('loginForm')!.addEventListener('submit', function (e) {
 	e.preventDefault();
 
-	let loginBtn = document.getElementById('loginBtn')!;
+	let loginBtn = document.getElementById('login-btn')!;
 	loginBtn.classList.add('active');
 
 	let username = (document.getElementById('username') as HTMLInputElement).value;

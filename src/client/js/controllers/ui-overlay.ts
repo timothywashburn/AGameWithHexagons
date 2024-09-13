@@ -8,8 +8,8 @@ import thePlayer from '../objects/client-the-player';
 import CreateUnitAction, { CreateUnitActionData } from '../../../shared/game/actions/create-unit-action';
 import PacketServerJoinGame from '../../../shared/packets/server/packet-server-join-game';
 
-document.getElementById('chatSend')!.addEventListener('click', () => {
-	const chatInput = document.getElementById('chatInput') as HTMLInputElement;
+document.getElementById('chat-send')!.addEventListener('click', () => {
+	const chatInput = document.getElementById('chat-input') as HTMLInputElement;
 	if (chatInput.value === '') return;
 
 	let packet = new PacketServerChat(chatInput.value);
@@ -18,17 +18,17 @@ document.getElementById('chatSend')!.addEventListener('click', () => {
 	chatInput.value = '';
 });
 
-document.getElementById('chatInput')!.addEventListener('keypress', (event) => {
+document.getElementById('chat-input')!.addEventListener('keypress', (event) => {
 	if (event.key === 'Enter') {
 		event.preventDefault();
-		document.getElementById('chatSend')!.click();
+		document.getElementById('chat-send')!.click();
 	}
 });
 
 document.addEventListener('keypress', (e) => {
 	if (e.key === 'Enter') {
 		e.preventDefault();
-		document.getElementById('chatInput')!.focus();
+		document.getElementById('chat-input')!.focus();
 	}
 });
 
