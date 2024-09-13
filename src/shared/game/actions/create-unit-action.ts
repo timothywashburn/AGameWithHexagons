@@ -21,8 +21,6 @@ export default class CreateUnitAction extends PlannedAction<CreateUnitActionData
 
 		let unitType = Enum.TroopType.getFromIndex(actionData.unitTypeIndex);
 		this.ghostUnit = new ClientGhostUnit('create', unitType, actionData.tileID, Enum.ClientUnitState.PLANNED_BUILD);
-
-		thePlayer.addPlannedAction(this);
 	}
 
 	getGhostUnit() {

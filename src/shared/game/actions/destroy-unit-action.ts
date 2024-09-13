@@ -32,8 +32,6 @@ export default class DestroyUnitAction extends PlannedAction<DestroyUnitActionDa
 			actionData.tileID,
 			Enum.ClientUnitState.PLANNED_BUILD
 		);
-
-		thePlayer.addPlannedAction(this);
 	}
 
 	getGhostUnit() {
