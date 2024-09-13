@@ -1,6 +1,7 @@
 import { RegistrationResponse } from '../../../shared/enums/account/registration-response';
 import { response } from 'express';
 import Enum from '../../../shared/enums/enum';
+import { setCookie } from '../controllers/cookie-handler';
 
 document.getElementById('registerForm')!.addEventListener('submit', function (e) {
 	e.preventDefault();
@@ -14,6 +15,7 @@ document.getElementById('registerForm')!.addEventListener('submit', function (e)
 
 	if (password !== confirmPassword) {
 		showError('Passwords do not match');
+		return;
 	}
 
 	let params = new URLSearchParams({ username: username, password: password }).toString();
@@ -27,7 +29,7 @@ document.getElementById('registerForm')!.addEventListener('submit', function (e)
 				window.location.href = '/play';
 
 				let token = data.token;
-				if (token) localStorage.setItem('token', token);
+				setCookie('token', token, 7);
 			} else {
 				let response = Enum.RegistrationResponse.getFromIndex(data.result);
 				let userOnly =

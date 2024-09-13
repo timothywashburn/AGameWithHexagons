@@ -1,39 +1,38 @@
 import { BuildingSnapshot } from '../../../shared/interfaces/snapshot';
 import ClientPlayer from './client-player';
 import ClientElement from './client-element';
-import { getGame } from './client-game';
 import ClientTile from './client-tile';
 import { BuildingType } from '../../../shared/enums/game/building-type';
+import thePlayer from './client-the-player';
+import { ClientUnitState } from '../../../shared/enums/game/client-unit-state';
+import ClientUnit from './client-unit';
+import Enum from '../../../shared/enums/enum';
 
 const canvas = document.getElementById('gameCanvas') as HTMLCanvasElement;
 const ctx = canvas.getContext('2d')!;
 
 let radius = 20;
 
-export default abstract class ClientBuilding extends ClientElement {
+export default abstract class ClientBuilding extends ClientUnit {
 	public type: BuildingType;
 	public owner: ClientPlayer;
 
 	public sprite = new Image();
 
-	constructor(type: BuildingType, buildingSnapshot: BuildingSnapshot) {
+	constructor(buildingSnapshot: BuildingSnapshot) {
 		super(buildingSnapshot.id);
-		this.type = type;
+		this.type = Enum.BuildingType.getFromIndex(buildingSnapshot.typeIndex);
 
 		this.updateBuilding(buildingSnapshot);
 
 		this.prepareSprite();
-
-		getGame().buildings.push(this);
 	}
-
-	abstract getImageName(): string;
 
 	updateBuilding(buildingSnapshot: BuildingSnapshot) {
 		this.owner = ClientPlayer.getClient(buildingSnapshot.ownerID)!;
 	}
 
-	renderBuilding() {
+	render() {
 		ctx.save();
 		ctx.drawImage(
 			this.sprite,
@@ -45,13 +44,15 @@ export default abstract class ClientBuilding extends ClientElement {
 		ctx.restore();
 	}
 
+	ghostRender(tileID: number) {}
+
 	getParentTile(): ClientTile {
-		return getGame().tiles.find((tile) => tile.building === this)!;
+		return thePlayer.getGame().tiles.find((tile) => tile.building === this)!;
 	}
 
 	async prepareSprite() {
 		try {
-			const response = await fetch(`images/${this.getImageName()}.svg`);
+			const response = await fetch(`images/${this.type.spriteName}.svg`);
 			let svgString = await response.text();
 			svgString = svgString.replace(/fill:#003545/g, `fill:${this.owner.teamColor.colorString}`);
 

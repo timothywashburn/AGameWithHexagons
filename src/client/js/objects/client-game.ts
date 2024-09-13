@@ -11,13 +11,11 @@ import {
 import ClientPlayer from './client-player';
 import ClientBuilding from './client-building';
 import { getClientBuildingConstructor, getClientTroopConstructor } from '../../client-register';
-import { populateSpawnButtons, updateTurnText } from '../misc/ui';
+import { populateSpawnButtons, updateTurnText } from '../controllers/ui-overlay';
 import { TurnType } from '../../../shared/enums/game/turn-type';
 import Enum from '../../../shared/enums/enum';
-
-let game: ClientGame;
-
-export const getGame = () => game;
+import thePlayer from './client-the-player';
+import { renderAction } from '../controllers/client-action-handler';
 
 export class ClientGame {
 	public startTime: number;
@@ -37,7 +35,10 @@ export class ClientGame {
 	public selectedTile: ClientTile | null = null;
 
 	constructor(initData: GameSnapshot) {
-		game = this;
+		console.log(initData);
+
+		thePlayer.setGame(this);
+
 		this.startTime = Date.now();
 		this.setupDebug();
 		this.initGame(initData);
@@ -106,7 +107,7 @@ export class ClientGame {
 				troop.updateTroop(snapshot);
 			} else {
 				let TroopConstructor = getClientTroopConstructor(Enum.TroopType.getFromIndex(snapshot.typeIndex));
-				new TroopConstructor(snapshot);
+				thePlayer.getGame().troops.push(new TroopConstructor(snapshot));
 			}
 		});
 
@@ -118,7 +119,7 @@ export class ClientGame {
 				let BuildingConstructor = getClientBuildingConstructor(
 					Enum.BuildingType.getFromIndex(snapshot.typeIndex)
 				);
-				new BuildingConstructor(snapshot);
+				thePlayer.getGame().buildings.push(new BuildingConstructor(snapshot));
 			}
 		});
 
@@ -144,10 +145,10 @@ export class ClientGame {
 		lobbyDiv.style.display = 'none';
 		gameDiv.style.display = 'block';
 
-		this.tick();
+		this.renderFrame();
 	}
 
-	async tick() {
+	async renderFrame() {
 		try {
 			const renderStartTime = window.performance.now();
 
@@ -155,8 +156,10 @@ export class ClientGame {
 
 			// Render tiles
 			this.tiles.forEach((tile) => tile.renderTile());
-			this.troops.forEach((troop) => troop.renderTroop());
-			this.buildings.forEach((building) => building.renderBuilding());
+			this.troops.forEach((troop) => troop.render());
+			this.buildings.forEach((building) => building.render());
+
+			thePlayer.getPlannedActions().forEach((action) => renderAction(action));
 
 			const finalRenderTime = window.performance.now() - renderStartTime;
 			this.renderTimes.push(finalRenderTime);
@@ -166,7 +169,7 @@ export class ClientGame {
 		}
 
 		// await new Promise(resolve => setTimeout(resolve, 1000));
-		requestAnimationFrame(() => this.tick());
+		requestAnimationFrame(() => this.renderFrame());
 	}
 
 	getPlayer(id: number | undefined): ClientPlayer | null {
@@ -180,6 +183,11 @@ export class ClientGame {
 		if (id == undefined) return null;
 		for (let tile of this.tiles) if (tile.id === id) return tile;
 		console.error(`TILE NOT FOUND: ${id}`);
+		return null;
+	}
+
+	getTileByPosition(x: number, y: number): ClientTile | null {
+		for (let tile of this.tiles) if (tile.x === x && tile.y == y) return tile;
 		return null;
 	}
 

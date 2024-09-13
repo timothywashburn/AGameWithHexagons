@@ -2,16 +2,19 @@ import { Server } from 'http';
 import ServerClient from './server-client';
 import ServerTile from './server-tile';
 import ServerTroop from './server-troop';
-import { GameSnapshot } from '../../shared/interfaces/snapshot';
+import { GameInitData, GameSnapshot } from '../../shared/interfaces/snapshot';
 import ConnectionManager from '../controllers/connection-manager';
 import ServerBuilding from './server-building';
-import PacketClientGameSnapshot from '../../shared/packets/client/packet-client-game-snapshot';
 import ServerPlayer from './server-player';
 import PacketClientTurnStart from '../../shared/packets/client/packet-client-turn-start';
 import PacketClientPlayerListInfo from '../../shared/packets/client/packet-client-player-list-info';
 import PacketClientDev from '../../shared/packets/client/packet-client-dev';
 import Enum from '../../shared/enums/enum';
 import { TurnType, TurnTypeEnum } from '../../shared/enums/game/turn-type';
+import { cli } from 'webpack';
+import { handleAction } from '../controllers/server-action-handler';
+import { clientSocket } from '../../client/js/controllers/connection';
+import ClientTile from '../../client/js/objects/client-tile';
 
 let gameID = 0;
 
@@ -81,28 +84,31 @@ export default class ServerGame {
 		// this.tiles.push(new ServerTile(-5, 0)); //This tile should Error
 	}
 
-	getFullGameSnapshot(client: ServerClient): GameSnapshot {
+	getGameInitData(client: ServerClient): GameInitData {
+		let player = client.getPlayer();
+		if (player == null) throw new Error('Player for client: ' + client.getID() + ' not found in game: ' + this.id);
+
+		return {
+			plannedActions: player.plannedActions,
+			...this.getGameSnapshot(client)
+		};
+	}
+
+	getGameSnapshot(client: ServerClient): GameSnapshot {
+		let player = client.getPlayer();
+		if (player == null) throw new Error('Player for client: ' + client.getID() + ' not found in game: ' + this.id);
+
 		return {
 			isRunning: this.isRunning,
 			isAuthenticated: client.isAuthenticated,
 			turnNumber: this.turnNumber,
 			turnTypeIndex: this.turnType.getIndex(),
-			resources: client.resources,
-			players: this.players.map((player) => player.getPlayerSnapshot(client)),
-			tiles: this.tiles.map((tile) => tile.getTileSnapshot(client)),
-			troops: this.troops.map((troop) => troop.getTroopSnapshot(client)),
-			buildings: this.buildings.map((building) => building.getBuildingSnapshot(client))
+			resources: player!.resources,
+			players: this.players.map((player) => player.getPlayerSnapshot()),
+			tiles: this.tiles.map((tile) => tile.getTileSnapshot()),
+			troops: this.troops.map((troop) => troop.getTroopSnapshot()),
+			buildings: this.buildings.map((building) => building.getBuildingSnapshot())
 		};
-	}
-
-	sendServerSnapshot() {
-		this.connectionManager.clients.forEach((client) => this.sendSnapshot(client));
-	}
-
-	sendSnapshot(client: ServerClient) {
-		let packet = new PacketClientGameSnapshot(this.getFullGameSnapshot(client));
-		packet.addClient(client);
-		packet.sendToClients();
 	}
 
 	attemptEndTurn() {
@@ -112,21 +118,48 @@ export default class ServerGame {
 	}
 
 	private endTurn() {
+		let clientsToProcess = [...this.connectionManager.clients];
+
+		while (clientsToProcess.length > 0) {
+			const client: ServerClient = clientsToProcess.shift()!;
+			let player = client.getPlayer();
+
+			if (player == null)
+				throw new Error('Player for client: ' + client.getID() + ' not found in game: ' + this.id);
+
+			if (player.plannedActions.length > 0) {
+				const actionToExecute = player.plannedActions.shift()!;
+				if (player.plannedActions.length > 0) clientsToProcess.push(client);
+				handleAction(client, actionToExecute);
+			}
+		}
+
 		this.connectionManager.waitingToEndTurn = this.connectionManager.clients;
-		this.sendServerSnapshot();
 
 		this.turnNumber++;
 		this.turnType = this.turnNumber % 2 == 0 ? Enum.TurnType.SIEGE : Enum.TurnType.DEVELOP;
 
+		this.troops.forEach((troop) => (troop.hasMoved = false));
+
 		setTimeout(() => {
-			let packet = new PacketClientTurnStart(this.turnNumber, this.turnType.getIndex());
-			this.connectionManager.clients.forEach((client) => packet.addClient(client));
-			packet.sendToClients();
+			this.connectionManager.clients.forEach((client) => {
+				new PacketClientTurnStart(this.getGameSnapshot(client), this.turnNumber, this.turnType.getIndex())
+					.addClient(client)
+					.sendToClients();
+			});
 		}, 1000);
 	}
 
 	getName() {
 		return `Game ${ServerGame.gameList.indexOf(this) + 1}`;
+	}
+
+	getTroop(id: number): ServerTroop | null {
+		for (let troop of this.troops) {
+			if (troop.id === id) return troop;
+		}
+
+		return null;
 	}
 
 	isJoinable() {
@@ -144,8 +177,13 @@ export default class ServerGame {
 	}
 
 	getTile(id: number): ServerTile | null {
-		for (let game of this.tiles) if (game.id === id) return game;
+		for (let tile of this.tiles) if (tile.id === id) return tile;
 		console.error(`TILE NOT FOUND: ${id}`);
+		return null;
+	}
+
+	getTileByPosition(x: number, y: number): ServerTile | null {
+		for (let tile of this.tiles) if (tile.x === x && tile.y == y) return tile;
 		return null;
 	}
 

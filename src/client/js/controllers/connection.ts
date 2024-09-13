@@ -1,19 +1,23 @@
 import Packet, { ClientPacketID, getPacketName, PacketDestination } from '../../../shared/packets/base/packet';
 import { io } from 'socket.io-client';
 import { devConfig, joinGame } from '../pages/play';
-import { ClientGame, getGame } from '../objects/client-game';
+import { ClientGame } from '../objects/client-game';
 import PacketClientAnnouncement from '../../../shared/packets/client/packet-client-announcement';
 import PacketClientGameInit from '../../../shared/packets/client/packet-client-game-init';
-import PacketClientGameSnapshot from '../../../shared/packets/client/packet-client-game-snapshot';
 import PacketClientPlayerListInfo from '../../../shared/packets/client/packet-client-player-list-info';
 import PacketClientChat from '../../../shared/packets/client/packet-client-chat';
 import { PlayerListItemInfo, UserProfile } from '../../../server/objects/server-client';
-import { updateTurnText } from '../misc/ui';
+import { updateTurnText } from './ui-overlay';
 import PacketClientTurnStart from '../../../shared/packets/client/packet-client-turn-start';
 import PacketClientDev from '../../../shared/packets/client/packet-client-dev';
 import { isDev } from '../../../server/misc/utils';
 import Enum from '../../../shared/enums/enum';
 import { AnnouncementType } from '../../../shared/enums/packet/announcement-type';
+import thePlayer from '../objects/client-the-player';
+import { onReceivePlannedActions } from './client-action-handler';
+import { disableMoveOptionRendering, setSelectedTile } from './render';
+import PacketClientSocketResponse from '../../../shared/packets/client/packet-client-socket-response';
+import { getCookie, setCookie } from './cookie-handler';
 
 export const clientSocket = (io as any).connect();
 
@@ -24,6 +28,8 @@ clientSocket.on('connect', () => {
 		clearInterval(intervalID);
 		if (devConfig.autoJoin) joinGame(1, (window as any).gameData.socketID);
 	}, 10);
+
+	clientSocket.emit('header', getCookie('token'), getCookie('guestToken'));
 });
 
 clientSocket.on('packet', function (packet: Packet) {
@@ -40,6 +46,15 @@ clientSocket.on('packet', function (packet: Packet) {
 				button.style.display = 'none';
 			}
 		}
+	} else if (packet.packetTypeID === ClientPacketID.SOCKET_RESPONSE.id) {
+		let packetClientSocketResponse = packet as PacketClientSocketResponse;
+		let guestToken = packetClientSocketResponse.initData.guestToken;
+
+		if (guestToken) {
+			setCookie('guestToken', guestToken, 1);
+		}
+
+		thePlayer.setID(packetClientSocketResponse.initData.clientID);
 	} else if (packet.packetTypeID === ClientPacketID.GAME_INIT.id) {
 		let packetClientGameInit = packet as PacketClientGameInit;
 
@@ -48,9 +63,8 @@ clientSocket.on('packet', function (packet: Packet) {
 
 		if (devConfig.hideChat) document.getElementById('chatBox')!.style.display = 'none';
 		if (devConfig.hidePlayerList) document.getElementById('playerList')!.style.display = 'none';
-	} else if (packet.packetTypeID === ClientPacketID.GAME_SNAPSHOT.id) {
-		let packetClientGameSnapshot = packet as PacketClientGameSnapshot;
-		getGame().updateGame(packetClientGameSnapshot.snapshot);
+
+		onReceivePlannedActions(packetClientGameInit.initData.plannedActions);
 	} else if (packet.packetTypeID === ClientPacketID.PLAYER_LIST_INFO.id) {
 		let packetClientPlayerListInfo = packet as PacketClientPlayerListInfo;
 
@@ -103,7 +117,16 @@ clientSocket.on('packet', function (packet: Packet) {
 	} else if (packet.packetTypeID === ClientPacketID.TURN_START.id) {
 		let packetClientTurnStart = packet as PacketClientTurnStart;
 
-		getGame().updateTurnInfo(packetClientTurnStart.turnNumber, packetClientTurnStart.turnTypeIndex);
+		disableMoveOptionRendering();
+
+		setTimeout(() => {
+			setSelectedTile(thePlayer.getGame().selectedTile, true);
+		}, 100);
+
+		thePlayer.clearPlannedActions();
+		thePlayer.getGame().updateGame(packetClientTurnStart.snapshot);
+
+		thePlayer.getGame().updateTurnInfo(packetClientTurnStart.turnNumber, packetClientTurnStart.turnTypeIndex);
 
 		const button = document.getElementById('end-turn-button') as HTMLButtonElement;
 		button.disabled = false;

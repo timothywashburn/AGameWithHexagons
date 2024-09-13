@@ -27,12 +27,12 @@ export default class ServerTile {
 		game.tiles.push(this);
 	}
 
-	getTileSnapshot(client: ServerClient): TileSnapshot {
+	getTileSnapshot(): TileSnapshot {
 		let snapshot: TileSnapshot = {
 			id: this.id,
 			x: this.x,
 			y: this.y,
-			color: this.color,
+			color: this.color
 		};
 		if (this.troop) snapshot.troopID = this.troop.id;
 		if (this.building) snapshot.buildingID = this.building.id;

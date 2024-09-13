@@ -9,6 +9,8 @@ import { BuildingTypeEnum } from './game/building-type';
 import { TurnTypeEnum } from './game/turn-type';
 import { TroopTypeEnum } from './game/troop-type';
 import { JoinStateEnum } from './misc/join-state';
+import { ActionTypeEnum } from './game/action-type';
+import { ClientUnitStateEnum } from './game/client-unit-state';
 
 export default class Enum {
 	// Account
@@ -19,7 +21,9 @@ export default class Enum {
 	static RegistrationResponse = new RegistrationResponseEnum();
 
 	// Game
+	static ActionType = new ActionTypeEnum();
 	static BuildingType = new BuildingTypeEnum();
+	static ClientUnitState = new ClientUnitStateEnum();
 	static TeamColor = new TeamColorEnum();
 	static TroopType = new TroopTypeEnum();
 	static TurnType = new TurnTypeEnum();

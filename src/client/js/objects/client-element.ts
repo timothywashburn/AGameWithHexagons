@@ -1,5 +1,5 @@
 export default abstract class ClientElement {
-	id: number;
+	public id: number;
 
 	protected constructor(id: number) {
 		this.id = id;

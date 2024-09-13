@@ -1,11 +1,11 @@
 import PacketServerChat from '../../../shared/packets/server/packet-server-chat';
-import { clientSocket } from '../controllers/connection';
-import PacketServerSpawnUnit from '../../../shared/packets/server/packet-server-spawn-unit';
-import { getGame } from '../objects/client-game';
+import { clientSocket } from './connection';
 import ClientTile from '../objects/client-tile';
 import PacketServerEndTurn from '../../../shared/packets/server/packet-server-end-turn';
 import PacketServerDev from '../../../shared/packets/server/packet-server-dev';
 import Enum from '../../../shared/enums/enum';
+import thePlayer from '../objects/client-the-player';
+import CreateUnitAction, { CreateUnitActionData } from '../../../shared/game/actions/create-unit-action';
 
 document.getElementById('chatSend')!.addEventListener('click', () => {
 	const chatInput = document.getElementById('chatInput') as HTMLInputElement;
@@ -19,7 +19,7 @@ document.getElementById('chatSend')!.addEventListener('click', () => {
 
 document.getElementById('chatInput')!.addEventListener('keypress', (event) => {
 	if (event.key === 'Enter') {
-		event.preventDefault(); // Prevent the default action (form submission)
+		event.preventDefault();
 		document.getElementById('chatSend')!.click();
 	}
 });
@@ -32,28 +32,28 @@ document.addEventListener('keypress', (e) => {
 });
 
 document.getElementById('toggle-tile')!.addEventListener('click', () => {
-	let game = getGame();
+	let game = thePlayer.getGame();
 	if (game.selectedTile != null) {
 		toggleSidebar('tile');
 	}
 });
 
 document.getElementById('toggle-troop')!.addEventListener('click', () => {
-	let game = getGame();
+	let game = thePlayer.getGame();
 	if (game.selectedTile != null && game.selectedTile.troop != null) {
 		toggleSidebar('troop');
 	}
 });
 
 document.getElementById('toggle-building')!.addEventListener('click', () => {
-	let game = getGame();
+	let game = thePlayer.getGame();
 	if (game.selectedTile != null && game.selectedTile.building != null) {
 		toggleSidebar('building');
 	}
 });
 
 document.getElementById('end-turn-button')!.addEventListener('click', () => {
-	let packet = new PacketServerEndTurn();
+	let packet = new PacketServerEndTurn(thePlayer.getPlannedActions());
 
 	const button = document.getElementById('end-turn-button') as HTMLButtonElement;
 	button.disabled = true;
@@ -81,7 +81,7 @@ document.getElementById('start-game-button')!.addEventListener('click', () => {
 
 export function updateTurnText() {
 	const turnText = document.getElementById('turn-text') as HTMLInputElement;
-	turnText.textContent = `Turn ${getGame().turnNumber}: ${getGame().turnType.displayName}`;
+	turnText.textContent = `Turn ${thePlayer.getGame().turnNumber}: ${thePlayer.getGame().turnType.displayName}`;
 }
 
 export function populateSpawnButtons() {
@@ -92,11 +92,14 @@ export function populateSpawnButtons() {
 		newButton.id = `spawn-troop-${troopType.getIndex()}`;
 
 		newButton.addEventListener('click', () => {
-			let packet = new PacketServerSpawnUnit('troop', troopType.getIndex(), getGame().selectedTile!.id);
-			packet.sendToServer(clientSocket).then((response) => {
-				if (!response.success) return;
-				toggleSidebar('troop');
-			});
+			let actionData: CreateUnitActionData = {
+				category: 'troop',
+				unitTypeIndex: troopType.getIndex(),
+				tileID: thePlayer.getGame().selectedTile!.id
+			};
+			new CreateUnitAction(actionData);
+			// TODO: Add support for in progress units
+			// toggleSidebar('troop');
 		});
 		document.getElementById('troop-spawn-options')!.appendChild(newButton);
 	}
@@ -108,11 +111,14 @@ export function populateSpawnButtons() {
 		newButton.id = `spawn-building-${buildingType.getIndex()}`;
 
 		newButton.addEventListener('click', () => {
-			let packet = new PacketServerSpawnUnit('building', buildingType.getIndex(), getGame().selectedTile!.id);
-			packet.sendToServer(clientSocket).then((response) => {
-				if (!response.success) return;
-				toggleSidebar('building');
-			});
+			let actionData: CreateUnitActionData = {
+				category: 'building',
+				unitTypeIndex: buildingType.getIndex(),
+				tileID: thePlayer.getGame().selectedTile!.id
+			};
+			new CreateUnitAction(actionData);
+			// TODO: Add support for in progress units
+			// toggleSidebar('building');
 		});
 		document.getElementById('building-spawn-options')!.appendChild(newButton);
 	}
@@ -124,7 +130,7 @@ export function toggleSidebar(sidebar: 'tile' | 'troop' | 'building') {
 	document.getElementById('sidebar-building')!.style.display = 'none';
 
 	document.getElementById(`sidebar-${sidebar}`)!.style.display = 'block';
-	showSidebarToggles(getGame().selectedTile!);
+	showSidebarToggles(thePlayer.getGame().selectedTile!);
 
 	if (sidebar === 'tile') setSidebarInfoTile();
 	else if (sidebar === 'troop') setSidebarInfoTroop();
@@ -142,18 +148,22 @@ export function showSidebarToggles(tile: ClientTile) {
 }
 
 export function setSidebarInfoTile() {
-	let thisTile = getGame().selectedTile!;
+	let thisTile = thePlayer.getGame().selectedTile!;
 	document.getElementById('tile-name')!.innerText = `Tile ${thisTile.id}`;
 }
 
 export function setSidebarInfoTroop() {
-	let thisTroop = getGame().selectedTile!.troop!;
+	let thisTroop = thePlayer.getGame().selectedTile!.troop!;
 	document.getElementById('troop-name')!.innerText = `Troop ${thisTroop.id}`;
 	document.getElementById('troop-class')!.innerText = `${thisTroop.type.displayName}`;
+
+	let moveButton = document.getElementById('troop-move');
+	if (!thisTroop.hasMoved && thisTroop.owner.id === thePlayer.getID()) moveButton!.style.display = 'block';
+	else moveButton!.style.display = 'none';
 }
 
 export function setSidebarInfoBuilding() {
-	let thisBuilding = getGame().selectedTile!.building!;
+	let thisBuilding = thePlayer.getGame().selectedTile!.building!;
 	document.getElementById('building-name')!.innerText = `Building ${thisBuilding.id}`;
 	document.getElementById('building-class')!.innerText = `${thisBuilding.type.displayName}`;
 }

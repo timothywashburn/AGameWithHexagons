@@ -26,6 +26,7 @@ export default abstract class ReplyableClientPacket<T> extends ClientPacket {
 
 	addClient(client: ServerClient) {
 		this.clients.push(client);
+		return this;
 	}
 
 	sendToClients(): [ServerClient, Promise<T>][] {
@@ -47,7 +48,7 @@ export default abstract class ReplyableClientPacket<T> extends ClientPacket {
 
 					client.socket.on('packet', packetHandler);
 					client.socket.emit('packet', packetData);
-				}),
+				})
 			]);
 		});
 		return result;

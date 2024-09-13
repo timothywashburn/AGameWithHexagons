@@ -36,7 +36,7 @@ export default class ConnectionManager {
 			new ServerPlayer(this.game, client);
 		}
 
-		let packet = new PacketClientGameInit(this.game.getFullGameSnapshot(client));
+		let packet = new PacketClientGameInit(this.game.getGameInitData(client));
 		packet.addClient(client);
 		await packet.sendToClients();
 
@@ -46,6 +46,7 @@ export default class ConnectionManager {
 
 	disconnectClient(client: ServerClient) {
 		this.clients = this.clients.filter((testClient: ServerClient) => testClient !== client);
+		this.waitingToEndTurn = this.waitingToEndTurn.filter((testClient: ServerClient) => testClient !== client);
 
 		this.sendAlert(client, Enum.AnnouncementType.GAME_LEAVE);
 		this.updatePlayerList();

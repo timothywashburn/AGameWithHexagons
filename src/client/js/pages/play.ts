@@ -1,20 +1,21 @@
 import '../objects/client-game';
 import '../controllers/connection';
-import '../misc/ui';
+import '../controllers/ui-overlay';
 import '../../../shared/packets/base/packet';
 import { showToast } from '../controllers/toast';
 import { Modal } from 'bootstrap';
 import Enum from '../../../shared/enums/enum';
+import { getCookie } from '../controllers/cookie-handler';
 
 (window as any).gameData = {};
 
 window.onload = function () {
-	if (!localStorage.token) return;
+	if (!getCookie('token')) return;
 
 	fetch('/api/account', {
 		method: 'GET',
 		headers: {
-			Authorization: 'Bearer ' + localStorage.token
+			Authorization: 'Bearer ' + getCookie('token')
 		}
 	})
 		.then((response) => response.json())
@@ -43,7 +44,7 @@ export let devConfig: DevConfig;
 
 function updateGames() {
 	let headers = new Headers();
-	headers.append('Authorization', 'Bearer ' + localStorage.token);
+	headers.append('Authorization', 'Bearer ' + getCookie('token'));
 
 	let requestOptions: RequestInit = {
 		method: 'GET',
@@ -80,7 +81,7 @@ function updateGames() {
 
 export function joinGame(gameID: number, socketID: number) {
 	let headers = new Headers();
-	headers.append('Authorization', 'Bearer ' + localStorage.token);
+	headers.append('Authorization', 'Bearer ' + getCookie('token'));
 
 	let requestOptions: RequestInit = {
 		method: 'GET',

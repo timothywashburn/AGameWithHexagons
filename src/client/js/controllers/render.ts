@@ -1,5 +1,14 @@
-import { getGame } from '../objects/client-game';
-import { toggleSidebar } from '../misc/ui';
+import { toggleSidebar } from './ui-overlay';
+import thePlayer from '../objects/client-the-player';
+import ClientTroop from '../objects/client-troop';
+import { platform } from 'os';
+import ClientTile from '../objects/client-tile';
+import { render } from 'ejs';
+import assert from 'assert';
+import CreateUnitAction, { CreateUnitActionData } from '../../../shared/game/actions/create-unit-action';
+import MoveUnitAction, { MoveUnitActionData } from '../../../shared/game/actions/move-unit-action';
+import { Pair } from '../../../shared/interfaces/pair';
+import { calculateMoves, getAdjacentTiles } from '../../../shared/game/util';
 
 const canvas = document.getElementById('gameCanvas') as HTMLCanvasElement;
 const ctx = canvas.getContext('2d')!;
@@ -42,7 +51,7 @@ canvas.addEventListener(
 		cameraZoom *= 1 + delta * SCROLL_SENSITIVITY;
 		cameraZoom = Math.max(Math.min(cameraZoom, MAX_ZOOM), MIN_ZOOM);
 	},
-	{ passive: true },
+	{ passive: true }
 );
 
 canvas.addEventListener('mousedown', (event) => {
@@ -71,8 +80,23 @@ canvas.addEventListener('mouseup', (event) => {
 
 const stationaryClick = (event: MouseEvent) => {
 	let clickedTile = getTile(event.clientX, event.clientY);
-	let game = getGame();
-	if (game.selectedTile == clickedTile) {
+	setSelectedTile(clickedTile);
+};
+
+export function setSelectedTile(clickedTile: ClientTile | undefined | null, override = false) {
+	let game = thePlayer.getGame();
+
+	if (clickedTile && clickedTile.isMoveOption) {
+		let game = thePlayer.getGame();
+		let selectedTile = game.selectedTile;
+
+		if (clickedTile && selectedTile && selectedTile.troop) attemptMove(selectedTile.troop, clickedTile);
+		return;
+	}
+
+	disableMoveOptionRendering();
+
+	if (game.selectedTile == clickedTile && !override) {
 		game.selectedTile = null;
 
 		document.getElementById('sidebar')!.style.display = 'none';
@@ -84,7 +108,7 @@ const stationaryClick = (event: MouseEvent) => {
 		else if (game.selectedTile.building != null) toggleSidebar('building');
 		else toggleSidebar('tile');
 	}
-};
+}
 
 canvas.addEventListener('mousemove', (event) => {
 	mouseX = event.clientX;
@@ -112,15 +136,72 @@ canvas.addEventListener('mousemove', (event) => {
 	}
 
 	let hoveredTile = getTile(mouseX, mouseY);
-	for (let tile of getGame().tiles) {
+	for (let tile of thePlayer.getGame().tiles) {
 		tile.isHovered = hoveredTile === tile;
 	}
 });
 
 const getTile = (canvasX: number, canvasY: number) => {
-	for (let tile of getGame().tiles) {
+	for (let tile of thePlayer.getGame().tiles) {
 		if (ctx.isPointInPath(tile.path!, canvasX, canvasY)) {
 			return tile;
 		}
 	}
 };
+
+document.getElementById('troop-move')!.addEventListener('click', () => {
+	let game = thePlayer.getGame();
+	let selectedTile = game.selectedTile;
+
+	if (selectedTile && selectedTile.troop) renderTroopMoveOptions(selectedTile.troop);
+});
+
+function renderTroopMoveOptions(troop: ClientTroop) {
+	let tile = troop.getParentTile();
+	let renderTiles: Pair<number>[] = getAdjacentTiles(tile.x, tile.y);
+	let speed = troop.speed;
+
+	renderTiles = renderTiles.filter((pair) => {
+		let tile = thePlayer.getGame().getTileByPosition(pair.first, pair.second);
+		if (tile === null) return false;
+
+		return tile.troop == null && tile.building == null;
+	});
+
+	for (let i = 0; i < speed - 1; i++) {
+		let isOccupied = function (pair: Pair<number>) {
+			let tile = thePlayer.getGame().getTileByPosition(pair.first, pair.second);
+			if (tile === null) return false;
+
+			return tile.troop != null || tile.building != null;
+		};
+
+		renderTiles = calculateMoves(renderTiles, isOccupied);
+	}
+
+	renderTiles.forEach((pair) => {
+		let tile = thePlayer.getGame().getTileByPosition(pair.first, pair.second);
+		if (tile === null) return;
+
+		tile.isMoveOption = true;
+	});
+}
+
+export function disableMoveOptionRendering() {
+	thePlayer.getGame().tiles.forEach((tile) => (tile.isMoveOption = false));
+}
+
+function attemptMove(troop: ClientTroop, tile: ClientTile) {
+	let actionData: MoveUnitActionData = {
+		troopID: troop.id,
+		tileID: tile.id
+	};
+	new MoveUnitAction(actionData);
+
+	troop.hasMoved = true;
+
+	setTimeout(() => {
+		tile.isMoveOption = false;
+		setSelectedTile(tile);
+	}, 100);
+}

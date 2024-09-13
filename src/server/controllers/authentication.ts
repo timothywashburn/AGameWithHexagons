@@ -45,27 +45,31 @@ export async function generateToken(username: string, expires = '1w'): Promise<s
 }
 
 export async function validateUser(token: string, client?: ServerClient | null): Promise<boolean> {
+	const userProfile = await getUserProfile(token);
+	if (!userProfile) {
+		return false;
+	}
+
+	if (client) {
+		client.isAuthenticated = true;
+		client.profile = userProfile;
+	}
+
+	return true;
+}
+
+export async function getUserProfile(token: string): Promise<UserProfile | null> {
 	try {
 		const decoded = verifyToken(token);
 		const result = await runQuery<any[]>('SELECT last_logout, username FROM accounts WHERE id = ?', [
 			decoded.userId
 		]);
 
-		if (result.length === 0 || (decoded.iat && result[0].last_logout / 1000 > decoded.iat)) {
-			throw new Error('Token expired');
-		}
+		if (result.length === 0 || (decoded.iat && result[0].last_logout / 1000 > decoded.iat)) return null;
 
-		if (client) {
-			client.isAuthenticated = true;
-			client.profile = {
-				userID: decoded.userId,
-				username: result[0].username
-			};
-		}
-
-		return true;
+		return new UserProfile(decoded.userId, result[0].username);
 	} catch {
-		return false;
+		return null;
 	}
 }
 
@@ -112,4 +116,24 @@ export async function isEmailInUse(email: string): Promise<boolean> {
 	const result = await runQuery<any[]>('SELECT * FROM accounts WHERE email = ?', [email]);
 	if (result.length === 0) return false;
 	return result[0].email_verified === 1;
+}
+
+export async function generateGuestToken(profile: UserProfile) {
+	const payload = {
+		userId: profile.userID,
+		username: profile.username
+	};
+
+	const options = { expiresIn: '1d' };
+
+	return jwt.sign(payload, config.secret, options);
+}
+
+export async function getGuestProfile(guestToken: string): Promise<UserProfile | null> {
+	try {
+		const decoded = verifyToken(guestToken);
+		return new UserProfile(decoded.userId, decoded.username);
+	} catch (error) {
+		return null;
+	}
 }

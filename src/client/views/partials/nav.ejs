@@ -1,6 +1,7 @@
+<% var currentUser = typeof user !== 'undefined' ? user : null; %>
 <nav class="navbar navbar-expand-sm bg-body-tertiary">
     <div class="container-fluid">
-        <a class="navbar-brand" href="/">Home</a>
+        <a class="navbar-brand nav-text" href="/">Home</a>
 
         <!-- Toggler Button -->
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
@@ -17,10 +18,20 @@
                 </li>
             </ul>
 
-            <ul class="navbar-nav ms-auto">
+            <ul class="navbar-nav ms-auto d-flex align-items-center">
+                <div class="nav-text d-flex align-items-center">
+                    <% if (currentUser) { %>
+                        <h1>Welcome, <%= currentUser.username %></h1>
+                    <% } else { %>
+                        <h1>Welcome, Guest</h1>
+                    <% } %>
+                </div>
+
                 <li class="nav-item">
                     <a class="nav-link logout-link" href="/account">
-                        <img class="navbar-icon" src="/images/account.svg" alt="Account">
+                        <div class="navbar-icon">
+                            <%- profileImg %>
+                        </div>
                     </a>
                 </li>
             </ul>
@@ -31,6 +42,12 @@
 </nav>
 
 <style>
+    .navbar {
+        font-family: Arial, sans-serif;
+        font-size: 16px;
+        color: #333;
+    }
+
     @keyframes slideInDown {
         0% {
             top: -100px;
@@ -46,9 +63,9 @@
         }
     }
 
-    .navbar-icon {
-        max-height: 25px;
-        width: auto;
+    .navbar-icon svg {
+        width: 35px;
+        height: 35px;
     }
 
     .toast {
@@ -76,5 +93,15 @@
         opacity: 1;
         top: 0;
         animation: slideInDown 0.5s forwards;
+    }
+
+    .nav-text {
+        text-align: center;
+        padding-top: 8px;
+        padding-right: 10px;
+    }
+
+    h1 {
+        font-size: 20px;
     }
 </style>

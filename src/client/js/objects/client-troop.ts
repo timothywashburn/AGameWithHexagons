@@ -1,19 +1,24 @@
-import { getGame } from './client-game';
 import ClientTile from './client-tile';
 import { TroopSnapshot } from '../../../shared/interfaces/snapshot';
 import ClientPlayer from './client-player';
-import ClientElement from './client-element';
 import Enum from '../../../shared/enums/enum';
-import { TurnType as TroopType } from '../../../shared/enums/game/turn-type';
+import thePlayer from './client-the-player';
+import ClientUnit from './client-unit';
+import { TroopType } from '../../../shared/enums/game/troop-type';
 
 const canvas = document.getElementById('gameCanvas') as HTMLCanvasElement;
 const ctx = canvas.getContext('2d')!;
 
 let radius = 20;
 
-export default abstract class ClientTroop extends ClientElement {
+export default abstract class ClientTroop extends ClientUnit {
 	public type: TroopType;
 	public owner: ClientPlayer;
+	public hasMoved: boolean = false;
+
+	//TODO: Temporary attribute for movement testing. Move to official
+	// attribute system once it is created
+	public speed: number;
 
 	public sprite = new Image();
 
@@ -25,16 +30,15 @@ export default abstract class ClientTroop extends ClientElement {
 
 		this.prepareSprite();
 
-		getGame().troops.push(this);
+		this.speed = 2;
 	}
-
-	abstract getImageName(): string;
 
 	updateTroop(troopSnapshot: TroopSnapshot) {
 		this.owner = ClientPlayer.getClient(troopSnapshot.ownerID)!;
+		this.hasMoved = false;
 	}
 
-	renderTroop() {
+	render() {
 		ctx.save();
 		ctx.drawImage(
 			this.sprite,
@@ -47,12 +51,12 @@ export default abstract class ClientTroop extends ClientElement {
 	}
 
 	getParentTile(): ClientTile {
-		return getGame().tiles.find((tile) => tile.troop === this)!;
+		return thePlayer.getGame().tiles.find((tile) => tile.troop === this)!;
 	}
 
 	async prepareSprite() {
 		try {
-			const response = await fetch(`images/${this.getImageName()}.svg`);
+			const response = await fetch(`images/${this.type.spriteName}.svg`);
 			let svgString = await response.text();
 			svgString = svgString.replace(/fill:#003545/g, `fill:${this.owner.teamColor.colorString}`);
 

@@ -1,11 +1,11 @@
 import { ClientPacketID } from '../base/packet';
-import { GameSnapshot } from '../../interfaces/snapshot';
+import { GameInitData } from '../../interfaces/snapshot';
 import ClientPacket from '../base/client-packet';
 
 export default class PacketClientGameInit extends ClientPacket {
-	public initData: GameSnapshot;
+	public initData: GameInitData;
 
-	constructor(initData: GameSnapshot) {
+	constructor(initData: GameInitData) {
 		super(ClientPacketID.GAME_INIT.id);
 		this.initData = initData;
 	}

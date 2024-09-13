@@ -4,18 +4,12 @@ import PacketServerChat from '../../shared/packets/server/packet-server-chat';
 import ServerGame from './server-game';
 import PacketClientChat from '../../shared/packets/client/packet-client-chat';
 import { generateUsername } from 'unique-username-generator';
-import PacketServerSpawnUnit, {
-	PacketServerSpawnUnitReply
-} from '../../shared/packets/server/packet-server-spawn-unit';
-import { ServerTroopInitData } from './server-troop';
-import { getServerBuildingConstructor, getServerTroopConstructor } from '../server-register';
 import ResponsePacket from '../../shared/packets/base/response-packet';
-import { ServerBuildingInitData } from './server-building';
 import PacketServerEndTurn, { PacketServerEndTurnReply } from '../../shared/packets/server/packet-server-end-turn';
-import { GameResources } from '../../shared/interfaces/snapshot';
 import PacketServerDev from '../../shared/packets/server/packet-server-dev';
 import { isDev } from '../misc/utils';
-import Enum from '../../shared/enums/enum';
+import PacketClientSocketResponse from '../../shared/packets/client/packet-client-socket-response';
+import { generateGuestToken, getGuestProfile, validateUser } from '../controllers/authentication';
 import { JoinState } from '../../shared/enums/misc/join-state';
 
 let nextID = -1;
@@ -30,8 +24,6 @@ export default class ServerClient {
 	public isConnected: boolean = true;
 	public profile: UserProfile;
 
-	public resources: GameResources;
-
 	constructor(socket: Socket) {
 		ServerClient.clientList.push(this);
 
@@ -42,14 +34,16 @@ export default class ServerClient {
 			username: generateUsername('', 3, 20)
 		};
 
-		this.resources = {
-			energy: 0,
-			goo: 0
-		};
-
 		socket.on('disconnect', () => {
 			if (this.game) this.game.connectionManager.disconnectClient(this);
 			ServerClient.clientList = ServerClient.clientList.filter((client) => client !== this);
+		});
+
+		socket.on('header', (token: string, guestToken: string) => {
+			this.handleHeader(token, guestToken).then((guestToken) => {
+				let packet = new PacketClientSocketResponse({ clientID: this.getID(), guestToken: guestToken });
+				packet.addClient(this).sendToClients();
+			});
 		});
 
 		socket.on('packet', (packet: Packet) => {
@@ -78,41 +72,14 @@ export default class ServerClient {
 				responsePacket.sendToClients();
 			}
 
-			if (packet.packetTypeID === ServerPacketID.SPAWN.id && this.getGame().isRunning) {
-				let packetServerSpawnUnit = packet as PacketServerSpawnUnit;
-				let parentTile = this.getGame().getTile(packetServerSpawnUnit.tileID)!;
-
-				if (packetServerSpawnUnit.category === 'troop') {
-					let troopType = Enum.TroopType.getFromIndex(packetServerSpawnUnit.unitIndex);
-					let initData: ServerTroopInitData = {
-						game: this.getGame(),
-						owner: this
-					};
-					let TroopConstructor = getServerTroopConstructor(troopType);
-					parentTile.troop = new TroopConstructor(initData);
-				} else if (packetServerSpawnUnit.category === 'building') {
-					let buildingType = Enum.BuildingType.getFromIndex(packetServerSpawnUnit.unitIndex);
-					let initData: ServerBuildingInitData = {
-						game: this.getGame(),
-						owner: this
-					};
-					let BuildingConstructor = getServerBuildingConstructor(buildingType);
-					parentTile.building = new BuildingConstructor(initData);
-				}
-
-				this.getGame().sendSnapshot(this);
-
-				new ResponsePacket<PacketServerSpawnUnitReply>(packetServerSpawnUnit.packetID, {
-					success: true
-				}).replyToClient(this);
-			}
-
 			if (packet.packetTypeID === ServerPacketID.END_TURN.id) {
 				let packetEndTurn = packet as PacketServerEndTurn;
+				let player = this.getPlayer();
 
 				let success = false;
-				if (this.getGame().isRunning) {
+				if (this.getGame().isRunning && player != null) {
 					success = true;
+					player.plannedActions = packetEndTurn.plannedActions;
 					this.getGame().connectionManager.waitingToEndTurn =
 						this.getGame().connectionManager.waitingToEndTurn.filter((client) => client !== this);
 					this.getGame().attemptEndTurn();
@@ -126,7 +93,9 @@ export default class ServerClient {
 	}
 
 	getID() {
-		// TODO: Figure out if ids should be done this way or not
+		// TODO: Figure out if ids should be done this way or not.
+
+		//TODO: Make it so the user is authenticated as soon as this object is created instead of waiting for another HTTP request.
 		return this.profile.userID;
 	}
 
@@ -138,9 +107,29 @@ export default class ServerClient {
 		this.game = game;
 	}
 
+	getPlayer() {
+		if (!this.game) return null;
+
+		return this.game?.getPlayer(this.profile.userID);
+	}
+
 	static getClient(id: number): ServerClient | null {
 		for (let client of ServerClient.clientList) if (client.getID() === id) return client;
 		console.error(`CLIENT NOT FOUND: ${id}`);
+		return null;
+	}
+
+	private async handleHeader(token: string, guestToken: string): Promise<string | null> {
+		const currentID = nextID;
+
+		if (guestToken) {
+			let profile = await getGuestProfile(guestToken);
+			if (profile != null) this.profile = profile;
+		}
+
+		await validateUser(token, this);
+
+		if (currentID + 1 === this.getID()) return await generateGuestToken(this.profile);
 		return null;
 	}
 }

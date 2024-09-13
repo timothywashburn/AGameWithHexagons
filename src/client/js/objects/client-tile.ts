@@ -1,8 +1,8 @@
 import { TileSnapshot } from '../../../shared/interfaces/snapshot';
 import ClientTroop from './client-troop';
 import ClientBuilding from './client-building';
-import { getGame } from './client-game';
 import ClientElement from './client-element';
+import thePlayer from './client-the-player';
 
 const canvas = document.getElementById('gameCanvas') as HTMLCanvasElement;
 const ctx = canvas.getContext('2d')!;
@@ -26,6 +26,7 @@ export default class ClientTile extends ClientElement {
 	public building: ClientBuilding | null = null;
 
 	public isHovered: boolean = false;
+	public isMoveOption: boolean = false;
 
 	public canvasX: number | undefined;
 	public canvasY: number | undefined;
@@ -42,13 +43,13 @@ export default class ClientTile extends ClientElement {
 
 		this.updateTile(tileSnapshot);
 
-		getGame().tiles.push(this);
+		thePlayer.getGame().tiles.push(this);
 	}
 
 	updateTile(tileSnapshot: TileSnapshot) {
 		this.color = tileSnapshot.color;
-		this.troop = getGame().getTroop(tileSnapshot.troopID);
-		this.building = getGame().getBuilding(tileSnapshot.buildingID);
+		this.troop = thePlayer.getGame().getTroop(tileSnapshot.troopID);
+		this.building = thePlayer.getGame().getBuilding(tileSnapshot.buildingID);
 	}
 
 	renderTile() {
@@ -75,10 +76,28 @@ export default class ClientTile extends ClientElement {
 		ctx.restore();
 
 		ctx.stroke(this.path);
+
+		if (this.isMoveOption) {
+			ctx.save();
+			ctx.fillStyle = 'blue';
+			ctx.beginPath();
+			ctx.arc(this.canvasX, this.canvasY, 5, 0, Math.PI * 2); // Draw a circle with a radius of 5 at the center
+			ctx.fill();
+			ctx.restore();
+		}
+
+		// Used for development
+		// ctx.save();
+		// ctx.font = '12px Arial';
+		// ctx.fillStyle = 'black';
+		// ctx.textAlign = 'center';
+		// ctx.textBaseline = 'middle';
+		// ctx.fillText(`(${this.x}, ${this.y})`, this.canvasX, this.canvasY);
+		// ctx.restore();
 	}
 
 	getImage() {
-		if (getGame().selectedTile == this) return hexagonSelected;
+		if (thePlayer.getGame().selectedTile == this) return hexagonSelected;
 		if (this.isHovered) return hexagonHover;
 		return hexagon;
 	}
