@@ -14,18 +14,16 @@ export interface CreateUnitActionData {
 }
 
 export default class CreateUnitAction extends PlannedAction<CreateUnitActionData> {
-	private ghostUnit: ClientGhostUnit;
+	private readonly ghostUnit: ClientGhostUnit;
 
 	constructor(actionData: CreateUnitActionData) {
 		super(Enum.ActionType.CREATE_UNIT, actionData);
 
 		let unitType = Enum.TroopType.getFromIndex(actionData.unitTypeIndex);
-		this.ghostUnit = new ClientGhostUnit(unitType, actionData.tileID, Enum.ClientUnitState.PLANNED_BUILD);
-
-		thePlayer.addPlannedAction(this);
+		this.ghostUnit = new ClientGhostUnit('create', unitType, actionData.tileID, Enum.ClientUnitState.PLANNED_BUILD);
 	}
 
-	getRenderHelperUnit() {
+	getGhostUnit() {
 		return this.ghostUnit;
 	}
 }

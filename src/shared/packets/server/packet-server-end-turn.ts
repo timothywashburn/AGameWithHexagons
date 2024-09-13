@@ -1,7 +1,6 @@
-import { ServerPacketID } from '../base/packet';
-import ServerPacket from '../base/server-packet';
 import ReplyableServerPacket from '../base/replyable-server-packet';
 import PlannedAction from '../../game/planned-action';
+import Enum from '../../enums/enum';
 
 export interface PacketServerEndTurnReply {
 	success: boolean;
@@ -11,7 +10,7 @@ export default class PacketServerEndTurn extends ReplyableServerPacket<PacketSer
 	public plannedActions: PlannedAction<any>[];
 
 	constructor(plannedActions: PlannedAction<any>[]) {
-		super(ServerPacketID.END_TURN.id);
+		super(Enum.ServerPacketType.END_TURN.getIndex());
 
 		this.plannedActions = plannedActions;
 	}

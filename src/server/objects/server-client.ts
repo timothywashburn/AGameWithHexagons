@@ -1,5 +1,5 @@
 import { Socket } from 'socket.io';
-import Packet, { PacketDestination, ServerPacketID } from '../../shared/packets/base/packet';
+import Packet from '../../shared/packets/base/packet';
 import PacketServerChat from '../../shared/packets/server/packet-server-chat';
 import ServerGame from './server-game';
 import PacketClientChat from '../../shared/packets/client/packet-client-chat';
@@ -8,8 +8,9 @@ import ResponsePacket from '../../shared/packets/base/response-packet';
 import PacketServerEndTurn, { PacketServerEndTurnReply } from '../../shared/packets/server/packet-server-end-turn';
 import PacketServerDev from '../../shared/packets/server/packet-server-dev';
 import { isDev } from '../misc/utils';
-import PacketClientSocketResponse from '../../shared/packets/client/packet-client-socket-response';
 import { generateGuestToken, getGuestProfile, validateUser } from '../controllers/authentication';
+import Enum from '../../shared/enums/enum';
+import PacketClientSocketResponse from '../../shared/packets/client/packet-client-socket-response';
 import { JoinState } from '../../shared/enums/misc/join-state';
 import PacketServerJoinGame from '../../shared/packets/server/packet-server-join-game';
 import PacketClientGameInit from '../../shared/packets/client/packet-client-game-init';
@@ -49,9 +50,10 @@ export default class ServerClient {
 		});
 
 		socket.on('packet', (packet: Packet) => {
-			if (packet.packetDestination !== PacketDestination.SERVER_BOUND) return;
+			if (Enum.PacketDestination.getFromIndex(packet.packetDestination) !== Enum.PacketDestination.SERVER_BOUND)
+				return;
 
-			if (packet.packetTypeID === ServerPacketID.DEV.id && isDev) {
+			if (packet.packetTypeIndex === Enum.ServerPacketType.DEV.getIndex() && isDev) {
 				let packetServerDev = packet as PacketServerDev;
 
 				if (packetServerDev.data.action) {
@@ -60,7 +62,7 @@ export default class ServerClient {
 						this.game?.start();
 					}
 				}
-			} else if (packet.packetTypeID === ServerPacketID.CHAT.id) {
+			} else if (packet.packetTypeIndex === Enum.ServerPacketType.CHAT.getIndex()) {
 				let packetServerChat = packet as PacketServerChat;
 
 				console.log(`Receiving chat message from client ${this.getID()}: ${packetServerChat.message}`);
@@ -72,7 +74,9 @@ export default class ServerClient {
 				);
 
 				responsePacket.sendToClients();
-			} else if (packet.packetTypeID === ServerPacketID.END_TURN.id) {
+			}
+
+			if (packet.packetTypeIndex === Enum.ServerPacketType.END_TURN.getIndex()) {
 				let packetEndTurn = packet as PacketServerEndTurn;
 				let player = this.getPlayer();
 

@@ -1,6 +1,6 @@
-import { ClientPacketID } from '../base/packet';
 import ClientPacket from '../base/client-packet';
 import { GameSnapshot } from '../../interfaces/snapshot';
+import Enum from '../../enums/enum';
 
 export default class PacketClientTurnStart extends ClientPacket {
 	public snapshot: GameSnapshot;
@@ -8,7 +8,7 @@ export default class PacketClientTurnStart extends ClientPacket {
 	public turnTypeIndex: number;
 
 	constructor(snapshot: GameSnapshot, turnNumber: number, turnTypeIndex: number) {
-		super(ClientPacketID.TURN_START.id);
+		super(Enum.ClientPacketType.TURN_START.getIndex());
 		this.snapshot = snapshot;
 		this.turnNumber = turnNumber;
 		this.turnTypeIndex = turnTypeIndex;

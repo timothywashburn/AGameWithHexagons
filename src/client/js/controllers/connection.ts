@@ -1,4 +1,3 @@
-import Packet, { ClientPacketID, getPacketName, PacketDestination } from '../../../shared/packets/base/packet';
 import { io } from 'socket.io-client';
 import { devConfig, joinGame } from '../pages/play';
 import { ClientGame } from '../objects/client-game';
@@ -18,6 +17,7 @@ import { onReceivePlannedActions } from './client-action-handler';
 import { disableMoveOptionRendering, setSelectedTile } from './render';
 import PacketClientSocketResponse from '../../../shared/packets/client/packet-client-socket-response';
 import { getCookie, setCookie } from './cookie-handler';
+import Packet from '../../../shared/packets/base/packet';
 
 export const clientSocket = (io as any).connect();
 
@@ -33,10 +33,10 @@ clientSocket.on('connect', () => {
 });
 
 clientSocket.on('packet', function (packet: Packet) {
-	if (packet.packetDestination !== PacketDestination.CLIENT_BOUND) return;
-	console.log(`receiving packet: ` + getPacketName(packet.packetTypeID));
+	if (Enum.PacketDestination.getFromIndex(packet.packetDestination) !== Enum.PacketDestination.CLIENT_BOUND) return;
+	console.log(`receiving packet: ` + packet.packetTypeIndex);
 
-	if (packet.packetTypeID === ClientPacketID.DEV.id && isDev) {
+	if (packet.packetTypeIndex === Enum.ClientPacketType.DEV.getIndex() && isDev) {
 		let packetClientDev = packet as PacketClientDev;
 
 		if (packetClientDev.data.action) {
@@ -46,7 +46,7 @@ clientSocket.on('packet', function (packet: Packet) {
 				button.style.display = 'none';
 			}
 		}
-	} else if (packet.packetTypeID === ClientPacketID.SOCKET_RESPONSE.id) {
+	} else if (packet.packetTypeIndex === Enum.ClientPacketType.SOCKET_RESPONSE.getIndex()) {
 		let packetClientSocketResponse = packet as PacketClientSocketResponse;
 		let guestToken = packetClientSocketResponse.initData.guestToken;
 
@@ -55,7 +55,7 @@ clientSocket.on('packet', function (packet: Packet) {
 		}
 
 		thePlayer.setID(packetClientSocketResponse.initData.clientID);
-	} else if (packet.packetTypeID === ClientPacketID.GAME_INIT.id) {
+	} else if (packet.packetTypeIndex === Enum.ClientPacketType.GAME_INIT.getIndex()) {
 		let packetClientGameInit = packet as PacketClientGameInit;
 
 		(window as any).gameData.initData = packetClientGameInit.initData;
@@ -65,7 +65,7 @@ clientSocket.on('packet', function (packet: Packet) {
 		if (devConfig.hidePlayerList) document.getElementById('player-list')!.style.display = 'none';
 
 		onReceivePlannedActions(packetClientGameInit.initData.plannedActions);
-	} else if (packet.packetTypeID === ClientPacketID.PLAYER_LIST_INFO.id) {
+	} else if (packet.packetTypeIndex === Enum.ClientPacketType.PLAYER_LIST_INFO.getIndex()) {
 		let packetClientPlayerListInfo = packet as PacketClientPlayerListInfo;
 
 		(window as any).gameData.playerListInfo = packetClientPlayerListInfo.playerListInfo;
@@ -81,7 +81,7 @@ clientSocket.on('packet', function (packet: Packet) {
 
 			playerList.appendChild(listItem);
 		});
-	} else if (packet.packetTypeID === ClientPacketID.CHAT.id) {
+	} else if (packet.packetTypeIndex === Enum.ClientPacketType.CHAT.getIndex()) {
 		let packetClientChat = packet as PacketClientChat;
 
 		const chatMessages = document.getElementById('chat-messages')!;
@@ -94,7 +94,7 @@ clientSocket.on('packet', function (packet: Packet) {
 
 		chatMessages.appendChild(message);
 		chatMessages.scrollTop = chatMessages.scrollHeight;
-	} else if (packet.packetTypeID === ClientPacketID.ANNOUNCEMENT.id) {
+	} else if (packet.packetTypeIndex === Enum.ClientPacketType.ANNOUNCEMENT.getIndex()) {
 		let packetClientAnnouncement = packet as PacketClientAnnouncement;
 
 		const chatMessages = document.getElementById('chat-messages')!;
@@ -113,7 +113,7 @@ clientSocket.on('packet', function (packet: Packet) {
 
 		chatMessages.appendChild(message);
 		chatMessages.scrollTop = chatMessages.scrollHeight;
-	} else if (packet.packetTypeID === ClientPacketID.TURN_START.id) {
+	} else if (packet.packetTypeIndex === Enum.ClientPacketType.TURN_START.getIndex()) {
 		let packetClientTurnStart = packet as PacketClientTurnStart;
 
 		disableMoveOptionRendering();

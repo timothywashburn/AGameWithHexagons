@@ -21,10 +21,9 @@ export async function renderAction(action: PlannedAction<any>) {
 	let actionType = Enum.ActionType.getFromIndex(action.actionTypeIndex);
 
 	if (actionType == Enum.ActionType.CREATE_UNIT) {
-		let createUnitAction = action as CreateUnitAction;
-
-		createUnitAction.getRenderHelperUnit().render();
-	} else if (actionType == Enum.ActionType.MOVE) {
+		let codAction = action as CreateUnitAction;
+		codAction.getGhostUnit().render();
+	} else if (actionType == Enum.ActionType.MOVE_UNIT) {
 		let moveUnitAction = action as MoveUnitAction;
 		let troop = thePlayer.getGame().getTroop(moveUnitAction.actionData.troopID);
 		let proposedTile = thePlayer.getGame().getTile(moveUnitAction.actionData.tileID);

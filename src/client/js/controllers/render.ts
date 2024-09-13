@@ -149,14 +149,7 @@ const getTile = (canvasX: number, canvasY: number) => {
 	}
 };
 
-document.getElementById('troop-move')!.addEventListener('click', () => {
-	let game = thePlayer.getGame();
-	let selectedTile = game.selectedTile;
-
-	if (selectedTile && selectedTile.troop) renderTroopMoveOptions(selectedTile.troop);
-});
-
-function renderTroopMoveOptions(troop: ClientTroop) {
+export function renderTroopMoveOptions(troop: ClientTroop) {
 	let tile = troop.getParentTile();
 	let renderTiles: Pair<number>[] = getAdjacentTiles(tile.x, tile.y);
 	let speed = troop.speed;

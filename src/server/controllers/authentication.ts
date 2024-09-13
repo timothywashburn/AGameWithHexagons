@@ -77,8 +77,8 @@ export async function getUserProfile(token: string): Promise<UserProfile | null>
 }
 
 export async function getUserEmail(userID: number): Promise<string> {
-	const result = await runQuery<any[]>('SELECT id FROM accounts WHERE id = ?', [userID]);
-	return result[0].id;
+	const result = await runQuery<any[]>('SELECT email FROM accounts WHERE id = ?', [userID]);
+	return result[0].email;
 }
 
 export async function verifyEmail(token: string): Promise<boolean> {
@@ -117,8 +117,15 @@ export async function isUsernameValid(username: string): Promise<boolean> {
 
 export async function isEmailInUse(email: string): Promise<boolean> {
 	const result = await runQuery<any[]>('SELECT * FROM accounts WHERE email = ?', [email]);
+
+	console.log(result);
 	if (result.length === 0) return false;
-	return result[0].email_verified === 1;
+
+	for (let row of result) {
+		if (row.email_verified[0] === 1) return true;
+	}
+
+	return false;
 }
 
 export async function generateGuestToken(profile: UserProfile) {

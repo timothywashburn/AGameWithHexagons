@@ -11,6 +11,9 @@ import { TroopTypeEnum } from './game/troop-type';
 import { JoinStateEnum } from './misc/join-state';
 import { ActionTypeEnum } from './game/action-type';
 import { ClientUnitStateEnum } from './game/client-unit-state';
+import { ClientPacketTypeEnum } from './packet/client-packet-type';
+import { PacketDestinationEnum } from './packet/packet-destination';
+import { ServerPacketTypeEnum } from './packet/server-packet-type';
 
 export default class Enum {
 	// Account
@@ -33,4 +36,7 @@ export default class Enum {
 
 	// Packet
 	static AnnouncementType = new AnnouncementTypeEnum();
+	static ClientPacketType = new ClientPacketTypeEnum();
+	static PacketDestination = new PacketDestinationEnum();
+	static ServerPacketType = new ServerPacketTypeEnum();
 }

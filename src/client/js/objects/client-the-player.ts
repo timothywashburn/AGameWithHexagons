@@ -23,6 +23,14 @@ class ClientThePlayer {
 		return [...this.plannedActions];
 	}
 
+	addPlannedAction(plannedAction: PlannedAction<any>) {
+		this.plannedActions.push(plannedAction);
+	}
+
+	clearPlannedActions() {
+		this.plannedActions = [];
+	}
+
 	getID() {
 		return this.id;
 	}
@@ -31,12 +39,9 @@ class ClientThePlayer {
 		this.id = id;
 	}
 
-	addPlannedAction(plannedAction: PlannedAction<any>) {
-		this.plannedActions.push(plannedAction);
-	}
-
-	clearPlannedActions() {
-		this.plannedActions = [];
+	// TODO: Maybe later figure out a cleaner way of doing this
+	getPlayer() {
+		return this.getGame().getPlayer(this.getID())!;
 	}
 }
 

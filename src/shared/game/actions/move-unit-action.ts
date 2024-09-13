@@ -8,6 +8,6 @@ export interface MoveUnitActionData {
 
 export default class MoveUnitAction extends PlannedAction<MoveUnitActionData> {
 	constructor(actionData: MoveUnitActionData) {
-		super(Enum.ActionType.MOVE, actionData);
+		super(Enum.ActionType.MOVE_UNIT, actionData);
 	}
 }

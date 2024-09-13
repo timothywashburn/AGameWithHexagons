@@ -9,12 +9,11 @@ import { calculateMoves, getAdjacentTiles } from '../../shared/game/util';
 import ServerTile from './server-tile';
 import ClientTile from '../../client/js/objects/client-tile';
 import thePlayer from '../../client/js/objects/client-the-player';
+import ServerUnit from './server-unit';
+import internal from 'node:stream';
 
-export default abstract class ServerTroop {
-	public id: number;
+export default abstract class ServerTroop extends ServerUnit {
 	public type: TroopType;
-	public game: ServerGame;
-	public owner: ServerClient;
 	public hasMoved: boolean = false;
 
 	//TODO: Temporary attribute for movement testing. Move to official
@@ -22,10 +21,8 @@ export default abstract class ServerTroop {
 	public speed: number;
 
 	protected constructor(type: TroopType, initData: ServerTroopInitData) {
+		super(initData.game, initData.owner);
 		this.type = type;
-		this.game = initData.game;
-		this.owner = initData.owner;
-		this.id = this.game.getNextID();
 
 		this.speed = 2;
 
@@ -73,6 +70,15 @@ export default abstract class ServerTroop {
 		}
 
 		return false;
+	}
+
+	destroy() {
+		this.game.troops = this.game.troops.filter((troop) => troop !== this);
+		for (let tile of this.game.tiles) {
+			if (tile.troop != this) continue;
+			tile.troop = null;
+			return;
+		}
 	}
 }
 
