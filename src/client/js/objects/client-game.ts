@@ -67,7 +67,7 @@ export class ClientGame {
 	// TODO: with new packet, change initGame to only handle stuff in lobby or have similar way to differentiate between on lobby join and on game start
 	initGame(gameSnapshot: GameSnapshot) {
 		// TODO: debug, remove later
-		let isGameHost = false;
+		let isGameHost = true;
 
 		if (!gameSnapshot.isRunning) {
 			document.getElementById('start-game-menu')!.style.display = 'block';

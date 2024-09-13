@@ -92,7 +92,7 @@ export default class ServerClient {
 				new ResponsePacket<PacketServerEndTurnReply>(packetEndTurn.packetID, {
 					success: success
 				}).replyToClient(this);
-			} else if (packet.packetTypeID === ServerPacketID.JOIN_GAME.id) {
+			} else if (packet.packetTypeIndex === Enum.ServerPacketType.JOIN_GAME.getIndex()) {
 				let packetJoinGame = packet as PacketServerJoinGame;
 				let player = this.getPlayer();
 
@@ -100,7 +100,7 @@ export default class ServerClient {
 					let newPacket = new PacketClientGameInit(this.getGame().getGameInitData(player.client));
 					newPacket.addClient(player.client);
 				}
-			} else if (packet.packetTypeID === ServerPacketID.LEAVE_GAME.id) {
+			} else if (packet.packetTypeIndex === Enum.ServerPacketType.LEAVE_GAME.getIndex()) {
 			}
 		});
 	}

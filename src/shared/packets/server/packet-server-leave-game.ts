@@ -1,6 +1,6 @@
-import { ServerPacketID } from '../base/packet';
 import ServerPacket from '../base/server-packet';
 import ReplyableServerPacket from '../base/replyable-server-packet';
+import Enum from '../../enums/enum';
 
 export interface PacketServerEndTurnReply {
 	success: boolean;
@@ -8,6 +8,6 @@ export interface PacketServerEndTurnReply {
 
 export default class PacketServerLeaveGame extends ReplyableServerPacket<PacketServerEndTurnReply> {
 	constructor() {
-		super(ServerPacketID.LEAVE_GAME.id);
+		super(Enum.ServerPacketType.LEAVE_GAME.getIndex());
 	}
 }

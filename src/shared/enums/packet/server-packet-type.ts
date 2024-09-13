@@ -9,6 +9,8 @@ export class ServerPacketTypeEnum extends CustomEnum<ServerPacketType> {
 	public CHAT = this.addValue(new ServerPacketType());
 	public SPAWN = this.addValue(new ServerPacketType());
 	public END_TURN = this.addValue(new ServerPacketType());
+	public JOIN_GAME = this.addValue(new ServerPacketType());
+	public LEAVE_GAME = this.addValue(new ServerPacketType());
 }
 
 export class ServerPacketType extends EnumValue {
