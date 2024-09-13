@@ -1,11 +1,12 @@
 import ServerClient from '../../../server/objects/server-client';
-import Packet, { PacketDestination } from './packet';
+import Packet from './packet';
+import Enum from '../../enums/enum';
 
 export default abstract class ClientPacket extends Packet {
 	public clients: ServerClient[] = [];
 
-	protected constructor(id: number) {
-		super(id, PacketDestination.CLIENT_BOUND);
+	protected constructor(packetTypeIndex: number) {
+		super(packetTypeIndex, Enum.PacketDestination.CLIENT_BOUND.getIndex());
 	}
 
 	addClient(client: ServerClient) {
