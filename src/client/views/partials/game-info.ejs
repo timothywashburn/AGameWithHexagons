@@ -4,7 +4,7 @@
             <% let games = data.games; %>
             <% for (let index in games) { %>
                 <% let gameData = games[index]; %>
-                <div class="card mb-3 game-lobby" id="<%= gameData.id; %>">
+                <div class="card mb-3 game-lobby-card" id="<%= gameData.id; %>">
                     <div class="card-body">
                         <div class="d-flex justify-content-between">
                             <h5 class="card-title"><%= gameData.name; %></h5>

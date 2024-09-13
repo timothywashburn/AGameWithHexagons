@@ -76,8 +76,10 @@ document.getElementById('start-game-button')!.addEventListener('click', () => {
 
 	packet.sendToServer(clientSocket);
 
-	const div = document.getElementById('start-game-menu') as HTMLDivElement;
-	div.style.display = 'none';
+	const startGameDiv = document.getElementById('start-game-menu') as HTMLDivElement;
+	startGameDiv.style.display = 'none';
+	const canvas = document.getElementById('game-canvas') as HTMLDivElement;
+	canvas.style.filter = 'none';
 });
 
 document.getElementById('join-game-button')!.addEventListener('click', () => {

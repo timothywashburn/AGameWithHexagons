@@ -57,10 +57,10 @@ function updateGames() {
 		.then((data) => {
 			devConfig = data.dev;
 
-			let lobbyContainer = document.getElementById('lobby-container')!;
-			lobbyContainer.innerHTML = data.html;
+			let gameSelectContainer = document.getElementById('game-select-container')!;
+			gameSelectContainer.innerHTML = data.html;
 
-			const gameCards = document.querySelectorAll('.game-lobby');
+			const gameCards = document.querySelectorAll('.game-lobby-card');
 			gameCards.forEach((game) => {
 				game.addEventListener('click', () => {
 					const gameID = parseInt(game.id);

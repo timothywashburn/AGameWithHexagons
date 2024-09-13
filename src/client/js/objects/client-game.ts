@@ -66,7 +66,7 @@ export class ClientGame {
 
 	initGame(gameSnapshot: GameSnapshot) {
 		// TODO: debug, remove later
-		let isGameHost = true;
+		let isGameHost = false;
 
 		if (!gameSnapshot.isRunning) {
 			document.getElementById('start-game-menu')!.style.display = 'block';
@@ -140,10 +140,10 @@ export class ClientGame {
 	}
 
 	startRender() {
-		const lobbyDiv = document.getElementById('game-lobby')!;
+		const gameSelectDiv = document.getElementById('game-select')!;
 		const gameDiv = document.getElementById('game')!;
 
-		lobbyDiv.style.display = 'none';
+		gameSelectDiv.style.display = 'none';
 		gameDiv.style.display = 'block';
 
 		this.renderFrame();
