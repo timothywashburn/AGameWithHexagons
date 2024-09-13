@@ -67,7 +67,10 @@ export async function getUserProfile(token: string): Promise<UserProfile | null>
 
 		if (result.length === 0 || (decoded.iat && result[0].last_logout / 1000 > decoded.iat)) return null;
 
-		return new UserProfile(decoded.userId, result[0].username);
+		return {
+			userID: decoded.userId,
+			username: result[0].username
+		};
 	} catch {
 		return null;
 	}
@@ -132,7 +135,10 @@ export async function generateGuestToken(profile: UserProfile) {
 export async function getGuestProfile(guestToken: string): Promise<UserProfile | null> {
 	try {
 		const decoded = verifyToken(guestToken);
-		return new UserProfile(decoded.userId, decoded.username);
+		return {
+			userID: decoded.userId,
+			username: decoded.username
+		};
 	} catch (error) {
 		return null;
 	}
