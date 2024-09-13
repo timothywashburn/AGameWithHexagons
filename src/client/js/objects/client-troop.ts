@@ -50,6 +50,10 @@ export default abstract class ClientTroop extends ClientUnit {
 		ctx.restore();
 	}
 
+	destroy() {
+		thePlayer.getGame().troops = thePlayer.getGame().troops.filter((troop) => troop != this);
+	}
+
 	getParentTile(): ClientTile {
 		return thePlayer.getGame().tiles.find((tile) => tile.troop === this)!;
 	}

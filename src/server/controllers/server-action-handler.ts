@@ -4,7 +4,7 @@ import Enum from '../../shared/enums/enum';
 import { ServerTroopInitData } from '../objects/server-troop';
 import { getServerBuildingConstructor, getServerTroopConstructor } from '../server-register';
 import { ServerBuildingInitData } from '../objects/server-building';
-import CreateUnitAction, { CreateUnitActionData } from '../../shared/game/actions/create-unit-action';
+import CreateUnitAction from '../../shared/game/actions/create-unit-action';
 import MoveUnitAction from '../../shared/game/actions/move-unit-action';
 
 export function handleAction(client: ServerClient, action: PlannedAction<any>) {
@@ -13,7 +13,6 @@ export function handleAction(client: ServerClient, action: PlannedAction<any>) {
 	if (actionType == Enum.ActionType.CREATE_UNIT) {
 		let createUnitAction = action as CreateUnitAction;
 		let actionData = createUnitAction.actionData;
-
 		let parentTile = client.getGame().getTile(actionData.tileID)!;
 
 		if (actionData.category === 'troop') {
@@ -33,7 +32,17 @@ export function handleAction(client: ServerClient, action: PlannedAction<any>) {
 			let BuildingConstructor = getServerBuildingConstructor(buildingType);
 			parentTile.building = new BuildingConstructor(initData);
 		}
-	} else if (actionType == Enum.ActionType.MOVE) {
+	} else if (actionType == Enum.ActionType.DESTROY_UNIT) {
+		let createUnitAction = action as CreateUnitAction;
+		let actionData = createUnitAction.actionData;
+		let parentTile = client.getGame().getTile(actionData.tileID)!;
+
+		if (actionData.category === 'troop') {
+			if (parentTile.troop) parentTile.troop.destroy();
+		} else if (actionData.category === 'building') {
+			if (parentTile.building) parentTile.building.destroy();
+		}
+	} else if (actionType == Enum.ActionType.MOVE_UNIT) {
 		let createUnitAction = action as MoveUnitAction;
 		let actionData = createUnitAction.actionData;
 

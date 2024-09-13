@@ -6,6 +6,8 @@ import PacketServerDev from '../../../shared/packets/server/packet-server-dev';
 import Enum from '../../../shared/enums/enum';
 import thePlayer from '../objects/client-the-player';
 import CreateUnitAction, { CreateUnitActionData } from '../../../shared/game/actions/create-unit-action';
+import { renderTroopMoveOptions } from './render';
+import DestroyUnitAction, { DestroyUnitActionData } from '../../../shared/game/actions/destroy-unit-action';
 
 document.getElementById('chatSend')!.addEventListener('click', () => {
 	const chatInput = document.getElementById('chatInput') as HTMLInputElement;
@@ -49,6 +51,27 @@ document.getElementById('toggle-building')!.addEventListener('click', () => {
 	let game = thePlayer.getGame();
 	if (game.selectedTile != null && game.selectedTile.building != null) {
 		toggleSidebar('building');
+	}
+});
+
+document.getElementById('troop-move')!.addEventListener('click', () => {
+	let game = thePlayer.getGame();
+	let selectedTile = game.selectedTile;
+
+	if (selectedTile && selectedTile.troop) renderTroopMoveOptions(selectedTile.troop);
+});
+
+document.getElementById('troop-destroy')!.addEventListener('click', () => {
+	let game = thePlayer.getGame();
+	let selectedTile = game.selectedTile;
+
+	if (selectedTile && selectedTile.troop) {
+		let actionData: DestroyUnitActionData = {
+			category: 'troop',
+			tileID: selectedTile.id
+		};
+		new DestroyUnitAction(actionData);
+		document.getElementById('sidebar')!.style.display = 'none';
 	}
 });
 

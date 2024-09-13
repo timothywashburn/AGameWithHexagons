@@ -7,7 +7,7 @@ export class ActionTypeEnum extends CustomEnum<ActionType> {
 
 	public CREATE_UNIT = this.addValue(new ActionType());
 	public DESTROY_UNIT = this.addValue(new ActionType());
-	public MOVE = this.addValue(new ActionType());
+	public MOVE_UNIT = this.addValue(new ActionType());
 	public ATTACK = this.addValue(new ActionType());
 	public USE_ABILITY = this.addValue(new ActionType());
 }

@@ -1,14 +1,14 @@
 import { toggleSidebar } from './ui-overlay';
 import thePlayer from '../objects/client-the-player';
-import ClientTroop from "../objects/client-troop";
-import {platform} from "os";
-import ClientTile from "../objects/client-tile";
-import {render} from "ejs";
-import assert from "assert";
-import CreateUnitAction, {CreateUnitActionData} from "../../../shared/game/actions/create-unit-action";
-import MoveUnitAction, {MoveUnitActionData} from "../../../shared/game/actions/move-unit-action";
-import {Pair} from "../../../shared/interfaces/pair";
-import {calculateMoves, getAdjacentTiles} from "../../../shared/game/util";
+import ClientTroop from '../objects/client-troop';
+import { platform } from 'os';
+import ClientTile from '../objects/client-tile';
+import { render } from 'ejs';
+import assert from 'assert';
+import CreateUnitAction, { CreateUnitActionData } from '../../../shared/game/actions/create-unit-action';
+import MoveUnitAction, { MoveUnitActionData } from '../../../shared/game/actions/move-unit-action';
+import { Pair } from '../../../shared/interfaces/pair';
+import { calculateMoves, getAdjacentTiles } from '../../../shared/game/util';
 
 const canvas = document.getElementById('gameCanvas') as HTMLCanvasElement;
 const ctx = canvas.getContext('2d')!;
@@ -91,7 +91,7 @@ export function setSelectedTile(clickedTile: ClientTile | undefined | null, over
 		let selectedTile = game.selectedTile;
 
 		if (clickedTile && selectedTile && selectedTile.troop) attemptMove(selectedTile.troop, clickedTile);
-		return
+		return;
 	}
 
 	disableMoveOptionRendering();
@@ -149,14 +149,7 @@ const getTile = (canvasX: number, canvasY: number) => {
 	}
 };
 
-document.getElementById("troop-move")!.addEventListener('click', () => {
-	let game = thePlayer.getGame();
-	let selectedTile = game.selectedTile;
-
-	if (selectedTile && selectedTile.troop) renderTroopMoveOptions(selectedTile.troop);
-});
-
-function renderTroopMoveOptions(troop: ClientTroop) {
+export function renderTroopMoveOptions(troop: ClientTroop) {
 	let tile = troop.getParentTile();
 	let renderTiles: Pair<number>[] = getAdjacentTiles(tile.x, tile.y);
 	let speed = troop.speed;
@@ -165,32 +158,30 @@ function renderTroopMoveOptions(troop: ClientTroop) {
 		let tile = thePlayer.getGame().getTileByPosition(pair.first, pair.second);
 		if (tile === null) return false;
 
-		return tile.troop == null && tile.building == null
+		return tile.troop == null && tile.building == null;
 	});
 
-
 	for (let i = 0; i < speed - 1; i++) {
-
 		let isOccupied = function (pair: Pair<number>) {
 			let tile = thePlayer.getGame().getTileByPosition(pair.first, pair.second);
 			if (tile === null) return false;
 
 			return tile.troop != null || tile.building != null;
-		}
+		};
 
 		renderTiles = calculateMoves(renderTiles, isOccupied);
 	}
 
-	renderTiles.forEach(pair => {
+	renderTiles.forEach((pair) => {
 		let tile = thePlayer.getGame().getTileByPosition(pair.first, pair.second);
 		if (tile === null) return;
 
 		tile.isMoveOption = true;
-	})
+	});
 }
 
 export function disableMoveOptionRendering() {
-	thePlayer.getGame().tiles.forEach(tile => tile.isMoveOption = false);
+	thePlayer.getGame().tiles.forEach((tile) => (tile.isMoveOption = false));
 }
 
 function attemptMove(troop: ClientTroop, tile: ClientTile) {
@@ -205,5 +196,5 @@ function attemptMove(troop: ClientTroop, tile: ClientTile) {
 	setTimeout(() => {
 		tile.isMoveOption = false;
 		setSelectedTile(tile);
-	}, 100)
+	}, 100);
 }

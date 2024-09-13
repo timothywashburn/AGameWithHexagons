@@ -187,10 +187,24 @@ export class ClientGame {
 		return null;
 	}
 
+	getTroopByTile(tileID: number): ClientTroop | null {
+		if (tileID == undefined) return null;
+		for (let tile of this.tiles) if (tile.id === tileID) return tile.troop;
+		console.error(`TROOP NOT FOUND: ${tileID}`);
+		return null;
+	}
+
 	getBuilding(id: number | undefined): ClientBuilding | null {
 		if (id == undefined) return null;
 		for (let building of this.buildings) if (building.id === id) return building;
 		console.error(`BUILDING NOT FOUND: ${id}`);
+		return null;
+	}
+
+	getBuildingByTile(tileID: number): ClientBuilding | null {
+		if (tileID == undefined) return null;
+		for (let tile of this.tiles) if (tile.id === tileID) return tile.building;
+		console.error(`BUILDING NOT FOUND: ${tileID}`);
 		return null;
 	}
 }

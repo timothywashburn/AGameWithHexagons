@@ -2,18 +2,15 @@ import ServerGame from './server-game';
 import ServerClient from './server-client';
 import { BuildingSnapshot } from '../../shared/interfaces/snapshot';
 import { BuildingType } from '../../shared/enums/game/building-type';
+import ServerUnit from './server-unit';
+import { type } from 'node:os';
 
-export default class ServerBuilding {
-	public id: number;
+export default class ServerBuilding extends ServerUnit {
 	public type: BuildingType;
-	public game: ServerGame;
-	public owner: ServerClient;
 
 	constructor(type: BuildingType, initData: ServerBuildingInitData) {
+		super(initData.game, initData.owner);
 		this.type = type;
-		this.game = initData.game;
-		this.owner = initData.owner;
-		this.id = this.game.getNextID();
 
 		this.game.buildings.push(this);
 	}
@@ -24,6 +21,15 @@ export default class ServerBuilding {
 			typeIndex: this.type.getIndex(),
 			ownerID: this.owner.getID()
 		};
+	}
+
+	destroy() {
+		this.game.buildings = this.game.buildings.filter((troop) => troop !== this);
+		for (let tile of this.game.tiles) {
+			if (tile.building != this) continue;
+			tile.building = null;
+			return;
+		}
 	}
 }
 

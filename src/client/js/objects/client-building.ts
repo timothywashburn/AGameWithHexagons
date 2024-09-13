@@ -44,6 +44,10 @@ export default abstract class ClientBuilding extends ClientUnit {
 		ctx.restore();
 	}
 
+	destroy() {
+		thePlayer.getGame().buildings = thePlayer.getGame().buildings.filter((troop) => troop != this);
+	}
+
 	ghostRender(tileID: number) {}
 
 	getParentTile(): ClientTile {

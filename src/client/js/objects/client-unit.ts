@@ -7,4 +7,5 @@ export default abstract class ClientUnit extends ClientElement {
 	}
 
 	abstract render(): void;
+	abstract destroy(): void;
 }
