@@ -76,8 +76,9 @@ export class ClientGame {
 			document.getElementById('start-game-button')!.style.display = 'inline';
 			document.getElementById('disband-game-button')!.style.display = 'inline';
 		} else {
+			// TODO: check if is joined; if joined, display leave button; else display join button
 			document.getElementById('join-game-button')!.style.display = 'inline';
-			document.getElementById('leave-game-button')!.style.display = 'inline';
+			// document.getElementById('leave-game-button')!.style.display = 'inline';
 			document.getElementById('return-menu-button')!.style.display = 'inline';
 		}
 

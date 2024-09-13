@@ -48,11 +48,11 @@
             </div>
 
             <div id="playerStatuses">
-                <button class="btn btn-success game-participant" id="join-game-button">Join Game</button>
-                <button class="btn btn-danger game-participant" id="return-menu-button">Return to Menu</button>
-                <button class="btn btn-danger game-participant" id="leave-game-button">Leave Game</button>
-                <button class="btn btn-success game-host" id="start-game-button">Start Game</button>
-                <button class="btn btn-danger game-host" id="disband-game-button">Disband Game</button>
+                <button class="btn btn-success" id="join-game-button">Join Game</button>
+                <button class="btn btn-danger" id="return-menu-button">Return to Menu</button>
+                <button class="btn btn-danger" id="leave-game-button">Leave Game</button>
+                <button class="btn btn-success" id="start-game-button">Start Game</button>
+                <button class="btn btn-danger" id="disband-game-button">Disband Game</button>
             </div>
         </div>
     </div>
@@ -166,11 +166,11 @@
 
     #gameSettings > div > * {
         display: inline-block;
-        width: 30%;
+        max-width: 30%;
     }
 
     #gameSettings > div > *:not(:last-child) {
-        margin-right: 5%;
+        margin-right: 5px;
     }
 
     #gameSettings select {
@@ -192,13 +192,6 @@
         font-size: 1em;
         cursor: pointer;
         border-radius: 5px;
-    }
-
-    .game-host {
-        display: none;
-    }
-
-    .game-participant {
         display: none;
     }
 

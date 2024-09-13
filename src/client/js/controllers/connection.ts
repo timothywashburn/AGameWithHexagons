@@ -78,7 +78,6 @@ clientSocket.on('packet', function (packet: Packet) {
 
 			const name = document.createTextNode(playerListEntry.username);
 			listItem.appendChild(name);
-			console.log(playerListEntry.joinState);
 
 			playerList.appendChild(listItem);
 		});

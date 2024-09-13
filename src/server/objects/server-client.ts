@@ -11,6 +11,8 @@ import { isDev } from '../misc/utils';
 import PacketClientSocketResponse from '../../shared/packets/client/packet-client-socket-response';
 import { generateGuestToken, getGuestProfile, validateUser } from '../controllers/authentication';
 import { JoinState } from '../../shared/enums/misc/join-state';
+import PacketServerJoinGame from '../../shared/packets/server/packet-server-join-game';
+import PacketClientGameInit from '../../shared/packets/client/packet-client-game-init';
 
 let nextID = -1;
 
@@ -70,9 +72,7 @@ export default class ServerClient {
 				);
 
 				responsePacket.sendToClients();
-			}
-
-			if (packet.packetTypeID === ServerPacketID.END_TURN.id) {
+			} else if (packet.packetTypeID === ServerPacketID.END_TURN.id) {
 				let packetEndTurn = packet as PacketServerEndTurn;
 				let player = this.getPlayer();
 
@@ -88,6 +88,15 @@ export default class ServerClient {
 				new ResponsePacket<PacketServerEndTurnReply>(packetEndTurn.packetID, {
 					success: success
 				}).replyToClient(this);
+			} else if (packet.packetTypeID === ServerPacketID.JOIN_GAME.id) {
+				let packetJoinGame = packet as PacketServerJoinGame;
+				let player = this.getPlayer();
+
+				if (!this.getGame().isRunning && player != null) {
+					let newPacket = new PacketClientGameInit(this.getGame().getGameInitData(player.client));
+					newPacket.addClient(player.client);
+				}
+			} else if (packet.packetTypeID === ServerPacketID.LEAVE_GAME.id) {
 			}
 		});
 	}

@@ -48,5 +48,7 @@ export const ServerPacketID: Readonly<{ [key: string]: PacketData }> = Object.fr
 	DEV: { id: 0x00 },
 	CHAT: { id: 0x01 },
 	SPAWN: { id: 0x02 },
-	END_TURN: { id: 0x03 }
+	END_TURN: { id: 0x03 },
+	JOIN_GAME: { id: 0x04 },
+	LEAVE_GAME: { id: 0x05 }
 });
