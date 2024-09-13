@@ -1,12 +1,11 @@
-import { ClientPacketID } from '../base/packet';
-import ClientPacket from '../base/client-packet';
 import ReplyableClientPacket from '../base/replyable-client-packet';
+import Enum from '../../enums/enum';
 
 export default class PacketClientDev extends ReplyableClientPacket<object> {
 	data: any;
 
 	constructor(data: any) {
-		super(ClientPacketID.DEV.id);
+		super(Enum.ClientPacketType.DEV.getIndex());
 
 		this.data = data;
 	}

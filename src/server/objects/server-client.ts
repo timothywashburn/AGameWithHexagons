@@ -1,15 +1,16 @@
-import {Socket} from 'socket.io';
-import Packet, {PacketDestination, ServerPacketID} from '../../shared/packets/base/packet';
+import { Socket } from 'socket.io';
+import Packet from '../../shared/packets/base/packet';
 import PacketServerChat from '../../shared/packets/server/packet-server-chat';
 import ServerGame from './server-game';
 import PacketClientChat from '../../shared/packets/client/packet-client-chat';
-import {generateUsername} from 'unique-username-generator';
+import { generateUsername } from 'unique-username-generator';
 import ResponsePacket from '../../shared/packets/base/response-packet';
-import PacketServerEndTurn, {PacketServerEndTurnReply} from '../../shared/packets/server/packet-server-end-turn';
+import PacketServerEndTurn, { PacketServerEndTurnReply } from '../../shared/packets/server/packet-server-end-turn';
 import PacketServerDev from '../../shared/packets/server/packet-server-dev';
-import {isDev} from '../misc/utils';
-import PacketClientSocketResponse from "../../shared/packets/client/packet-client-socket-response";
-import {generateGuestToken, getGuestProfile, validateUser} from "../controllers/authentication";
+import { isDev } from '../misc/utils';
+import PacketClientSocketResponse from '../../shared/packets/client/packet-client-socket-response';
+import { generateGuestToken, getGuestProfile, validateUser } from '../controllers/authentication';
+import Enum from '../../shared/enums/enum';
 
 let nextID = -1;
 
@@ -36,16 +37,17 @@ export default class ServerClient {
 		});
 
 		socket.on('header', (token: string, guestToken: string) => {
-			this.handleHeader(token, guestToken).then(guestToken => {
+			this.handleHeader(token, guestToken).then((guestToken) => {
 				let packet = new PacketClientSocketResponse({ clientID: this.getID(), guestToken: guestToken });
 				packet.addClient(this).sendToClients();
 			});
 		});
 
 		socket.on('packet', (packet: Packet) => {
-			if (packet.packetDestination !== PacketDestination.SERVER_BOUND) return;
+			if (Enum.PacketDestination.getFromIndex(packet.packetDestination) !== Enum.PacketDestination.SERVER_BOUND)
+				return;
 
-			if (packet.packetTypeID === ServerPacketID.DEV.id && isDev) {
+			if (packet.packetTypeIndex === Enum.ServerPacketType.DEV.getIndex() && isDev) {
 				let packetServerDev = packet as PacketServerDev;
 
 				if (packetServerDev.data.action) {
@@ -54,7 +56,7 @@ export default class ServerClient {
 						this.game?.start();
 					}
 				}
-			} else if (packet.packetTypeID === ServerPacketID.CHAT.id) {
+			} else if (packet.packetTypeIndex === Enum.ServerPacketType.CHAT.getIndex()) {
 				let packetServerChat = packet as PacketServerChat;
 
 				console.log(`Receiving chat message from client ${this.getID()}: ${packetServerChat.message}`);
@@ -68,7 +70,7 @@ export default class ServerClient {
 				responsePacket.sendToClients();
 			}
 
-			if (packet.packetTypeID === ServerPacketID.END_TURN.id) {
+			if (packet.packetTypeIndex === Enum.ServerPacketType.END_TURN.getIndex()) {
 				let packetEndTurn = packet as PacketServerEndTurn;
 				let player = this.getPlayer();
 
@@ -129,8 +131,6 @@ export default class ServerClient {
 		return null;
 	}
 }
-
-
 
 export class UserProfile {
 	userID: number;

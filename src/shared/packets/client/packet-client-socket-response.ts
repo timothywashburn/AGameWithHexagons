@@ -1,7 +1,5 @@
-import { ClientPacketID } from '../base/packet';
-import { GameInitData } from '../../interfaces/snapshot';
 import ClientPacket from '../base/client-packet';
-import PlannedAction from '../../game/planned-action';
+import Enum from '../../enums/enum';
 
 export type ClientInitData = {
 	clientID: number;
@@ -12,7 +10,7 @@ export default class PacketClientSocketResponse extends ClientPacket {
 	public initData: ClientInitData;
 
 	constructor(initData: ClientInitData) {
-		super(ClientPacketID.SOCKET_RESPONSE.id);
+		super(Enum.ClientPacketType.SOCKET_RESPONSE.getIndex());
 		this.initData = initData;
 	}
 }
