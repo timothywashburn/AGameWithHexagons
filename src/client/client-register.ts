@@ -7,6 +7,7 @@ import ClientBuilding from './js/objects/client-building';
 import { TroopType } from '../shared/enums/game/troop-type';
 import Enum from '../shared/enums/enum';
 import { BuildingType } from '../shared/enums/game/building-type';
+import { ClientUnitState } from '../shared/enums/game/client-unit-state';
 
 type ClientTroopConstructor = new (troopSnapshot: TroopSnapshot) => ClientTroop;
 

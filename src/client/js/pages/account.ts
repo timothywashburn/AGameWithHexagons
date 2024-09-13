@@ -1,7 +1,7 @@
 import { showToast } from '../controllers/toast';
 import { Modal } from 'bootstrap';
 import Enum from '../../../shared/enums/enum';
-import {expireCookie, getCookie} from "../controllers/cookie-handler";
+import { expireCookie, getCookie } from '../controllers/cookie-handler';
 
 window.onload = function () {
 	showToasts();
@@ -9,7 +9,7 @@ window.onload = function () {
 	fetch('/api/account', {
 		method: 'GET',
 		headers: {
-			Authorization: 'Bearer ' + getCookie("token")
+			Authorization: 'Bearer ' + getCookie('token')
 		}
 	})
 		.then((response) => response.json())
@@ -61,14 +61,14 @@ function setupButtons() {
 			method: 'GET',
 			headers: {
 				'Content-Type': 'application/json',
-				Authorization: `Bearer ${getCookie("token")}`
+				Authorization: `Bearer ${getCookie('token')}`
 			}
 		})
 			.then((response) => response.json())
 			.then((data) => {
 				if (data.success) {
-					expireCookie("token");
-					expireCookie("guestToken");
+					expireCookie('token');
+					expireCookie('guestToken');
 					window.location.href = '/login';
 				} else {
 					console.error(data.error);
@@ -95,7 +95,7 @@ function setupButtons() {
 		fetch('/api/resendverification', {
 			method: 'GET',
 			headers: {
-				Authorization: 'Bearer ' + getCookie("token")
+				Authorization: 'Bearer ' + getCookie('token')
 			}
 		})
 			.then((response) => response.json())
@@ -186,7 +186,7 @@ function changeUsername(newUsername: string) {
 	fetch(`/api/changeusername?${params}`, {
 		method: 'GET',
 		headers: {
-			Authorization: 'Bearer ' + getCookie("token")
+			Authorization: 'Bearer ' + getCookie('token')
 		}
 	})
 		.then((response) => response.json())
@@ -212,7 +212,7 @@ function changeEmail(newEmail: string) {
 	fetch(`/api/changeemail?${params}`, {
 		method: 'GET',
 		headers: {
-			Authorization: 'Bearer ' + getCookie("token")
+			Authorization: 'Bearer ' + getCookie('token')
 		}
 	})
 		.then((response) => response.json())
@@ -239,7 +239,7 @@ function changePassword(oldPassword: string, newPassword: string) {
 	fetch(`/api/changepassword?${params}`, {
 		method: 'GET',
 		headers: {
-			Authorization: 'Bearer ' + getCookie("token")
+			Authorization: 'Bearer ' + getCookie('token')
 		}
 	})
 		.then((response) => response.json())

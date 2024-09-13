@@ -1,7 +1,7 @@
 import { ClientPacketID } from '../base/packet';
 import { GameInitData } from '../../interfaces/snapshot';
 import ClientPacket from '../base/client-packet';
-import PlannedAction from "../../game/planned-action";
+import PlannedAction from '../../game/planned-action';
 
 export type ClientInitData = {
 	clientID: number;

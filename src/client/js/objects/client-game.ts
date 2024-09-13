@@ -35,7 +35,7 @@ export class ClientGame {
 	public selectedTile: ClientTile | null = null;
 
 	constructor(initData: GameSnapshot) {
-		console.log(initData)
+		console.log(initData);
 
 		thePlayer.setGame(this);
 
@@ -96,7 +96,7 @@ export class ClientGame {
 				troop.updateTroop(snapshot);
 			} else {
 				let TroopConstructor = getClientTroopConstructor(Enum.TroopType.getFromIndex(snapshot.typeIndex));
-				new TroopConstructor(snapshot);
+				thePlayer.getGame().troops.push(new TroopConstructor(snapshot));
 			}
 		});
 
@@ -108,7 +108,7 @@ export class ClientGame {
 				let BuildingConstructor = getClientBuildingConstructor(
 					Enum.BuildingType.getFromIndex(snapshot.typeIndex)
 				);
-				new BuildingConstructor(snapshot);
+				thePlayer.getGame().buildings.push(new BuildingConstructor(snapshot));
 			}
 		});
 
@@ -145,8 +145,8 @@ export class ClientGame {
 
 			// Render tiles
 			this.tiles.forEach((tile) => tile.renderTile());
-			this.troops.forEach((troop) => troop.renderTroop());
-			this.buildings.forEach((building) => building.renderBuilding());
+			this.troops.forEach((troop) => troop.render());
+			this.buildings.forEach((building) => building.render());
 
 			thePlayer.getPlannedActions().forEach((action) => renderAction(action));
 

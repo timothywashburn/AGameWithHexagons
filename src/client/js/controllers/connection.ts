@@ -15,9 +15,9 @@ import Enum from '../../../shared/enums/enum';
 import { AnnouncementType } from '../../../shared/enums/packet/announcement-type';
 import thePlayer from '../objects/client-the-player';
 import { onReceivePlannedActions } from './client-action-handler';
-import {disableMoveOptionRendering, setSelectedTile} from "./render";
-import PacketClientSocketResponse from "../../../shared/packets/client/packet-client-socket-response";
-import {getCookie, setCookie} from "./cookie-handler";
+import { disableMoveOptionRendering, setSelectedTile } from './render';
+import PacketClientSocketResponse from '../../../shared/packets/client/packet-client-socket-response';
+import { getCookie, setCookie } from './cookie-handler';
 
 export const clientSocket = (io as any).connect();
 
@@ -29,7 +29,7 @@ clientSocket.on('connect', () => {
 		if (devConfig.autoJoin) joinGame(1, (window as any).gameData.socketID);
 	}, 10);
 
-	clientSocket.emit('header', getCookie("token"), getCookie("guestToken"));
+	clientSocket.emit('header', getCookie('token'), getCookie('guestToken'));
 });
 
 clientSocket.on('packet', function (packet: Packet) {
@@ -46,13 +46,12 @@ clientSocket.on('packet', function (packet: Packet) {
 				button.style.display = 'none';
 			}
 		}
-
 	} else if (packet.packetTypeID === ClientPacketID.SOCKET_RESPONSE.id) {
 		let packetClientSocketResponse = packet as PacketClientSocketResponse;
 		let guestToken = packetClientSocketResponse.initData.guestToken;
 
 		if (guestToken) {
-			setCookie("guestToken", guestToken, 1);
+			setCookie('guestToken', guestToken, 1);
 		}
 
 		thePlayer.setID(packetClientSocketResponse.initData.clientID);
@@ -115,7 +114,7 @@ clientSocket.on('packet', function (packet: Packet) {
 		chatMessages.appendChild(message);
 		chatMessages.scrollTop = chatMessages.scrollHeight;
 	} else if (packet.packetTypeID === ClientPacketID.TURN_START.id) {
-		let packetClientTurnStart = packet as PacketClientTurnStart
+		let packetClientTurnStart = packet as PacketClientTurnStart;
 
 		disableMoveOptionRendering();
 

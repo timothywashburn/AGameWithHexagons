@@ -5,17 +5,17 @@ import '../../../shared/packets/base/packet';
 import { showToast } from '../controllers/toast';
 import { Modal } from 'bootstrap';
 import Enum from '../../../shared/enums/enum';
-import {getCookie} from "../controllers/cookie-handler";
+import { getCookie } from '../controllers/cookie-handler';
 
 (window as any).gameData = {};
 
 window.onload = function () {
-	if (!getCookie("token")) return;
+	if (!getCookie('token')) return;
 
 	fetch('/api/account', {
 		method: 'GET',
 		headers: {
-			Authorization: 'Bearer ' + getCookie("token")
+			Authorization: 'Bearer ' + getCookie('token')
 		}
 	})
 		.then((response) => response.json())
@@ -44,7 +44,7 @@ export let devConfig: DevConfig;
 
 function updateGames() {
 	let headers = new Headers();
-	headers.append('Authorization', 'Bearer ' + getCookie("token"));
+	headers.append('Authorization', 'Bearer ' + getCookie('token'));
 
 	let requestOptions: RequestInit = {
 		method: 'GET',
@@ -81,7 +81,7 @@ function updateGames() {
 
 export function joinGame(gameID: number, socketID: number) {
 	let headers = new Headers();
-	headers.append('Authorization', 'Bearer ' + getCookie("token"));
+	headers.append('Authorization', 'Bearer ' + getCookie('token'));
 
 	let requestOptions: RequestInit = {
 		method: 'GET',

@@ -1,4 +1,4 @@
-import {setCookie} from "../controllers/cookie-handler";
+import { setCookie } from '../controllers/cookie-handler';
 
 document.getElementById('loginForm')!.addEventListener('submit', function (e) {
 	e.preventDefault();
@@ -12,7 +12,7 @@ document.getElementById('loginForm')!.addEventListener('submit', function (e) {
 	let params = new URLSearchParams({ username: username, password: password }).toString();
 
 	fetch(`/api/login?${params}`, {
-		method: 'GET',
+		method: 'GET'
 	})
 		.then((response) => response.json())
 		.then((data) => {

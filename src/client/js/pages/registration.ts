@@ -1,7 +1,7 @@
 import { RegistrationResponse } from '../../../shared/enums/account/registration-response';
 import { response } from 'express';
 import Enum from '../../../shared/enums/enum';
-import {setCookie} from "../controllers/cookie-handler";
+import { setCookie } from '../controllers/cookie-handler';
 
 document.getElementById('registerForm')!.addEventListener('submit', function (e) {
 	e.preventDefault();
