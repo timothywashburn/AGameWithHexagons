@@ -34,34 +34,34 @@ export default class ClientGhostUnit {
 	render() {
 		ctx.save();
 
-		let timeSinceCreation = (Date.now() - thePlayer.getGame().startTime) / 1000;
-		let period = 2.5;
-		let phase = (timeSinceCreation % period) / period;
+		if (this.type == 'create') {
+			let timeSinceCreation = (Date.now() - thePlayer.getGame().startTime) / 1000;
+			let period = 2.5;
+			let phase = (timeSinceCreation % period) / period;
 
-		let pulseFactor = this.getPulseRadius(phase);
-		let minRadius = 0;
-		let maxRadius = radius * 2;
+			let pulseFactor = this.getPulseRadius(phase);
+			let minRadius = 0;
+			let maxRadius = radius * 2;
 
-		ctx.globalAlpha = this.getOpacityRadius(phase);
+			ctx.globalAlpha = this.getOpacityRadius(phase);
 
-		let gradient = ctx.createRadialGradient(
-			this.tile.canvasX!,
-			this.tile.canvasY!,
-			0,
-			this.tile.canvasX!,
-			this.tile.canvasY!,
-			minRadius + (maxRadius - minRadius) * pulseFactor
-		);
-		gradient.addColorStop(0, 'rgba(0, 255, 0, 0.4)');
-		gradient.addColorStop(1, 'rgba(0, 255, 0, 0)');
+			let gradient = ctx.createRadialGradient(
+				this.tile.canvasX!,
+				this.tile.canvasY!,
+				0,
+				this.tile.canvasX!,
+				this.tile.canvasY!,
+				minRadius + (maxRadius - minRadius) * pulseFactor
+			);
+			gradient.addColorStop(0, 'rgba(0, 255, 0, 0.4)');
+			gradient.addColorStop(1, 'rgba(0, 255, 0, 0)');
 
-		ctx.fillStyle = gradient;
-		ctx.fillRect(this.tile.canvasX! - radius * 2, this.tile.canvasY! - radius * 2, radius * 4, radius * 4);
-
-		ctx.globalAlpha = 1;
-		ctx.drawImage(this.sprite, this.tile.canvasX! - radius, this.tile.canvasY! - radius, radius * 2, radius * 2);
+			ctx.fillStyle = gradient;
+			ctx.fillRect(this.tile.canvasX! - radius * 2, this.tile.canvasY! - radius * 2, radius * 4, radius * 4);
+		}
 
 		ctx.restore();
+		ctx.drawImage(this.sprite, this.tile.canvasX! - radius, this.tile.canvasY! - radius, radius * 2, radius * 2);
 	}
 
 	private getPulseRadius(phase: number): number {
