@@ -14,7 +14,7 @@ export default class DestroyUnitAction extends PlannedAction<DestroyUnitActionDa
 	private readonly ghostUnit: ClientGhostUnit;
 
 	constructor(actionData: DestroyUnitActionData) {
-		super(Enum.ActionType.CREATE_UNIT, actionData);
+		super(Enum.ActionType.DESTROY_UNIT, actionData);
 
 		let unitType: TroopType | BuildingType;
 		if (actionData.category == 'troop') {
