@@ -7,6 +7,7 @@ import Enum from '../../../shared/enums/enum';
 import thePlayer from '../objects/client-the-player';
 import CreateUnitAction, { CreateUnitActionData } from '../../../shared/game/actions/create-unit-action';
 import PacketServerJoinGame from '../../../shared/packets/server/packet-server-join-game';
+import PacketServerLeaveGame from '../../../shared/packets/server/packet-server-leave-game';
 
 document.getElementById('chat-send')!.addEventListener('click', () => {
 	const chatInput = document.getElementById('chat-input') as HTMLInputElement;
@@ -69,6 +70,7 @@ document.getElementById('end-turn-button')!.addEventListener('click', () => {
 	});
 });
 
+// TODO: create packet that is sent to all clients when game is started to handle actual game start stuff
 document.getElementById('start-game-button')!.addEventListener('click', () => {
 	let packet = new PacketServerDev({
 		action: 'START_GAME'
@@ -90,6 +92,17 @@ document.getElementById('join-game-button')!.addEventListener('click', () => {
 	const joinButton = document.getElementById('join-game-button') as HTMLDivElement;
 	joinButton.style.display = 'none';
 	const leaveButton = document.getElementById('leave-game-button') as HTMLDivElement;
+	leaveButton.style.display = 'inline-block';
+});
+
+document.getElementById('leave-game-button')!.addEventListener('click', () => {
+	let packet = new PacketServerLeaveGame();
+
+	packet.sendToServer(clientSocket);
+
+	const joinButton = document.getElementById('leave-game-button') as HTMLDivElement;
+	joinButton.style.display = 'none';
+	const leaveButton = document.getElementById('join-game-button') as HTMLDivElement;
 	leaveButton.style.display = 'inline-block';
 });
 

@@ -64,22 +64,25 @@ export class ClientGame {
 		console.log('debugging enabled');
 	}
 
+	// TODO: with new packet, change initGame to only handle stuff in lobby or have similar way to differentiate between on lobby join and on game start
 	initGame(gameSnapshot: GameSnapshot) {
 		// TODO: debug, remove later
 		let isGameHost = false;
 
 		if (!gameSnapshot.isRunning) {
 			document.getElementById('start-game-menu')!.style.display = 'block';
+			const canvas = document.getElementById('game-canvas') as HTMLDivElement;
+			canvas.style.filter = 'blur(5px)';
 		}
 
 		if (isGameHost) {
 			document.getElementById('start-game-button')!.style.display = 'inline';
 			document.getElementById('disband-game-button')!.style.display = 'inline';
 		} else {
+			document.getElementById('return-menu-button')!.style.display = 'inline';
 			// TODO: check if is joined; if joined, display leave button; else display join button
 			document.getElementById('join-game-button')!.style.display = 'inline';
 			// document.getElementById('leave-game-button')!.style.display = 'inline';
-			document.getElementById('return-menu-button')!.style.display = 'inline';
 		}
 
 		this.updateGame(gameSnapshot);
